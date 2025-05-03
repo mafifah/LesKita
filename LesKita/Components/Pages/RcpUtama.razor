@@ -1,4 +1,5 @@
-﻿@inject IJSRuntime _js
+﻿@page "/"
+@inject IJSRuntime _js
 @inject ISvcStatusBar _svcStatusBar
 @inject NavigationManager _nm
 @inject RefreshViewState RefreshViewState
@@ -199,7 +200,7 @@
     left: calc((var(--indicator-index)* 20%) + 10%);
     width: 45px;
     height: 45px;
-    background-color: #437ceb;
+    background-color: #6282c8;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -256,13 +257,13 @@
     @@import url('https://fonts.googleapis.com/css2?family=Lato');
 
     .container-utama{
-        background-color: #dee0e2;
+        background-color: #fff;
     }
     .header {
-        background-color: #437ceb !important;
+        background-color: #6282c8 !important;
         color:white;
-        height: 78px;
-        padding-right: 20px;
+        height: 178px;
+        padding-top: 30px;
     }
     .profile-img {
         width: 40px;
@@ -312,7 +313,7 @@
 
 
     .page {
-        height: calc(100vh - 120px);
+        height: calc(100vh - 220px);
         overflow: auto;
     }
     .page::-webkit-scrollbar {
@@ -3618,12 +3619,7 @@
     }
     }
 </style>
-
-
-
-
 <!-- #endregion -->
-
 <style>
     /*Highlight button yang memiliki icon jika diklik atau diketuk*/
     .button-with-icon {
@@ -3752,7 +3748,7 @@
 </style>
 <CascadingValue Value="this">
     <div class="container-utama">
-        <div class="d-flex justify-content-between align-items-center header px-3">
+        <div class="d-flex justify-content-between align-items-start header px-3">
             <div class="d-flex align-items-center">
                 <img src="https://sdatafile.blob.core.windows.net/gajahmasantarniaga/Gambar/Display%20Picture/Karyawan-Auto" class="rounded-circle profile-img" alt="Foto Profil">
                 <div class="ms-2">
@@ -3761,13 +3757,12 @@
                 </div>
             </div>
             <div class="notifikasi-container">
-                <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; ModalNotifikasi.Show(); RefreshViewState.IsEnabled = false;})">
+                <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; ModalNotifikasi?.Show(); RefreshViewState.IsEnabled = false;})">
                     <span class="badge-notif-custom"></span>
                     <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">notifications</span>
                 </button>
             </div>
         </div>
-
         <div id="scrollContainer" class="page">
             @RfContent
         </div>
@@ -4148,7 +4143,7 @@
         }
     #endregion
 
-    private string GetGreeting()
+    public string GetGreeting()
     {
         var now = DateTime.Now.ToLocalTime().TimeOfDay;
 

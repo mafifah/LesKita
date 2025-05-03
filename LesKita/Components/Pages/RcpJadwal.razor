@@ -1,5 +1,10 @@
 ﻿<h3>RcpJadwal</h3>
 
 @code {
-
+    [CascadingParameter]
+    public RcpUtama RcpUtama { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var data = RcpUtama;
+    }
 }
