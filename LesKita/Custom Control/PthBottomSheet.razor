@@ -1,0 +1,134 @@
+﻿@namespace LesKita.Components
+<div class="bottom-sheet-overlay @(IsVisible ? "show" : "")" onclick="HideBottomSheet">
+    <div class="bottom-sheet @(IsVisible ? "show" : (IsHiding ? "hide" : ""))" onclick:stopPropagation>
+        <div class="bottom-sheet-header">
+            <div class="drag-handle"></div>
+            <button class="close-button" @onclick="HideBottomSheet">✕</button>
+        </div>
+        <div class="bottom-sheet-content">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Overlay dengan efek blur untuk tampilan modern */
+    .bottom-sheet-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+
+        /* Saat Bottom Sheet aktif, overlay muncul */
+        .bottom-sheet-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+    /* Bottom Sheet utama */
+    .bottom-sheet {
+        width: 100%;
+        max-width: 480px;
+        background-color: white;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out;
+        transform: translateY(100%);
+        opacity: 0;
+        will-change: transform, opacity;
+        padding: 16px;
+    }
+
+        /* Saat bottom sheet aktif, naik ke atas */
+        .bottom-sheet.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Saat bottom sheet disembunyikan */
+        .bottom-sheet.hide {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+    /* Header dengan tombol close */
+    .bottom-sheet-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 16px;
+    }
+
+    /* Garis drag handle untuk indikasi bisa digeser */
+    .drag-handle {
+        width: 40px;
+        height: 4px;
+        background: #ccc;
+        border-radius: 2px;
+        margin-bottom: 8px;
+    }
+
+    /* Tombol Close */
+    .close-button {
+        position: absolute;
+        right: 16px;
+        top: 10px;
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* Konten utama Bottom Sheet */
+    .bottom-sheet-content {
+    }
+
+    .open-sheet-button {
+        background-color: #409ADF;
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s ease-in-out;
+    }
+
+        .open-sheet-button:hover {
+            background-color: #347BCF;
+        }
+
+</style>
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback<bool> OnVisibilityChanged { get; set; }
+
+    private bool IsVisible { get; set; } = false;
+    private bool IsHiding { get; set; } = false;
+
+    public void ShowBottomSheet()
+    {
+        IsVisible = true;
+        IsHiding = false;
+        OnVisibilityChanged.InvokeAsync(true);
+    }
+
+    public async Task HideBottomSheet()
+    {
+        IsHiding = true;
+        StateHasChanged();
+        await Task.Delay(200); // Tunggu animasi selesai dulu
+        IsVisible = false;
+        IsHiding = false;
+        OnVisibilityChanged.InvokeAsync(false);
+        StateHasChanged();
+    }
+}

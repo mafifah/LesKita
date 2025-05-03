@@ -1,0 +1,121 @@
+﻿@namespace LesKita.Components
+@using Microsoft.JSInterop
+@* Full-Screen Modal *@
+<div class="modal-overlay @(IsVisible ? "show" : "hide")" onclick="Close">
+    <div class="modal-container @(IsVisible ? "slide-up" : "slide-down")" onclick:stopPropagation>
+        <div class="modal-content" style="@Style">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+<style>
+    /* === Modal Container (Full Screen) === */
+    .modal-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: @Tinggi; /* Hanya menutupi 80% bagian bawah */
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease-in-out;
+        z-index: 1100;
+    }
+
+
+        /* === Animasi Slide === */
+        .modal-container.slide-up {
+            transform: translateY(0);
+        }
+
+        .modal-container.slide-down {
+            transform: translateY(100%);
+        }
+
+    @@keyframes slideUp {
+        0% {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .slide-up {
+        animation: slideUp 0.6s ease-out forwards;
+    }
+
+    /* === Header Modal === */
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        font-size: 18px;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* === Tombol Close === */
+    .close-button {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* === Konten Modal === */
+    .modal-content {
+        flex-grow: 1;
+        padding-top: 5px;
+        overflow-y: auto;
+    }
+
+    /* === Nonaktifkan Scroll Global saat Modal Aktif === */
+    body.modal-open {
+        overflow: hidden;
+    }
+
+</style>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Style { get; set; }
+    [Parameter] public string Tinggi { get; set; } = "100%";
+
+    public bool IsVisible { get; private set; } = false;
+
+    public void Show()
+    {
+        IsVisible = true;
+        SetBodyScrollLock(true);
+        StateHasChanged();
+    }
+
+    public async Task Close()
+    {
+        IsVisible = false;
+        StateHasChanged();
+        await Task.Delay(400); // Tunggu animasi selesai
+        SetBodyScrollLock(false);
+    }
+
+    private void SetBodyScrollLock(bool disableScroll)
+    {
+        if (disableScroll)
+        {
+            _ = Task.Run(() => JS.InvokeVoidAsync("document.body.classList.add", "modal-open"));
+        }
+        else
+        {
+            _ = Task.Run(() => JS.InvokeVoidAsync("document.body.classList.remove", "modal-open"));
+        }
+    }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+}
