@@ -1,5 +1,4 @@
-﻿@page "/"
-@inject IJSRuntime _js
+﻿@inject IJSRuntime _js
 @inject ISvcStatusBar _svcStatusBar
 @inject NavigationManager _nm
 @inject RefreshViewState RefreshViewState
@@ -200,7 +199,7 @@
     left: calc((var(--indicator-index)* 20%) + 10%);
     width: 45px;
     height: 45px;
-    background-color: #2a59ea;
+    background-color: #437ceb;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -260,15 +259,60 @@
         background-color: #dee0e2;
     }
     .header {
-        background-color: #dee0e2 !important;
-        height: 48px;
-        position: relative;
-        top: 40px;
+        background-color: #437ceb !important;
+        color:white;
+        height: 78px;
         padding-right: 20px;
     }
+    .profile-img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    .greeting {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+
+    .username {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+    .notifikasi-container{
+        width: 28px;
+        height: 28px;
+        background-color:#fff;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    .notifikasi-container button {
+        width: 28px;
+        height: 28px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border: none;
+        padding: 0;
+    }
+
+    .badge-notif-custom {
+        position: absolute;
+        top: 4.5px;
+        right: 6px;
+        width: 8px;
+        height: 8px;
+        background-color: #be2d39;
+        border-radius: 50%;
+    }
+
 
     .page {
-        height: calc(100vh - 90px);
+        height: calc(100vh - 120px);
         overflow: auto;
     }
     .page::-webkit-scrollbar {
@@ -3708,23 +3752,22 @@
 </style>
 <CascadingValue Value="this">
     <div class="container-utama">
-        <div class="d-flex justify-content-end align-items-center header">
-            <div class="ms-md-auto pe-md-4 d-flex align-items-center panel-cari" style="width:26em !important; font-size: 16px;padding-right:10px;padding-left:20px;">
-                <h3>Home</h3>
+        <div class="d-flex justify-content-between align-items-center header px-3">
+            <div class="d-flex align-items-center">
+                <img src="https://sdatafile.blob.core.windows.net/gajahmasantarniaga/Gambar/Display%20Picture/Karyawan-Auto" class="rounded-circle profile-img" alt="Foto Profil">
+                <div class="ms-2">
+                    <p class="mb-0 greeting">@GetGreeting()</p>
+                    <h5 class="mb-0 username">Yuma Yuanda</h5>
+                </div>
             </div>
-            @* <button type="button" class="button-panel-header btn-default pesan" @onclick="(() => {  ModalMessage.Show(); RefreshViewState.IsEnabled = false; })">
-                <span class="badge-notif" style="font-family:sans-serif !important">10+</span>
-                <span class="material-symbols-outlined" style="scale:1.2;" aria-hidden="true">email</span>
-            </button> *@
-            <button id="popup-notifikasi" type="button" class="button-panel-header btn-default notifikasi" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; ModalNotifikasi.Show(); RefreshViewState.IsEnabled = false;})">
-                <span class="badge-notif" style="font-family:sans-serif !important">1</span>
-                <span class="material-symbols-outlined" style="scale:1.2;" aria-hidden="true">notifications</span>
-            </button>
-            @*<button style="box-shadow:none !important;" id="popup-keranjang" type="button" class="btn btn-default keranjang">
-                    <span class="badge-notif"><b>15</b></span>
-                    <span class="fa fa-solid fa-shopping-cart ukuran-icon-header warna-icon-header" aria-hidden="true"></span>
-                </button>*@
+            <div class="notifikasi-container">
+                <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; ModalNotifikasi.Show(); RefreshViewState.IsEnabled = false;})">
+                    <span class="badge-notif-custom"></span>
+                    <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">notifications</span>
+                </button>
+            </div>
         </div>
+
         <div id="scrollContainer" class="page">
             @RfContent
         </div>
@@ -3858,7 +3901,6 @@
                 "jadwal" => @<RcpJadwal></RcpJadwal>,
                 "bantuan" => @<RcpBantuan ></RcpBantuan>,
                 "akun" => @<RcpAkun></RcpAkun>,
-                _ => @<RcpBeranda ></RcpBeranda>
             };
         await _js.InvokeVoidAsync("setScrollPositionInContainer", "scrollContainer", 0);
         await InvokeAsync(StateHasChanged);
@@ -4105,4 +4147,19 @@
 
         }
     #endregion
+
+    private string GetGreeting()
+    {
+        var now = DateTime.Now.ToLocalTime().TimeOfDay;
+
+        if (now < new TimeSpan(12, 0, 0))
+            return "Selamat pagi,";
+        else if (now < new TimeSpan(15, 0, 0))
+            return "Selamat siang,";
+        else if (now < new TimeSpan(18, 0, 0))
+            return "Selamat sore,";
+        else
+            return "Selamat malam,";
+    }
+
 }
