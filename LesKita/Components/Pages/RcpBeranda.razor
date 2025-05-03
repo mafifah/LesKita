@@ -1,5 +1,31 @@
-﻿@page "/"
-
+﻿<span>Beranda</span>
 @code {
+    [CascadingParameter]
+    public RcpUtama RcpUtama { get; set; }
 
+    public bool IsLoading_DtGuru { get; set; } = false;
+    public bool IsSkeletonAktif { get; set; } = false;
+    private int TinggiHeaderTersembunyi = 0;
+    private int TinggiHeaderSticky = 0; // Tambahkan ini untuk menyimpan tinggi header sticky
+    private bool IsScrollAktif = true;
+
+    public List<T0Guru> DtGuru { get; set; } = new List<T0Guru>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DtGuru.Add(new T0Guru
+            {
+                Nama = "Geni Santika",
+                Alamat = "Jl. Raya No. 1",
+                Rating = 4.5,
+                Usia = 27
+            });
+        DtGuru.Add(new T0Guru
+            {
+                Nama = "M. Afifah",
+                Alamat = "Jl. Raya No. 51",
+                Rating = 4.2,
+                Usia = 26
+            });
+    }
 }

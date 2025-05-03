@@ -13,6 +13,7 @@ public class T0Guru
     public string? Nama { get; set; }
     public DateTimeOffset? TanggalLahir { get; set; }
     public int? Usia { get; set; }
+    public string? JenisKelamin { get; set; }
     public string? Alamat { get; set; }
     public double? Rating { get; set; }
     public double? Latitude { get; set; }

@@ -1,4 +1,5 @@
-﻿@inject IJSRuntime _js
+﻿@page "/"
+@inject IJSRuntime _js
 @inject ISvcStatusBar _svcStatusBar
 @inject NavigationManager _nm
 @inject RefreshViewState RefreshViewState
@@ -92,7 +93,7 @@
     .button-panel-header {
     position: relative; /* Tambahkan agar efek highlight bisa muncul */
     box-shadow: none !important;
-    color: #fff !important;
+    color: #333  !important;
     margin-top: 0px;
     background-color: transparent;
     border: none;
@@ -199,7 +200,7 @@
     left: calc((var(--indicator-index)* 20%) + 10%);
     width: 45px;
     height: 45px;
-    background-color: #0e868d;
+    background-color: #2a59ea;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -255,15 +256,20 @@
     @@import url('https://fonts.googleapis.com/css2?family=Montserrat');
     @@import url('https://fonts.googleapis.com/css2?family=Lato');
 
+    .container-utama{
+        background-color: #dee0e2;
+    }
     .header {
-        background-color: #1E293B !important;
+        background-color: #dee0e2 !important;
         height: 48px;
+        position: relative;
+        top: 40px;
+        padding-right: 20px;
     }
 
     .page {
-    height: calc(100vh - 90px);
-    background-color: #cae9fa;
-    overflow: auto;
+        height: calc(100vh - 90px);
+        overflow: auto;
     }
     .page::-webkit-scrollbar {
     height: 0; /* Menyembunyikan scrollbar horizontal */
@@ -518,14 +524,13 @@
     }
 
     body {
-    overflow-x: hidden !important;
-    /*height: 100vh !important;*/
-    overflow: hidden !important;
-    padding: 0 !important;
+        overflow-x: hidden !important;
+        overflow: hidden !important;
+        padding: 0 !important;
     }
 
     ul {
-    list-style-type: none;
+        list-style-type: none;
     }
 
 
@@ -662,22 +667,22 @@
     }*/
 
     .badge-notif {
-    font-size: 10px;
-    position: absolute;
-    border-radius: 4px;
-    text-align: center;
-    min-width: 20px; /* Pastikan ada ukuran minimum */
-    height: 16px; /* Sesuaikan agar teks tetap di tengah */
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    padding: 2px;
-    top: 5px;
-    right:4px !important;
-    background: #EF4444;
-    color: white;
+        font-size: 10px;
+        position: absolute;
+        border-radius: 4px;
+        text-align: center;
+        min-width: 20px; /* Pastikan ada ukuran minimum */
+        height: 16px; /* Sesuaikan agar teks tetap di tengah */
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding: 2px;
+        top: 5px;
+        right:1px !important;
+        background: #EF4444;
+        color: white;
     }
 
 
@@ -3569,683 +3574,12 @@
     }
     }
 </style>
-<style>
-    @@media (max-width: 600px) {
-
-    .topbar-home {
-    padding: 0 2px !important;
-    }
-
-    .topbar-collapse-wrapper,
-    .topbar_btn-collapse,
-    .topbar_btn-expand {
-    width: 40px !important;
-    }
-
-    .header_menu-sidebar {
-    height: calc(100vh - 60px) !important;
-    }
-
-    .rz-panel-menu .rz-navigation-item-link {
-    padding-left: 10px !important;
-    }
-
-    .portal-message,
-    .portal-notification,
-    .portal-new-message,
-    .portal-add-member,
-    .portal-create-group {
-    width: 100% !important;
-    }
-
-    .listbox-item-template-text {
-    width: 210px !important;
-    }
-
-    .listbox-item-template-time {
-    width: 36px !important;
-    }
-
-    .advanced-search-dropdown {
-    width: 400px !important;
-    }
-
-    .container-fluid.tinggi {
-    /*height: calc(100vh - 110px) !important;*/
-    }
-
-    .portal-notificationmenu-arrow {
-    margin-top: -3px !important;
-    }
-
-    .portal-notification-dropdown-button-icon {
-    margin-top: -1px !important;
-    }
-
-    .portal-title-text,
-    .portal-title-text-new-message,
-    .portal-title-text-add-member {
-    font-size: 17px !important;
-    }
-
-    .rz-navigation-item-link > img {
-    margin: 0 12px 0 0 !important;
-    }
-    }
-</style>
-<style>
-
-    @*Untuk mengatur tampilan context menu grid*@
-    div.dxbl-dropdown-body > ul {
-    font-size: 13px !important;
-    }
-
-    div.dxbl-dropdown-body > ul > li {
-    outline: none !important;
-    box-shadow: none !important;
-    }
-
-    div.dxbl-dropdown-body > ul > li > div[role="menuitem"] {
-    outline: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    }
-
-    div.dxbl-dropdown-body > ul > li > div[role="menuitem"]:active {
-    outline: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: inherit !important;
-    background-color: rgba(217, 217, 217, 1) !important;
-    }
-</style>
-
-<style>    
-    .dxbl-btn.dxbl-btn-link span:not(.dxbl-image), .dxbl-btn.dxbl-btn-outline-link span:not(.dxbl-image), .dxbl-btn.dxbl-btn-text-link span:not(.dxbl-image) {
-    text-decoration: none !important;
-    margin-top: -10px !important;
-    margin-left: -1vh;
-    margin-right: -1vh;
-    }
-</style>
-<style>
-    .fixed-text {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    color: red;
-    padding: 0;
-    font-size: 11px;
-    z-index: 1000;
-    }
-</style>
-<style>
-
-    .dropdown-item:active .grid-context-menu-item-sort-clear,
-    .dropdown-item:active .grid-context-menu-item-rename-column,
-    .dropdown-item:active .grid-context-menu-item-full-expand,
-    .dropdown-item:active .grid-context-menu-item-full-collapse,
-    .dropdown-item:active .grid-context-menu-item-sort-ascending,
-    .dropdown-item:active .grid-context-menu-item-sort-descending,
-    .dropdown-item:active .grid-context-menu-item-group-by-column,
-    .dropdown-item:active .grid-context-menu-item-ungroup-column,
-    .dropdown-item:active .grid-context-menu-item-clear-grouping,
-    .dropdown-item:active .grid-context-menu-item-show-group-panel,
-    .dropdown-item:active .grid-context-menu-item-hide-column,
-    .dropdown-item:active .grid-context-menu-item-column-chooser,
-    .dropdown-item:active .grid-context-menu-item-fix-column-left,
-    .dropdown-item:active .grid-context-menu-item-fix-column-right,
-    .dropdown-item:active .grid-context-menu-item-unfix-column,
-    .dropdown-item:active .grid-context-menu-item-clear-filter,
-    .dropdown-item:active .grid-context-menu-item-expand-row,
-    .dropdown-item:active .grid-context-menu-item-collapse-row,
-    .dropdown-item:active .grid-context-menu-item-expand-detail-row,
-    .dropdown-item:active .grid-context-menu-item-collapse-detail-row,
-    .dropdown-item:active .grid-context-menu-item-new-row,
-    .dropdown-item:active .grid-context-menu-item-edit-row,
-    .dropdown-item:active .grid-context-menu-item-delete-row {
-    background-color: white;
-    }
-
-    .dropdown-item.disabled .grid-context-menu-item-sort-clear,
-    .dropdown-item.disabled .grid-context-menu-item-rename-column,
-    .dropdown-item.disabled .grid-context-menu-item-full-expand,
-    .dropdown-item.disabled .grid-context-menu-item-full-collapse,
-    .dropdown-item.disabled .grid-context-menu-item-sort-ascending,
-    .dropdown-item.disabled .grid-context-menu-item-sort-descending,
-    .dropdown-item.disabled .grid-context-menu-item-group-by-column,
-    .dropdown-item.disabled .grid-context-menu-item-ungroup-column,
-    .dropdown-item.disabled .grid-context-menu-item-clear-grouping,
-    .dropdown-item.disabled .grid-context-menu-item-show-group-panel,
-    .dropdown-item.disabled .grid-context-menu-item-unfix-column,
-    .dropdown-item.disabled .grid-context-menu-item-clear-filter,
-    .dropdown-item.disabled .grid-context-menu-item-expand-row,
-    .dropdown-item.disabled .grid-context-menu-item-collapse-row,
-    .dropdown-item.disabled .grid-context-menu-item-expand-detail-row,
-    .dropdown-item.disabled .grid-context-menu-item-collapse-detail-row,
-    .dropdown-item.disabled .grid-context-menu-item-new-row,
-    .dropdown-item.disabled .grid-context-menu-item-edit-row,
-    .dropdown-item.disabled .grid-context-menu-item-delete-row {
-    background-color: #c3c2c2;
-    }
-    .progressbar-editdata.dxbl-progress-bar-success {
-    --dxbl-progress-bar-indicator-color: black !important;
-    opacity: 0.1 !important;
-    }
-</style>
-
-@*Style untuk tag*@
-<style>
-    .dxbl-dropdown > .dxbl-dropdown-dialog.dxbl-edit-dropdown, .dxbl-modal > .dxbl-modal-root > .dxbl-popup.dxbl-edit-dropdown > .dxbl-modal-content {
-    z-index: 9999 !important;
-    }
-
-    /*Notifikasi More*/
-    .notifikasi-button {
-    background: transparent; /* Transparan untuk tampilan minimal */
-    border: none; /* Hapus border bawaan tombol */
-    cursor: pointer; /* Tampilkan pointer saat hover */
-    display: inline-flex; /* Agar konten di dalam tombol tersusun dengan baik */
-    align-items: center; /* Rata tengah secara vertikal */
-    justify-content: center; /* Rata tengah secara horizontal */
-    transition: background-color 0.2s ease, transform 0.1s ease; /* Efek halus */
-    margin-left: -7px; /* Jarak antar tombol */
-    }
-
-    /* Ikon di dalam tombol */
-    .notifikasi-button .material-symbols-outlined {
-    font-size: 24px; /* Ukuran ikon */
-    color: #0078d4; /* Warna ikon */
-    }
-
-    .notifikasi-button:hover,
-    .notifikasi-button:focus,
-    .notifikasi-button.active {
-    background-color: rgba(217, 217, 217, 0.4);
-    /*background-color:red;*/
-    }
 
 
-    .notifikasi-button:active {
-    background-color: rgba(217, 217, 217, 0.4);
-    }
 
-    .notifikasi-button:active:hover,
-    .notifikasi-button:focus:hover,
-    .notifikasi-button.active:hover,
-    .notifikasi-button.active:focus,
-    .notifikasi-button.active:active:hover,
-    .notifikasi-button.active:focus:hover {
-    background-color: rgba(217, 217, 217, 0.2);
-    }
-</style>
 
 <!-- #endregion -->
-<!-- #region Style Message -->
 
-<style>
-    .portal-message {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: blo;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    }
-
-    .portal-new-message {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,.132), 0 .3px .9px 0 rgba(0,0,0,.108)
-    }
-
-    .search-people-input {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    }
-
-    .btn-action-search {
-    margin-top: .2rem;
-    position: absolute;
-    right: 25px;
-    cursor: pointer;
-    z-index: 1;
-    }
-
-    .btn-action-new-group {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 15px;
-    gap: 10px;
-    padding: 10px 10px;
-    background-color: #F7F7F7;
-    cursor: pointer;
-    }
-
-    .btn-action-new-group:hover {
-    background-color: rgba(217, 217, 217, 0.4);
-    ;
-    }
-
-    .btn-action-new-group:focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    }
-
-    .btn-action-new-group:active {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    }
-
-    .tag-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 5px;
-    background-color: #D9D9D9;
-    width: fit-content;
-    padding: 0px 11px;
-    border-radius: 15px;
-    cursor: pointer;
-    }
-
-    .tag-wrapper:hover {
-    background-color: #C9C9C9;
-    cursor: pointer;
-    }
-
-    .tag-wrapper:focus {
-    background-color: #BCBCBC;
-    cursor: pointer;
-    }
-
-    .list-contact-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-top: 25px;
-    text-align:left !important;
-    }
-
-    .list-contact-initial {
-    padding-top: .55rem;
-    color: white;
-    font-weight: 500;
-    font-size: 16px;
-    margin: 0 !important;
-    }
-
-    .list-recently-contacted {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-    }
-
-    .contact-data-wrapper-member {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    }
-
-    .list-contact-add-member-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 10px;
-    }
-
-    .list-contact-add-member-wrapper:hover {
-    background-color: rgba(217, 217, 217, 0.4);
-    }
-
-    .list-contact-add-member-wrapper:focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    }
-
-    .list-contact-add-member-wrapper:active {
-    background-color: rgba(217, 217, 217, 0.9) !important;
-    }
-
-    .contact-data-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    cursor: pointer;
-    }
-
-    .contact-data-wrapper:hover {
-    background-color: rgba(217, 217, 217, 0.4);
-    cursor: pointer;
-    }
-
-    .contact-data-wrapper:focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    cursor: pointer;
-    }
-
-    .contact-data-wrapper:active {
-    background-color: rgba(217, 217, 217, 0.9) !important;
-    cursor: pointer;
-    }
-
-    .list-contact-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: #8D8D8D;
-    border-radius: 50% !important;
-    text-align: center;
-    }
-
-    .btn-action-icon {
-    padding: 10px;
-    background-color: #EEEEEE;
-    border-radius: 50%;
-    }
-
-
-    .portal-add-member {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,.132), 0 .3px .9px 0 rgba(0,0,0,.108)
-    }
-
-    .portal-title-text-add-member {
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 28px;
-    flex: 0 1 auto;
-    margin-right: 16px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    visibility: visible;
-    }
-
-    .portal-title-toprow-add-member {
-    display: flex;
-    visibility: visible;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    }
-
-    .portal-title-text-new-message {
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 28px;
-    flex: 0 1 auto;
-    margin-right: 16px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    visibility: visible;
-    }
-
-    .portal-create-group {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,.132), 0 .3px .9px 0 rgba(0,0,0,.108)
-    }
-
-    .input-group-name {
-    background-color: #F7F7F7;
-    border: none !important;
-    /*width: 100vh;
-    height: 2.5rem;*/
-    border-radius: 5px;
-    }
-
-    .icon-active {
-    color: #0078D4 !important;
-    }
-
-    .avatar-group-wrapper {
-    padding: 10px;
-    border-radius: 50%;
-    background-color: #ECECEC;
-    width: 3rem;
-    text-align: center
-    }
-
-    .avatar-group-wrapper:hover {
-    background-color: rgba(217, 217, 217, 0.6);
-    color: white;
-    cursor: pointer;
-    }
-
-    .avatar-group-wrapper:focus {
-    background-color: rgba(217, 217, 217, 0.8);
-    color: white;
-    cursor: pointer;
-    }
-
-    .avatar-group-wrapper:active {
-    background-color: rgba(217, 217, 217, 0.9);
-    color: white;
-    cursor: pointer;
-    }
-
-    .btn-icon-sticker {
-    color: #BFBFBF;
-    scale: 1
-    }
-
-    .btn-icon-sticker:hover {
-    scale: 1.2;
-    color: #0078D4;
-    }
-
-    .btn-send-message {
-    background-color: #0078D4;
-    color: white;
-    margin: 0;
-    padding: 0px 10px;
-    height: 2rem;
-    }
-
-    .btn-send-message:hover {
-    background-color: #006EC2;
-    box-shadow: none !important;
-    color: white;
-    }
-
-    .btn-send-message:focus {
-    background-color: #005DA4;
-    box-shadow: none !important;
-    }
-
-    .btn-icon-attach {
-    color: #BFBFBF;
-    scale: .8
-    }
-
-    .btn-icon-attach:hover {
-    scale: 1;
-    color: #0078D4;
-    }
-
-    .btn-chat-more-personal {
-    background-color: #F5F6F6;
-    padding: 0;
-    height: 1.5rem;
-    position: absolute;
-    left: 120px;
-    }
-
-    .btn-chat-more-personal:hover {
-    background-color: #E4E4E4;
-    box-shadow: none !important;
-    }
-
-    .btn-chat-more-personal:focus {
-    background-color: #D5D5D5;
-    box-shadow: none !important;
-    }
-
-    .btn-chat-more-recipient {
-    background-color: #F5F6F6;
-    padding: 0;
-    margin: 0;
-    height: 1.5rem
-    }
-
-    .btn-chat-more-recipient:hover {
-    background-color: #E4E4E4;
-    box-shadow: none !important;
-    }
-
-    .btn-chat-more-recipient:focus {
-    background-color: #D5D5D5;
-    box-shadow: none !important;
-    }
-
-    .dxbl-list-box[data-dx-focus-hidden]:focus {
-    box-shadow: none;
-    }
-
-    .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):hover:not(.dxbl-list-box-item-focused):not(:focus), .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):hover:not(.dxbl-list-box-item-focused):not(:focus) {
-    background-color: rgba(217, 217, 217, 0.4);
-    cursor: default;
-    }
-
-    .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):focus, .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    cursor: default;
-    }
-
-    .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):active, .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):active {
-    background-color: rgba(217, 217, 217, 0.9) !important;
-    cursor: default;
-    }
-
-    .list-message-panel.dxbl-list-box:not([data-dx-focus-hidden]):not(.dxbl-list-box-multi-select) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
-    background-color: transparent !important;
-    }
-
-    .btn-icon-back {
-    color: #0078D4;
-    scale: 1.5;
-    margin-left: -8px;
-    margin-top: 3px;
-    }
-
-    .btn-icon-back:hover {
-    color: #005A9E;
-    }
-
-    .btn-icon-back:focus {
-    color: #005A9E;
-    }
-
-    .btn-icon-next {
-    color: #0078D4;
-    font-weight: 500;
-    margin-bottom: 2px;
-    }
-
-    .btn-icon-next:hover {
-    color: #005A9E;
-    }
-
-    .btn-icon-next:focus {
-    color: #005A9E;
-    }
-
-    .btn-icon-next:active {
-    color: #005A9E;
-    }
-
-    .btn-icon-back-text {
-    color: #0078D4;
-    font-weight: 500;
-    margin-bottom: 2px;
-    }
-
-    .btn-icon-back-text:hover {
-    color: #005A9E;
-    }
-
-    .btn-icon-back-text:focus {
-    color: #005A9E;
-    }
-
-    .btn-icon-back-text:active {
-    color: #005A9E;
-    }
-
-    .personal-chat-wrapper.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:hover {
-    background-color: white !important;
-    cursor: default !important;
-    }
-
-    .personal-chat-wrapper.dxbl-list-box:not([data-dx-focus-hidden]):not(.dxbl-list-box-multi-select) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
-    background-color: white !important;
-    }
-
-    .personal-chat-wrapper.dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
-    background-color: white !important;
-    }
-
-    /*.portal-personal-message-bottom {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    background-color: #F9FAFC;
-    height: 7rem;
-    padding: 25px 10px;
-    }*/
-
-</style>
 <style>
     /*Highlight button yang memiliki icon jika diklik atau diketuk*/
     .button-with-icon {
@@ -4373,18 +3707,15 @@
     }
 </style>
 <CascadingValue Value="this">
-    <div>
+    <div class="container-utama">
         <div class="d-flex justify-content-end align-items-center header">
-            @*<div class="ms-md-auto pe-md-4 d-flex align-items-center panel-cari" style="width:26em !important; font-size: 16px;padding-right:10px;">
-                <div id="attr-cari" class="input-group">
-                    <span class="input-group-text text-body search-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
-                    <input type="text" class="form-control search-input" placeholder="Cari...">
-                </div>
-            </div>*@
-            <button type="button" class="button-panel-header btn-default pesan" @onclick="(() => {  ModalMessage.Show(); RefreshViewState.IsEnabled = false; })">
+            <div class="ms-md-auto pe-md-4 d-flex align-items-center panel-cari" style="width:26em !important; font-size: 16px;padding-right:10px;padding-left:20px;">
+                <h3>Home</h3>
+            </div>
+            @* <button type="button" class="button-panel-header btn-default pesan" @onclick="(() => {  ModalMessage.Show(); RefreshViewState.IsEnabled = false; })">
                 <span class="badge-notif" style="font-family:sans-serif !important">10+</span>
                 <span class="material-symbols-outlined" style="scale:1.2;" aria-hidden="true">email</span>
-            </button>
+            </button> *@
             <button id="popup-notifikasi" type="button" class="button-panel-header btn-default notifikasi" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; ModalNotifikasi.Show(); RefreshViewState.IsEnabled = false;})">
                 <span class="badge-notif" style="font-family:sans-serif !important">1</span>
                 <span class="material-symbols-outlined" style="scale:1.2;" aria-hidden="true">notifications</span>
@@ -4393,9 +3724,6 @@
                     <span class="badge-notif"><b>15</b></span>
                     <span class="fa fa-solid fa-shopping-cart ukuran-icon-header warna-icon-header" aria-hidden="true"></span>
                 </button>*@
-            <button type="button" class="button-panel-header btn-default menu" @onclick="() => { }">
-                <span class="material-symbols-outlined" style="scale:1.2;" aria-hidden="true" @onclick:stopPropagation>menu</span>
-            </button>
         </div>
         <div id="scrollContainer" class="page">
             @RfContent
