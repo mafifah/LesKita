@@ -1,10 +1,215 @@
-﻿<h3>RcpJadwal</h3>
+﻿@using System.Globalization
+<style>
+    .header{
+        background-color:#f2f2f2 !important;
+        height: 258px !important;
+    }
+    .page{
+        height: calc(100vh - 300px) !important;
+    }
+    .header div {
+        visibility: hidden;
+    }
+    .container-utama{
+        background-color:#f2f2f2 !important
+    }
+
+    .date-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        margin-bottom: 10px;
+        font-family: 'Segoe UI', sans-serif;
+        position: fixed;
+        top: 170px;
+        min-width: -webkit-fill-available;
+    }
+
+    .date-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+    }
+
+    .day {
+        margin-bottom: 4px;
+        color: #555;
+    }
+        .day.active{
+            font-weight:750;
+        }
+
+    .circle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #ffff;
+        font-weight: 600;
+    }
+
+        .circle.active {
+            background-color: #6282c8;
+            color: white;
+        }
+
+    .schedule-wrapper {
+        padding: 0 20px 20px 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .schedule-row {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .time {
+        width: 50px;
+        font-weight: 400;
+        color: #555;
+    }
+
+    .schedule-card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        display: flex;
+        flex: 1;
+        gap: 12px;
+    }
+
+    .color-bar {
+        width: 5px;
+        border-radius: 5px;
+    }
+
+    .card-content .title {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .card-content .desc {
+        font-size: 13px;
+        color: #888;
+    }
+
+    .title-mentoring {
+        font-size: 32px !important;
+        font-weight: 600;
+        margin: 20px;
+        position: fixed;
+        top: 30px;
+        width: 10px;
+        color: #333;
+    }
+</style>
+<span class="title-mentoring">Jadwal mentoring</span>
+
+<div class="date-header">
+    @foreach (var d in DateHeaders)
+    {
+        <div class="date-item">
+            <div class="day @(d.IsToday ? "active" : "")">@d.Day</div>
+            <div class="circle @(d.IsToday ? "active" : "")" @onclick="() => PilihTanggal(d)">@d.Date.ToString("dd")</div>
+        </div>
+    }
+</div>
+
+<div class="schedule-wrapper">
+    @foreach (var item in DtJadwal.Where(x => x.Tanggal?.Date == SelectedDate.Date).OrderBy(x => x.JamMulai))
+    {
+        <div class="schedule-row">
+            <div class="time">@item.JamMulai?.ToString(@"hh\:mm")</div>
+            <div class="schedule-card">
+                <div class="color-bar" style="background-color:@item.WarnaKode"></div>
+                <div class="card-content">
+                    <div class="title">Sesi dengan @item.Mentor_Nama</div>
+                    <div class="desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
     [CascadingParameter]
     public RcpUtama RcpUtama { get; set; }
-    protected override async Task OnInitializedAsync()
+    private List<DateHeader> DateHeaders = new();
+    private List<uimT2Jadwal> DtJadwal = new();
+
+    protected override void OnInitialized()
     {
-        var data = RcpUtama;
+        SelectedDate = DateTimeOffset.Now.Date;
+        GenerateDateHeaders();
+
+        var random = new Random();
+        var warnaList = new[] { "#FACC15", "#34D399", "#6366F1", "#F472B6" };
+
+        for (int i = 0; i < 3; i++) // 3 hari ke depan
+        {
+            var tanggal = DateTimeOffset.Now.Date.AddDays(i);
+            int jumlahJadwalHariIni = random.Next(2, 5);
+
+            for (int j = 0; j < jumlahJadwalHariIni; j++)
+            {
+                var jamMulaiJam = random.Next(8, 20);
+                var jamMulai = new TimeSpan(jamMulaiJam, 0, 0);
+                var jamSelesai = jamMulai.Add(TimeSpan.FromHours(1));
+
+                DtJadwal.Add(new uimT2Jadwal
+                    {
+                        IdJadwal = Guid.NewGuid(),
+                        IdOrder = Guid.NewGuid(),
+                        Tanggal = tanggal,
+                        JamMulai = jamMulai,
+                        JamSelesai = jamSelesai,
+                        Status = true,
+                        Siswa_Nama = $"Siswa {i * 10 + j}",
+                        Mentor_Nama = $"Mentor {i * 10 + j}",
+                        WarnaKode = warnaList[random.Next(warnaList.Length)]
+                    });
+            }
+        }
     }
+    private DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now.Date;
+
+    private void PilihTanggal(DateHeader tanggalDipilih)
+    {
+        SelectedDate = tanggalDipilih.Date;
+        foreach (var item in DateHeaders)
+        {
+            item.IsToday = item.Date == SelectedDate;
+        }
+    }
+
+    private void GenerateDateHeaders()
+    {
+        var today = DateTimeOffset.Now.Date;
+        int daysFromMonday = ((int)today.DayOfWeek + 6) % 7; // Konversi Minggu=6, Senin=0
+        var startOfWeek = today.AddDays(-daysFromMonday); // Dapatkan Senin
+
+        DateHeaders = Enumerable.Range(0, 7).Select(i =>
+        {
+            var date = startOfWeek.AddDays(i);
+            return new DateHeader
+                {
+                    Date = date,
+
+                    IsToday = date == SelectedDate
+                };
+        }).ToList();
+    }
+    public class DateHeader
+    {
+        public string Day => Date.ToString("ddd", new CultureInfo("id-ID"));
+        public DateTime Date { get; set; }
+        public bool IsToday { get; set; }
+    }
+
+
 }
