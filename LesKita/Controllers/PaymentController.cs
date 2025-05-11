@@ -10,7 +10,7 @@ namespace LesKita.Controllers;
 [Route("api/[controller]")]
 public class PaymentController : ControllerBase
 {
-    private const string ServerKey = "SB-Mid-server-VRSSXaBzKx-_ZSuxbcgYey24";
+    private const string ServerKey = "";
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateSnapToken([FromBody] MidtransRequestDto request)
