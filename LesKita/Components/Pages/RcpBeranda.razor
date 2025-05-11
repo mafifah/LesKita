@@ -10,22 +10,22 @@
 @inject HttpClient Http
 <style>
     .services{
-    position:fixed;
-    margin: 20px;
-    top: 100px;
-    width: -webkit-fill-available;
-    border-radius:12px !important;
+        position:fixed !important;
+        margin: 20px !important;
+        top: 100px;
+        width: -webkit-fill-available;
+        border-radius:12px !important;
     }
 
     .service-item .icon-box {
-    background-color: #eef3ff;
-    border-radius: 12px;
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+        background-color: #eef3ff;
+        border-radius: 12px;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .service-item .icon-box .material-symbols-outlined {
@@ -39,115 +39,12 @@
     color: #333;
     }
 
-    .mentor-card {
-    width: 180px;
-    background-color: #fff;
-    border-radius: 15px 15px 0px 0px !important;
-    }
-
-    .mentor-img-top {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 15px 15px 0px 0px;
-    }
-
-    .avatars {
-    display: flex;
-    }
-
-    .avatar {
-    width: 24px;
-    height: 24px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    margin-left: -8px;
-    background-color: #eee;
-    }
-
-
-    .top-mentor-container{
-    position: relative;
-    top: 130px;
-    padding-left: 20px;
-    }
-
-    .rekomendasi-mentor-container {
-    position: relative;
-    /* bottom: 0px; */
-    top: 140px;
-    padding-left: 20px;
-    width: 392px;
-    }
-
-    .top-mentor-container  .title,
-    .rekomendasi-mentor-container .title
-    {
-    font-family:az_ea_font, "Segoe UI", az_font, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    line-height:19px;
-    margin-bottom: 10px;
-    }
-
-    .list-mentor{
-    display:flex;
-    gap:6px;
-    }
-    .mentor-detail{
-    top: -20px;
-    width: 184px;
-    border-radius: 15px;
-    background-color: #eef3ff;
-    border: none;
-    }
-    .mentor-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-left: 6px;
-    }
-
-    .rekomendasi-mentor-card{
-    display:flex;
-    gap:10px;
-    }
-
-    .rekomendasi-mentor-card.all-mentor{
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    margin-bottom: 15px !important;
-    }
-
-    .rekomendasi-mentor-card .mentor-image{
-    width: 65px;
-    height: 65px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: anchor-center;
-    }
-
-    .rekomendasi-mentor-card .mentor-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ini yang mengatur scaling proporsional */
-    border-radius: 10px;
-    }
-
-    .rekomendasi-mentor-detail{
-    display: flex;
-    justify-content: space-between;
-    /* border: 1px solid; */
-    width: 280px;
-    }
+   
     .tarif{
-    border: 0.5px solid rgba(170, 170, 170, 0.3) !important;
-    color: #6282c8;
-    border-radius: 5px;
-    min-width: 100px;
+        border: 0.5px solid rgba(170, 170, 170, 0.3) !important;
+        color: #6282c8;
+        border-radius: 5px;
+        min-width: 100px;
     }
 
     .tarif:hover {
@@ -197,6 +94,16 @@
     color: #6282c8;
     }
 
+    .pilih-mentor-btn {
+        border: 0.5px solid #6282c8;
+        border-radius: 6px;
+        padding: 5px 10px;
+        background-color: #6282c8;
+        color: #fff;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
     .jadwal-btn.selected {
     border: 0.5px solid #6282c8;
     border-radius: 6px;
@@ -244,6 +151,237 @@
     align-content: flex-end;
     }
 </style>
+<style>
+    .content-penugasan {
+    padding-left: 10px;
+    padding-top: 4px;
+    }
+
+    .filter-buttons {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+    padding: 5px;
+    transition: box-shadow 0.05s ease-in-out;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .cards-container {
+    padding: 10px;
+    }
+
+    .top-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 110px;
+    }
+
+    .card-body {
+    padding: 10px;
+    }
+
+    .card-number {
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+    font-size: 12px;
+    font weight: 600;
+    color: #555;
+    }
+
+    .arrow {
+    border: solid black;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    }
+
+    .down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    }
+
+    .card {
+    flex: 1 1 100%;
+    box-sizing: border-box;
+    position: relative;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    margin: 5px;
+    }
+
+    .selected.first-item .selected-contact-icon {
+    background-color: #333;
+    color: white;
+    }
+
+    .listbox-item-template-contact {
+    display: flex;
+    align-items: center;
+    }
+
+    .listbox-item-template-avatar {
+    width: 50px; /* Tetap memberikan lebar */
+    aspect-ratio: 1 / 1; /* Membuatnya tetap bulat */
+    background-color: gray;
+    display: flex;
+    justify-content: center;
+    border-radius: 50%; /* Membuatnya benar-benar lingkaran */
+    }
+
+    .listbox-item-template-avatar .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+
+
+    .listbox-item-template-initial {
+    color: white;
+    font-weight: bold;
+    }
+
+    .listbox-item-template-text {
+        display: flex;
+        flex-direction: column;
+        margin-left: 8px;
+        width: -webkit-fill-available;
+    }
+
+    .listbox-item-template-text-nama {
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 0 !important;
+    }
+
+    .listbox-item-template-text-alamat-customer {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-bottom: 0;
+    color: #333;
+    }
+
+    .assignment-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    border-bottom: 1px solid #eee;
+    }
+
+    .header-icon {
+    font-size: 26px;
+    color: #333;
+    }
+
+    .header-content {
+    font-size: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.1;
+    }
+
+    .header-title {
+    font-weight: 600;
+    margin: 0;
+    }
+
+    .header-date {
+    color: #666;
+    margin: 0;
+    font-size: 10px;
+    }
+
+    .header-badge {
+    padding: 0px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    }
+
+    .header-badge.done {
+    background-color: rgb(214, 255, 222);
+    color: rgb(3, 172, 14);
+    }
+
+    .header-badge.waiting {
+    background-color: #fdf5e6; /* krem lembut */
+    color: #a67c00; /* cokelat kekuningan, cocok untuk status "menunggu" */
+    }
+
+    .header-badge.active {
+    background-color: #d3e3fd; /* biru sedang */
+    color: #588ddf; /* putih agar kontras dengan biru */
+    }
+
+    .header-badge.cancel {
+    background-color: #ffeaef;
+    color: #ef144a;
+    }
+
+
+    .header-menu {
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+    }
+
+    .assignment-date {
+    font-weight: bold;
+    }
+
+    .assignment-route {
+    color: #555;
+    }
+
+    .income-section {
+    margin-top: 12px;
+    }
+
+    .income-label {
+    color: #666;
+    font-size: 10px;
+    margin: 0;
+    line-height: 1.2;
+    }
+
+    .income-amount {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+    }
+
+    .price{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price .nominal {
+        font-size:12px;
+        font-weight:500;
+    }
+</style>
+
 <script>
     let dotNetRef = null;
 
@@ -294,66 +432,9 @@
         </div>
     </div>
 </div>
-<div class="top-mentor-container">
-    <div class="title">Mentor terbaik</div>
-    <div class="list-mentor">
-        @foreach (var item in DtMentorTerbaik)
-        {
-            <div @onclick="@(() => { ProsesPilihMentor(item); })">
-                <div class="mentor-card shadow-sm overflow-hidden text-start">
-                    <img src="@item.UrlFoto" class="mentor-img-top" alt="Foto Mentor">
-                </div>
-                <div class="card p-3 mentor-detail">
-                    <div class="mb-1" style="font-weight:500;">@item.Nama</div>
-                    <div class="text-muted small mb-2">@item.Alamat</div>
 
-                    <div class="mentor-info">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="avatars">
-                                <img src="https://randomuser.me/api/portraits/men/12.jpg" class="avatar" />
-                                <img src="https://randomuser.me/api/portraits/women/31.jpg" class="avatar" />
-                            </div>
-                            <span class="small text-muted">@($"{item.JumlahKlien} klien")</span>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-1 mb-2">
-                            <span class="text-sm text-yellow-500">⭐</span>
-                            <span class="small">@item.Rating</span>
-                        </div>
-                    </div>
-                </div>
-            </div> 
-        }
-
-    </div>
-</div>
-
-<div class="rekomendasi-mentor-container">
-    <div class="title">Mentor yang cocok untukmu</div>
-    @foreach (var item in DtMentor.Take(4).OrderByDescending(x => x.Jarak).ToList())
-    {
-        <div class="flex items-center p-2 bg-white shadow mb-2 rekomendasi-mentor-card" @onclick="@(() => { ProsesPilihMentor(item); })">
-            <div class="mentor-image">
-                <img src="@item.UrlFoto" alt="Foto Mentor" />
-            </div>
-            <div class="ml-4 flex-1">
-                <div style="font-weight:500;">@item.Nama</div>
-                <div class="text-muted small">@item.Alamat</div>
-                <div class="rekomendasi-mentor-detail flex justify-between mt-1">
-                    <div class="flex items-center text-sm text-yellow-500" style="margin-left: -2px;">
-                        ⭐ @item.Rating <span class="text-gray-400 ml-1">(@item.JumlahKlien ulasan)</span>
-                    </div>
-                    <div class="text-right tarif" @onclick="@(() => { ProsesPilihMentor(item); })">
-                        <span class="font-semibold bg-blue-50 px-3 py-1 rounded-lg text-sm">@GetFormattedPrice((double)item.Tarif)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
-</div>
 <PthModal @ref="ModalMentor">
-    <div class="header-bar mentor">
+    <div class="header-bar">
         <button type="button" @onclick="(() => { ModalMentor.Close(); })" class="btn button-with-icon btn-default pesan">
             <span style="scale: 1.2;" class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
         </button>
@@ -371,19 +452,41 @@
                                     <ul class="portal-notificationpane-list">
                                         @foreach (var item in DtMentor.OrderByDescending(x => x.Jarak))
                                         {
-                                            <div class="flex items-center p-2 bg-white mb-2 rekomendasi-mentor-card all-mentor" @onclick="@(() => { ProsesPilihMentor(item); })">
-                                                <div class="mentor-image">
-                                                    <img src="@item.UrlFoto" alt="Foto Mentor" />
+                                            <div class="card">
+                                                <div class="assignment-header">
+                                                    <!-- Left icon -->
+                                                    <i class="header-icon material-symbols-outlined">schedule</i>
+
+                                                    <!-- Middle content -->
+                                                    <div class="header-content">
+                                                        <p class="header-title">Jadwal Tersedia</p>
+                                                        <p class="header-date">Senin, Selasa, Rabu</p>
+                                                    </div>
                                                 </div>
-                                                <div class="ml-4 flex-1">
-                                                    <div style="font-weight:500;">@item.Nama</div>
-                                                    <div class="text-muted small">@item.Alamat</div>
-                                                    <div class="rekomendasi-mentor-detail flex justify-between mt-1">
-                                                        <div class="flex items-center text-sm text-yellow-500" style="margin-left: -2px;">
-                                                            ⭐ @item.Rating <span class="text-gray-400 ml-1">(@item.JumlahKlien ulasan)</span>
-                                                        </div>
-                                                        <div class="text-right tarif" @onclick="@(() => { ProsesPilihMentor(item); })">
-                                                            <span class="font-semibold bg-blue-50 px-3 py-1 rounded-lg text-sm">@GetFormattedPrice((double)item.Tarif)</span>
+                                                <div class="listbox-item-template-contact">
+                                                    <div class="listbox-item-template-avatar">
+                                                        @if (string.IsNullOrEmpty(item.UrlFoto))
+                                                        {
+                                                            <p class="listbox-item-template-initial">@GenerateInitials(item.Nama)</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="@item.UrlFoto" alt="Avatar" class="avatar-img" />
+
+                                                        }
+                                                    </div>
+                                                    <div class="listbox-item-template-text">
+                                                        <p class="listbox-item-template-text-nama">@item.Nama</p>
+                                                        <div class="border-line"></div>
+                                                        <p class="listbox-item-template-text-alamat-customer text-muted">
+                                                            <span class="text-warning">⭐</span> @item.Rating (@item.JumlahKlien ulasan)
+                                                        </p>
+                                                        <div class="border-line"></div>
+                                                        <div class="price">
+                                                            <div class="nominal">Rp @(GetThousandSeparator(item.Tarif))</div>
+                                                            <div @onclick="@(() => { ProsesPilihMentor(item); })">
+                                                                <button class="pilih-mentor-btn">Pilih Mentor</button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

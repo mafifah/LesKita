@@ -66,11 +66,14 @@
 </script>
 <style>
     body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        max-width: 100%;
+        overflow-x: hidden;
     }
+
 
     button,
     .bottom-nav,
@@ -3760,7 +3763,7 @@
             </div>
             <div class="notifikasi-container">
                 <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; StartTimerNotifikasi(); ModalNotifikasi?.Show(); RefreshViewState.IsEnabled = false;})">
-                    <span class="badge-notif-custom"></span>
+                    <span class="badge-notif-custom" style="visibility: @(DtNotifikasi.Any() && DtNotifikasi.Where(x => x.IsRead != true).Count() > 0 ? "visible":"hidden")"></span>
                     <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">notifications</span>
                 </button>
             </div>
@@ -3902,20 +3905,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        DtNotifikasi.Add(new uimT9Notifikasi
-        {
-            IdNotifikasi = Guid.NewGuid(),
-            IdUser_Pengirim = Guid.Parse("00000001-0000-0000-0000-000000000000"),
-            IdUser_Penerima = Guid.Parse("00000001-0000-0000-0000-000000000000"),
-            UserPengirim_NamaPanggilan = "AUTO",
-            UserPenerima_NamaPanggilan = "AUTO",
-            IsRead = false,
-            WaktuProsesNotifikasi = DateTimeOffset.Now,
-            IsiPesan = "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem",
-            JenisPesan = "Bukan Dari User Login",
-            NilaiPK = "564a0000-1779-e460-94b3-08dd1867a8cd",
-            Form = "Pembayaran Berhasil",
-        });
+        // DtNotifikasi.Add(new uimT9Notifikasi
+        // {
+        //     IdNotifikasi = Guid.NewGuid(),
+        //     IdUser_Pengirim = Guid.Parse("00000001-0000-0000-0000-000000000000"),
+        //     IdUser_Penerima = Guid.Parse("00000001-0000-0000-0000-000000000000"),
+        //     UserPengirim_NamaPanggilan = "AUTO",
+        //     UserPenerima_NamaPanggilan = "AUTO",
+        //     IsRead = false,
+        //     WaktuProsesNotifikasi = DateTimeOffset.Now,
+        //     IsiPesan = "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem",
+        //     JenisPesan = "Bukan Dari User Login",
+        //     NilaiPK = "564a0000-1779-e460-94b3-08dd1867a8cd",
+        //     Form = "Pembayaran Berhasil",
+        // });
     }
 
     public bool IsAnyModalOpen =>
