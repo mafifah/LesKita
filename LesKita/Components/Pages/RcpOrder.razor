@@ -1,5 +1,460 @@
-﻿<h3>RcpOrder</h3>
+﻿<style>
+    .page {
+    background-color: #fff;
+    height:calc(100vh - 40px) !important;
+    }
 
+    .header{
+    display:none !important;
+    }
+    /*  .header {
+    background-color: #fff !important;
+    }
+    .input-group{
+    border: solid 1px #BFC9D9 !important;
+    background-color: #BFC9D9 !important;
+    }
+    .search-icon {
+    background-color: #fff !important;
+    color: #8D96AA !important;
+    }
+
+    .search-input {
+    background-color: #fff !important;
+    color: black !important;
+    }
+
+    .button-panel-header {
+    color: black !important;
+    } */
+    .content-penugasan {
+    padding-left: 10px;
+    padding-top: 4px;
+    }
+
+    .filter-buttons {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+    padding: 5px;
+    transition: box-shadow 0.05s ease-in-out;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .cards-container {
+    padding: 10px;
+    }
+
+    .top-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 110px;
+    }
+
+    .card-body {
+    padding: 10px;
+    }
+
+    .card-number {
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+    font-size: 12px;
+    font weight: 600;
+    color: #555;
+    }
+
+    .filter-buttons .btn {
+    font-size: 12px;
+    padding: 0px 0.75rem 0px 0.75rem;
+    }
+
+    .filter-buttons .btn .span {
+    position: relative;
+    top: -1px;
+    margin-bottom: 10px;
+    }
+
+    .btn-light {
+    border: 1px solid #E9BB4B !important;
+    border-radius: 20px;
+    }
+
+    .btn-light-toggled {
+    border-radius: 20px;
+    background-color: #E9BB4B;
+    outline: 0 !important;
+    box-shadow: none !important;
+    }
+
+    .btn :focus,
+    .btn-light:focus,
+    .btn-light-toggled :focus {
+    box-shadow: none !important;
+    outline: 0 !important;
+    }
+
+    .arrow {
+    border: solid black;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    }
+
+    .down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    }
+
+    .card {
+    flex: 1 1 100%;
+    box-sizing: border-box;
+    position: relative;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    margin: 5px;
+    }
+
+    .card.selected {
+    border: 1px solid #333;
+    }
+
+    .selected-contact-icon {
+    position: absolute;
+    top: -9px;
+    right: -5px;
+    background-color: #FF9800;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .selected.first-item .selected-contact-icon {
+    background-color: #333;
+    color: white;
+    }
+
+    .listbox-item-template-contact {
+    display: flex;
+    align-items: center;
+    }
+
+    .listbox-item-template-avatar {
+    width: 50px; /* Tetap memberikan lebar */
+    aspect-ratio: 1 / 1; /* Membuatnya tetap bulat */
+    background-color: gray;
+    display: flex;
+    justify-content: center;
+    border-radius: 50%; /* Membuatnya benar-benar lingkaran */
+    }
+
+
+    .listbox-item-template-initial {
+    color: white;
+    font-weight: bold;
+    }
+
+    .listbox-item-template-text {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    }
+
+    .listbox-item-template-text-nama {
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 0 !important;
+    }
+
+    .listbox-item-template-text-alamat-customer {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-bottom: 0;
+    color: #333;
+    }
+
+
+
+    .assignment-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    border-bottom: 1px solid #eee;
+    }
+
+    .header-icon {
+    font-size: 26px;
+    color: #333;
+    }
+
+    .header-content {
+    font-size: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.1;
+    }
+
+    .header-title {
+    font-weight: 600;
+    margin: 0;
+    }
+
+    .header-date {
+    color: #666;
+    margin: 0;
+    font-size: 10px;
+    }
+
+    .header-badge {
+        padding: 0px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+
+        .header-badge.done{
+            background-color: rgb(214, 255, 222);
+            color: rgb(3, 172, 14);
+        }
+
+        .header-badge.waiting {
+            background-color: #fdf5e6; /* krem lembut */
+            color: #a67c00; /* cokelat kekuningan, cocok untuk status "menunggu" */
+        }
+        .header-badge.active {
+            background-color: #d3e3fd; /* biru sedang */
+            color: #588ddf; /* putih agar kontras dengan biru */
+        }
+        .header-badge.cancel {
+            background-color:#ffeaef;
+            color: #ef144a;
+        }
+
+
+    .header-menu {
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+    }
+
+    .assignment-date {
+    font-weight: bold;
+    }
+
+    .assignment-route {
+    color: #555;
+    }
+
+    .income-section {
+    margin-top: 12px;
+    }
+
+    .income-label {
+    color: #666;
+    font-size: 10px;
+    margin: 0;
+    line-height: 1.2;
+    }
+
+    .income-amount {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+    }
+</style>
+
+<div class="filter-buttons">
+    <div class="cards-container d-flex gap-1">
+        <div class="top-card flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="background-color: #D4EDDA;">
+            <div class="card-body text-center">
+                <p class="card-number">@DtOrder.Where(x => x.IsAktif).Count()</p>
+                @* <p class="card-text">Pendapatan Mei 2025</p> *@
+                <p class="card-text">Jumlah Order Aktif</p>
+            </div>
+        </div>
+        @* <div class="top-card flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="background-color: #FFE4E1;">
+            <div class="card-body text-center">
+                <p class="card-number">0</p>
+                <p class="card-text">Pendapatan belum dicairkan</p>
+            </div>
+        </div> *@
+        <div class="top-card flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="background-color: #FDF5E6;">
+            <div class="card-body text-center">
+                <p class="card-number">@DtOrder.Where(x => x.IsDone).Count()</p>
+                <p class="card-text">Jumlah Order Selesai</p>
+            </div>
+        </div>
+    </div>
+</div>
+@foreach (var item in DtOrder)
+{
+    <div class="card">
+        <div class="assignment-header">
+            <!-- Left icon -->
+            <i class="header-icon material-symbols-outlined">receipt</i>
+
+            <!-- Middle content -->
+            <div class="header-content">
+                <p class="header-title">@GetFormattedDate(item.TanggalPemesanan)</p>
+                <p class="header-date">@item.JumlahSesi Sesi</p>
+            </div>
+
+            <!-- Right content -->
+            <span class="header-badge @(item.IsCancel ? "cancel" :!item.IsPaid ? "waiting" :item.IsDone ? "done" :item.IsAktif ? "active" : "")">
+                @GetStatusOrder(item)
+            </span>
+        </div>
+        <div class="listbox-item-template-contact">
+            <div class="listbox-item-template-avatar">
+                <p class="listbox-item-template-initial">@GenerateInitials(item.Mentor_Nama)</p>
+            </div>
+            <div class="listbox-item-template-text">
+                <p class="listbox-item-template-text-nama">@item.Mentor_Nama</p>
+                <div class="border-line"></div>
+                <p class="listbox-item-template-text-alamat-customer">@item.Mentor_Alamat</p>
+            </div>
+        </div>
+        <div class="income-section">
+            <p class="income-label">Total</p>
+            <p class="income-amount">@($"Rp {GetThousandSeparator(item.Total)}")</p>
+        </div>
+    </div>
+}
 @code {
 
+    private string? _filterAktif = string.Empty;
+    private List<T1Order> DtOrder = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DtOrder = new List<T1Order>
+        {
+            new T1Order
+            {
+                IdOrder = Guid.NewGuid(),
+                IdSiswa = Guid.NewGuid(),
+                IdMentor = Guid.NewGuid(),
+                JumlahSesi = 4,
+                TanggalPemesanan = DateTimeOffset.Now.AddDays(-2),
+                Siswa_Nama = "Ali",
+                Siswa_TanggalLahir = new DateTimeOffset(2010, 5, 1, 0, 0, 0, TimeSpan.Zero),
+                Siswa_Usia = DateTimeOffset.Now.AddYears(-13),
+                Siswa_Alamat = "Jl. Merdeka No. 10",
+                Mentor_Nama = "Bu Rina",
+                Mentor_TanggalLahir = new DateTimeOffset(1990, 8, 15, 0, 0, 0, TimeSpan.Zero),
+                Mentor_Usia = DateTimeOffset.Now.AddYears(-34),
+                Mentor_Alamat = "Jl. Mawar No. 5",
+                Harga = 50000,
+                Total = 200000,
+                IsPaid = true,
+                IsAktif = true,
+                ListT2Jadwal = new List<T2Jadwal>
+                {
+                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(1), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(8), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(14), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(28), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                }
+            },
+            new T1Order
+            {
+                IdOrder = Guid.NewGuid(),
+                IdSiswa = Guid.NewGuid(),
+                IdMentor = Guid.NewGuid(),
+                JumlahSesi = 2,
+                TanggalPemesanan = DateTimeOffset.Now.AddDays(-5),
+                Siswa_Nama = "Budi",
+                Siswa_TanggalLahir = new DateTimeOffset(2008, 9, 10, 0, 0, 0, TimeSpan.Zero),
+                Siswa_Usia = DateTimeOffset.Now.AddYears(-16),
+                Siswa_Alamat = "Jl. Diponegoro No. 20",
+                Mentor_Nama = "Pak Andi",
+                Mentor_TanggalLahir = new DateTimeOffset(1985, 3, 22, 0, 0, 0, TimeSpan.Zero),
+                Mentor_Usia = DateTimeOffset.Now.AddYears(-39),
+                Mentor_Alamat = "Jl. Melati No. 12",
+                Harga = 50000,
+                Total = 50000,
+                IsPaid = true,
+                IsDone = true,
+                ListT2Jadwal = new List<T2Jadwal>
+                {
+                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(2), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                }
+            },
+            new T1Order
+            {
+                IdOrder = Guid.NewGuid(),
+                IdSiswa = Guid.NewGuid(),
+                IdMentor = Guid.NewGuid(),
+                JumlahSesi = 1,
+                TanggalPemesanan = DateTimeOffset.Now.AddDays(-1),
+                Siswa_Nama = "Citra",
+                Siswa_TanggalLahir = new DateTimeOffset(2012, 11, 30, 0, 0, 0, TimeSpan.Zero),
+                Siswa_Usia = DateTimeOffset.Now.AddYears(-12),
+                Siswa_Alamat = "Jl. Kenanga No. 3",
+                Mentor_Nama = "Bu Sari",
+                Mentor_TanggalLahir = new DateTimeOffset(1992, 12, 1, 0, 0, 0, TimeSpan.Zero),
+                Mentor_Usia = DateTimeOffset.Now.AddYears(-32),
+                Mentor_Alamat = "Jl. Anggrek No. 7",
+                Harga = 60000,
+                Total = 60000,
+                IsCancel = true,
+                ListT2Jadwal = new List<T2Jadwal>
+                {
+                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(5), JamMulai = new TimeSpan(17, 0, 0), JamSelesai = new TimeSpan(18, 0, 0) },
+                }
+            }
+        };
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+
+        }
+        // _svcStatusBar.SetStatusBarColor(Color.FromArgb("#ffffff"), true);
+    }
+
+    public string GetStatusOrder(T1Order order)
+    {
+        if (order.IsCancel)
+            return "Dibatalkan";
+
+        if (!order.IsPaid)
+            return "Menunggu Pembayaran";
+
+        if (order.IsDone)
+            return "Selesai";
+
+        if (order.IsAktif)
+            return "Diproses";
+
+        return "Status Tidak Diketahui";
+    }
 }

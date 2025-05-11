@@ -1,103 +1,282 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Text.Json
+@using static LesKita.Controllers.PaymentController
+@inherits LayoutComponentBase
 @inject IJSRuntime _js
 @inject ISvcStatusBar _svcStatusBar
 @inject NavigationManager _nm
 @inject RefreshViewState RefreshViewState
 @inject IServiceProvider ServicesProv
+@inject IJSRuntime JSR
+@inject HttpClient Http
 <style>
     .services{
-        position:absolute;
-        margin: 20px;
-        top: 100px;
-        width: -webkit-fill-available;
-        border-radius:12px !important;
+    position:fixed;
+    margin: 20px;
+    top: 100px;
+    width: -webkit-fill-available;
+    border-radius:12px !important;
     }
 
     .service-item .icon-box {
-        background-color: #eef3ff;
-        border-radius: 12px;
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    background-color: #eef3ff;
+    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     }
 
     .service-item .icon-box .material-symbols-outlined {
-        font-size: 32px;
-        color: #4a6cf7;
+    font-size: 32px;
+    color: #4a6cf7;
     }
 
     .service-item .label {
-        font-weight: 500;
-        font-size: 14px;
-        color: #333;
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
     }
 
     .mentor-card {
-        width: 180px;
-        background-color: #fff;
-        border-radius: 15px 15px 0px 0px !important;
+    width: 180px;
+    background-color: #fff;
+    border-radius: 15px 15px 0px 0px !important;
     }
 
     .mentor-img-top {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 15px 15px 0px 0px;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 15px 15px 0px 0px;
     }
 
     .avatars {
-        display: flex;
+    display: flex;
     }
 
     .avatar {
-        width: 24px;
-        height: 24px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        margin-left: -8px;
-        background-color: #eee;
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    margin-left: -8px;
+    background-color: #eee;
     }
 
 
     .top-mentor-container{
-        position: relative;
-        top: 130px;
-        padding-left: 20px;
+    position: relative;
+    top: 130px;
+    padding-left: 20px;
     }
 
-    .top-mentor-container  .title{
-        font-family:az_ea_font, "Segoe UI", az_font, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        line-height:19px;
-        margin-bottom: 10px;
+    .rekomendasi-mentor-container {
+    position: relative;
+    /* bottom: 0px; */
+    top: 140px;
+    padding-left: 20px;
+    width: 392px;
+    }
+
+    .top-mentor-container  .title,
+    .rekomendasi-mentor-container .title
+    {
+    font-family:az_ea_font, "Segoe UI", az_font, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height:19px;
+    margin-bottom: 10px;
     }
 
     .list-mentor{
-        display:flex;
-        gap:6px;
+    display:flex;
+    gap:6px;
     }
     .mentor-detail{
-        top: -20px;
-        width: 184px;
-        border-radius: 15px;
-        background-color: #eef3ff;
-        border: none;
+    top: -20px;
+    width: 184px;
+    border-radius: 15px;
+    background-color: #eef3ff;
+    border: none;
     }
     .mentor-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-left: 6px;
     }
 
+    .rekomendasi-mentor-card{
+    display:flex;
+    gap:10px;
+    }
+
+    .rekomendasi-mentor-card.all-mentor{
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 15px !important;
+    }
+
+    .rekomendasi-mentor-card .mentor-image{
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: anchor-center;
+    }
+
+    .rekomendasi-mentor-card .mentor-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ini yang mengatur scaling proporsional */
+    border-radius: 10px;
+    }
+
+    .rekomendasi-mentor-detail{
+    display: flex;
+    justify-content: space-between;
+    /* border: 1px solid; */
+    width: 280px;
+    }
+    .tarif{
+    border: 0.5px solid rgba(170, 170, 170, 0.3) !important;
+    color: #6282c8;
+    border-radius: 5px;
+    min-width: 100px;
+    }
+
+    .tarif:hover {
+    background-color: #6282c8;
+    color:#fff;
+    }
+
+    .header-bar.mentor span{
+    font-weight:300 !important;
+    }
+    .portal-notificationpane-top.mentor{
+    padding: 20px 20px 0px 14px !important;
+    }
+
+    .panel-info-Mentor{
+    display:flex;
+    gap: 10px;
+    padding: 20px;
+    }
+    .mentor-display-image{
+    border: 0.5px solid rgba(170, 170, 170, 0.5) !important;
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    }
+    .mentor-name{
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #333;
+    }
+
+    .jadwal-section{
+    margin-top:10px;
+    }
+    .panel-info-jadwal{
+    padding:20px;
+    }
+
+    .jadwal-btn {
+    border: 0.5px solid rgba(170, 170, 170, 0.5) !important;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    color: #6282c8;
+    }
+
+    .jadwal-btn.selected {
+    border: 0.5px solid #6282c8;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background-color: #6282c8;
+    color: #fff;
+    }
+
+    .biaya-mentoring{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom:10px;
+    }
+
+    .biaya-mentoring span {
+    color: #333;
+    font-weight: 400;
+    font-size:12px;
+    }
+
+    .biaya-mentoring .total {
+    color: #333;
+    font-weight: 600;
+    font-size:14px;
+    }
+    .konfirmasi-section {
+    padding: 20px;
+    position: absolute;
+    bottom: 0;
+    width: -webkit-fill-available;
+    z-index:10;
+    }
+    .panel-konfirmasi{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    }
+    .total-payment{
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    }
+    .confirm-button{
+    align-content: flex-end;
+    }
 </style>
+<script>
+    let dotNetRef = null;
+
+    window.setDotNetRef = function (ref) {
+    dotNetRef = ref;
+    };
+
+    window.snapPay = function (snapToken) {
+    if (!window.snap || !dotNetRef) {
+    console.error("Midtrans snap.js belum dimuat atau dotNetRef belum diset.");
+    return;
+    }
+
+    window.snap.pay(snapToken, {
+    onSuccess: function (result) {
+    console.log("Success:", result);
+    dotNetRef.invokeMethodAsync("OnPaymentSuccess", result);
+    },
+    onPending: function (result) {
+    console.log("Pending:", result);
+    dotNetRef.invokeMethodAsync("OnPaymentPending", result);
+    },
+    onError: function (result) {
+    console.log("Error:", result);
+    dotNetRef.invokeMethodAsync("OnPaymentError", result);
+    }
+    });
+    };
+
+</script>
 <div class="card services shadow-sm p-4 mb-4 bg-white rounded text-center">
     <div class="row row-cols-2 text-center g-3">
-        <div class="col">
+        <div class="col" @onclick="@(() => { ModalMentor?.Show(); })">
             <div class="service-item">
                 <div class="icon-box">
                     <span class="material-symbols-outlined">supervisor_account</span>
@@ -116,11 +295,11 @@
     </div>
 </div>
 <div class="top-mentor-container">
-    <div class="title">Mentor Terbaik</div>
+    <div class="title">Mentor terbaik</div>
     <div class="list-mentor">
-        @foreach (var item in DtGuru)
+        @foreach (var item in DtMentorTerbaik)
         {
-            <div>
+            <div @onclick="@(() => { ProsesPilihMentor(item); })">
                 <div class="mentor-card shadow-sm overflow-hidden text-start">
                     <img src="@item.UrlFoto" class="mentor-img-top" alt="Foto Mentor">
                 </div>
@@ -138,46 +317,418 @@
                         </div>
 
                         <div class="d-flex align-items-center gap-1 mb-2">
-                            <span class="material-symbols-outlined text-warning" style="font-size: 24px;">star_half</span>
+                            <span class="text-sm text-yellow-500">⭐</span>
                             <span class="small">@item.Rating</span>
                         </div>
                     </div>
                 </div>
             </div> 
         }
+
     </div>
 </div>
 
+<div class="rekomendasi-mentor-container">
+    <div class="title">Mentor yang cocok untukmu</div>
+    @foreach (var item in DtMentor.Take(4).OrderByDescending(x => x.Jarak).ToList())
+    {
+        <div class="flex items-center p-2 bg-white shadow mb-2 rekomendasi-mentor-card" @onclick="@(() => { ProsesPilihMentor(item); })">
+            <div class="mentor-image">
+                <img src="@item.UrlFoto" alt="Foto Mentor" />
+            </div>
+            <div class="ml-4 flex-1">
+                <div style="font-weight:500;">@item.Nama</div>
+                <div class="text-muted small">@item.Alamat</div>
+                <div class="rekomendasi-mentor-detail flex justify-between mt-1">
+                    <div class="flex items-center text-sm text-yellow-500" style="margin-left: -2px;">
+                        ⭐ @item.Rating <span class="text-gray-400 ml-1">(@item.JumlahKlien ulasan)</span>
+                    </div>
+                    <div class="text-right tarif" @onclick="@(() => { ProsesPilihMentor(item); })">
+                        <span class="font-semibold bg-blue-50 px-3 py-1 rounded-lg text-sm">@GetFormattedPrice((double)item.Tarif)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
+</div>
+<PthModal @ref="ModalMentor">
+    <div class="header-bar mentor">
+        <button type="button" @onclick="(() => { ModalMentor.Close(); })" class="btn button-with-icon btn-default pesan">
+            <span style="scale: 1.2;" class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+        </button>
+        <span>@($"Rekomendasi Mentor")</span>
+    </div>
+    <div class="portal-content-container">
+        <div class="portal-content-container-default">
+            <div class="portal-content-wrapper">
+                <div class="portal-content">
+                    <div class="portal-stacklayout">
+                        <div class="portal-notificationpane">
+                            @if (DtMentor.Any() || DtMentor?.Count() < 1)
+                            {
+                                <div class="portal-notificationpane-top mentor">
+                                    <ul class="portal-notificationpane-list">
+                                        @foreach (var item in DtMentor.OrderByDescending(x => x.Jarak))
+                                        {
+                                            <div class="flex items-center p-2 bg-white mb-2 rekomendasi-mentor-card all-mentor" @onclick="@(() => { ProsesPilihMentor(item); })">
+                                                <div class="mentor-image">
+                                                    <img src="@item.UrlFoto" alt="Foto Mentor" />
+                                                </div>
+                                                <div class="ml-4 flex-1">
+                                                    <div style="font-weight:500;">@item.Nama</div>
+                                                    <div class="text-muted small">@item.Alamat</div>
+                                                    <div class="rekomendasi-mentor-detail flex justify-between mt-1">
+                                                        <div class="flex items-center text-sm text-yellow-500" style="margin-left: -2px;">
+                                                            ⭐ @item.Rating <span class="text-gray-400 ml-1">(@item.JumlahKlien ulasan)</span>
+                                                        </div>
+                                                        <div class="text-right tarif" @onclick="@(() => { ProsesPilihMentor(item); })">
+                                                            <span class="font-semibold bg-blue-50 px-3 py-1 rounded-lg text-sm">@GetFormattedPrice((double)item.Tarif)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="portal-notificationpane-top">
+                                    <div class="portal-notification-empty">
+                                        <div class="portal-notification-empty-icon"><span class="material-symbols-outlined" style="scale: 4">productivity</span></div>
+                                        <div class="nodata-content">@($"Belum ada mentor yang tersedia di area anda")</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</PthModal>
+<PthModal @ref="@ModalCreateOrder">
+    <div class="header-bar mentor">
+        <button type="button" @onclick="(() => { ModalCreateOrder.Close(); })" class="btn button-with-icon btn-default pesan">
+            <span style="scale: 1.2;" class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+        </button>
+        <span>@($"Ringkasan Pesanan")</span>
+    </div>
+    <div class="portal-content-container">
+        <div class="portal-content-container-default">
+            <div class="portal-content-wrapper">
+                <div class="portal-content">
+                    <div class="portal-stacklayout">
+                        <div class="portal-notificationpane" style="background-color:#f4f4f4">
+                            <div class="bg-white">
+                                <div class="panel-info-Mentor">
+                                    <div class="mentor-display-image">
+                                        <img src="@DrMentorDipilih?.UrlFoto" alt="Foto Mentor" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                                    </div>
+                                    <div class="mentor-identity">
+                                        <div class="mentor-name">@DrMentorDipilih?.Nama</div>
+                                        <div class="mentor-address text-muted">@DrMentorDipilih?.Alamat</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white jadwal-section">
+                                <div class="panel-info-jadwal">
+                                    <label style="font-weight: 600; display: block; margin-bottom: 20px;font-size:15px">Pilih Jadwal</label>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        @if (DrMentorDipilih is not null && DrMentorDipilih?.ListT1JadwalMentor is not null)
+                                        {
+                                            @foreach (var item in DrMentorDipilih?.ListT1JadwalMentor?.OrderBy(x => x.Hari).ToList())
+                                            {
+                                                <button class="jadwal-btn @(DrJadwalDipilih?.IdJadwalMentor == item.IdJadwalMentor ? "selected" : "")" @onclick="(() => { ProsesPilihJadwal(item); })">@($"{item.Hari} {item.JamMulai?.ToString(@"hh\:mm")} - {item.JamSelesai?.ToString(@"hh\:mm")}")</button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white jadwal-section">
+                                <div class="panel-info-jadwal">
+                                    <label style="font-weight: 600; display: block; margin-bottom: 20px;font-size:15px">Pilih Sesi</label>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        <button class="jadwal-btn @(JumlahSesi == 1 ? "selected" : "")" @onclick="(() => { ProsesPilihSesi(1); })">1x</button>
+                                        <button class="jadwal-btn @(JumlahSesi == 2 ? "selected" : "")" @onclick="(() => { ProsesPilihSesi(2); })">2x</button>
+                                        <button class="jadwal-btn @(JumlahSesi == 4 ? "selected" : "")" @onclick="(() => { ProsesPilihSesi(4); })">1 Bulan (4x)</button>
+                                        <button class="jadwal-btn @(JumlahSesi == 12 ? "selected" : "")" @onclick="(() => { ProsesPilihSesi(12); })">3 Bulan (12x)</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white jadwal-section">
+                                <div class="panel-info-jadwal">
+                                    <label style="font-weight: 600; display: block; margin-bottom: 20px;font-size:15px">Ringkasan Biaya</label>
+                                    <div class="biaya-mentoring">
+                                        <span class="text-muted">Biaya Sesi (@($"Rp {GetThousandSeparator(DrMentorDipilih?.Tarif)} x {JumlahSesi}"))</span>
+                                        <span>@($"Rp {GetThousandSeparator(TotalBiaya)}")</span>
+                                    </div>
+                                    <div class="biaya-mentoring">
+                                        <span class="text-muted">Biaya Layanan</span>
+                                        <span>@($"Rp {GetThousandSeparator(TotalLayanan)}")</span>
+                                    </div>
+                                    <div class="biaya-mentoring">
+                                        <span class="total">Pembayaranmu</span>
+                                        <span class="total">@($"Rp {GetThousandSeparator(TotalBiaya + TotalLayanan)}")</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white konfirmasi-section">
+                                <div class="panel-konfirmasi">
+                                    <div class="confirm-text">
+                                        <div class="text-muted" style="margin-bottom: 5px;">Pembayaranmu</div>
+                                        <div class="total-payment">@($"Rp {GetThousandSeparator(TotalBiaya + TotalLayanan)}")</div>
+                                    </div>
+                                    <div class="confirm-button" @onclick="@ProsesBayar">
+                                        <button class="jadwal-btn selected">Bayar & Konfirmasi</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</PthModal>
 
 @code {
-    public bool IsLoading_DtGuru { get; set; } = false;
+
+    public bool IsLoading_DtMentor { get; set; } = false;
     public bool IsSkeletonAktif { get; set; } = false;
     private int TinggiHeaderTersembunyi = 0;
     private int TinggiHeaderSticky = 0; // Tambahkan ini untuk menyimpan tinggi header sticky
     private bool IsScrollAktif = true;
 
-    public List<uimT0Guru> DtGuru { get; set; } = new();
+    public List<uimT0Mentor> DtMentorTerbaik { get; set; } = new();
+    public List<uimT0Mentor> DtMentor { get; set; } = new();
 
+    private DotNetObjectReference<RcpBeranda>? dotNetRef;
     protected override async Task OnInitializedAsync()
     {
-        DtGuru.Add(new uimT0Guru
+        if (Http.BaseAddress == null) Http.BaseAddress = new Uri("https://localhost:7068/"); // ganti sesuai port kamu
+        DtMentorTerbaik.Add(new uimT0Mentor
             {
                 Nama = "Geni Santika",
                 Alamat = "Jl. Raya No. 1",
                 Rating = 4.5,
                 Usia = 27,
                 JumlahKlien = 15,
-                UrlFoto = "https://randomuser.me/api/portraits/women/39.jpg"
+                UrlFoto = "https://randomuser.me/api/portraits/women/39.jpg",
+                Tarif = 180000,
+                ListT1JadwalMentor = new List<T1JadwalMentor>
+                {
+                    new T1JadwalMentor { Hari = "Minggu", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                    new T1JadwalMentor { Hari = "Senin", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                }
             });
-        DtGuru.Add(new uimT0Guru
+        DtMentorTerbaik.Add(new uimT0Mentor
             {
                 Nama = "M. Afifah",
                 Alamat = "Jl. Raya No. 51",
                 Rating = 4.2,
                 Usia = 26,
                 JumlahKlien = 10,
-                UrlFoto = "https://randomuser.me/api/portraits/men/40.jpg"
+                UrlFoto = "https://randomuser.me/api/portraits/men/40.jpg",
+                Tarif = 80000,
+                ListT1JadwalMentor = new List<T1JadwalMentor>
+                {
+                    new T1JadwalMentor { Hari = "Selasa", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                }
+            });
+
+        DtMentor.Add(new uimT0Mentor
+            {
+                Nama = "Geni Santika",
+                Alamat = "Jl. Raya No. 1",
+                Rating = 4.5,
+                Usia = 27,
+                JumlahKlien = 15,
+                UrlFoto = "https://randomuser.me/api/portraits/women/39.jpg",
+                Tarif = 180000,
+                ListT1JadwalMentor = new List<T1JadwalMentor>
+                {
+                    new T1JadwalMentor { Hari = "Minggu", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                    new T1JadwalMentor { Hari = "Senin", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                }
+
+            });
+        DtMentor.Add(new uimT0Mentor
+            {
+                Nama = "M. Afifah",
+                Alamat = "Jl. Raya No. 51",
+                Rating = 4.2,
+                Usia = 26,
+                JumlahKlien = 10,
+                UrlFoto = "https://randomuser.me/api/portraits/men/40.jpg",
+                Tarif = 80000,
+                ListT1JadwalMentor = new List<T1JadwalMentor>
+                {
+                    new T1JadwalMentor { Hari = "Selasa", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
+                }
+            });
+        DtMentor.Add(new uimT0Mentor
+            {
+                Nama = "Nura Hutama",
+                Alamat = "Jl. Raya No. 52",
+                Rating = 4.3,
+                Usia = 27,
+                JumlahKlien = 10,
+                UrlFoto = "https://randomuser.me/api/portraits/men/45.jpg",
+                Tarif = 140000,
+                ListT1JadwalMentor = new List<T1JadwalMentor>
+                {
+                    new T1JadwalMentor { Hari = "Sabtu", JamMulai = new TimeSpan(18, 0, 0), JamSelesai = new TimeSpan(19, 0, 0) },
+                    new T1JadwalMentor { Hari = "Kamis", JamMulai = new TimeSpan(18, 0, 0), JamSelesai = new TimeSpan(19, 0, 0) },
+                    new T1JadwalMentor { Hari = "Jumat", JamMulai = new TimeSpan(18, 0, 0), JamSelesai = new TimeSpan(19, 0, 0) },
+                }
             });
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            SSR = new ClsServisSignalR();
+            try
+            {
+                await SSR.MulaiKoneksi("LesKita"); //SignalR - Connect ke klien tertentu pada Hub
+            }
+            catch (OperationCanceledException oc_ex) { }
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JSR.InvokeVoidAsync("setDotNetRef", dotNetRef);
+        }
+    }
+    private string GetFormattedPrice(double tarif)
+    {
+        if (tarif >= 1000)
+            return $"{tarif / 1000}K/jam";
+        return tarif.ToString();
+    }
+
+
+    #region All Mentor
+    public PthModal? ModalMentor;
+    public uimT0Mentor DrMentorDipilih { get; set; }
+    public async Task ProsesPilihMentor(uimT0Mentor Mentor)
+    {
+        DrMentorDipilih = Mentor;
+        ModalCreateOrder.Show();
+    } 
+    #endregion
+
+    #region Booking
+    public PthModal? ModalCreateOrder;
+    public T1Order DrOrderBaru { get; set; }
+    public T1JadwalMentor DrJadwalDipilih { get; set; }
+    public int JumlahSesi { get; set; } = 0;
+    public double TotalBiaya { get; set; } = 0;
+    public double TotalLayanan { get; set; } = 2000;
+    public async Task ProsesPilihJadwal(T1JadwalMentor jadwal)
+    {
+        DrJadwalDipilih = jadwal;
+    }
+
+    public async Task ProsesPilihSesi(int sesi)
+    {
+        JumlahSesi = sesi;
+        TotalBiaya = (double)DrMentorDipilih?.Tarif * (double)JumlahSesi;
+        StateHasChanged();
+    }
+    public async Task ProsesBayar()
+    {
+        
+        DrOrderBaru = new();
+        DrOrderBaru.IdOrder = NewId.NextGuid();
+        DrOrderBaru.IsPaid = false;
+        DrOrderBaru.Siswa_Nama = "ABC";
+        DrOrderBaru.Siswa_Email = "abc@gmail.com";
+        DrOrderBaru.JumlahSesi = JumlahSesi;
+        DrOrderBaru.Harga = DrMentorDipilih?.Tarif ?? 0;
+        DrOrderBaru.Total = TotalBiaya;
+
+        var dto = new MidtransRequestDto
+        {
+            IdOrder = DrOrderBaru.IdOrder.ToString(),
+            Siswa_Nama = DrOrderBaru.Siswa_Nama,
+            Siswa_Email = DrOrderBaru.Siswa_Email,
+            Total = (double)DrOrderBaru.Total
+        };
+        
+
+        var response = await Http.PostAsJsonAsync("api/payment/create", dto);
+        // Baca respons JSON dari API backend
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        if (result.TryGetProperty("token", out var snapTokenProp))
+        {
+            var snapToken = snapTokenProp.GetString();
+            await JSR.InvokeVoidAsync("snapPay", snapToken);
+        }
+        else
+        {
+            var message = result.TryGetProperty("status_message", out var msg) ? msg.GetString() : "Tidak diketahui";
+            Console.WriteLine("Gagal mendapatkan snap token: " + message);
+        }
+        StateHasChanged();
+    }
+    #endregion
+
+    #region Payment Handler
+    [JSInvokable]
+    public async Task OnPaymentSuccess(JsonElement result)
+    {
+        Console.WriteLine("Pembayaran berhasil: " + result);
+        ModalMentor.Close();
+        ModalCreateOrder.Close();
+        DrOrderBaru = null;
+        DrMentorDipilih = null;
+        DrJadwalDipilih = null;
+        await KirimSignalR();
+    }
+
+    [JSInvokable]
+    public async Task OnPaymentPending(JsonElement result)
+    {
+
+        Console.WriteLine("Pembayaran pending: " + result);
+        ModalMentor.Close();
+        ModalCreateOrder.Close();
+        DrOrderBaru = null;
+        DrMentorDipilih = null;
+        DrJadwalDipilih = null;
+    }
+
+    [JSInvokable]
+    public async Task OnPaymentError(JsonElement result)
+    {
+        Console.WriteLine("Pembayaran error: " + result);
+        ModalMentor.Close();
+        ModalCreateOrder.Close();
+        DrOrderBaru = null;
+        DrMentorDipilih = null;
+        DrJadwalDipilih = null;
+    }
+    #endregion
+
+    #region SignalR
+    public ClsServisSignalR SSR;
+    public async Task KirimSignalR()
+    {
+        try
+        {
+            await SSR.KirimPesan(jenisPesan: "Notifikasi", namaForm: "Pembayaran Berhasil", statusAction: "Insert", namaFieldPK: "", nilaiPK: "00000001-0000-0000-0000-000000000000", waktuProses: DateTime.Now, isiPesan: "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem", idUser: Guid.Parse("00000001-0000-0000-0000-000000000000"), User_NamaPanggilan: "AUTO", idUserPenerima: Guid.Parse("00000001-0000-0000-0000-000000000000"), userPenerima_NamaPanggilan: "AUTO");
+            await Task.Delay(30000);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    #endregion
 }

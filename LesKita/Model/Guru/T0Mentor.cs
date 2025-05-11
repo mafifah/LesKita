@@ -4,7 +4,7 @@ global using MassTransit;
 
 namespace LesKita.Model;
 
-public class T0Guru
+public class T0Mentor
 {
     [Key]
     [PrimaryKey]
@@ -18,7 +18,10 @@ public class T0Guru
     public double? Rating { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    public double? Tarif { get; set; }
+    public string? Email { get; set; }
 
     //public Pengguna Pengguna { get; set; }
     public List<T1Order>? ListT1Order { get; set; }
+    public List<T1JadwalMentor>? ListT1JadwalMentor { get; set; }
 }

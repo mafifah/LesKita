@@ -4,63 +4,64 @@
 @inject NavigationManager _nm
 @inject RefreshViewState RefreshViewState
 @inject IServiceProvider ServicesProv 
+@inject IJSRuntime JSR
 @inherits LayoutComponentBase
 @namespace LesKita.Components
 <script>
     // Men-trigger animasi bouncing pada elemen indikator
     window.triggerBouncingAnimation = () => {
-        const indicator = document.querySelector(".indicator");
-        if (!indicator) return;
+    const indicator = document.querySelector(".indicator");
+    if (!indicator) return;
 
-        // Reset animasi agar bisa diulang
-        indicator.classList.remove("bouncing");
-        void indicator.offsetWidth; // Force reflow
+    // Reset animasi agar bisa diulang
+    indicator.classList.remove("bouncing");
+    void indicator.offsetWidth; // Force reflow
 
-        // Tambahkan kembali kelas animasi setelah sedikit delay
-        setTimeout(() => {
-            indicator.classList.add("bouncing");
-        }, 50);
+    // Tambahkan kembali kelas animasi setelah sedikit delay
+    setTimeout(() => {
+    indicator.classList.add("bouncing");
+    }, 50);
     };
 
     // Deteksi scroll dan panggil method .NET untuk update posisi scroll
     window.detectScrollPosition = (dotNetObject) => {
-        document.addEventListener("scroll", () => {
-            const scrollContainer = document.getElementById("scrollContainer");
-            if (scrollContainer) {
-                const scrollTop = scrollContainer.scrollTop;
-                dotNetObject.invokeMethodAsync("UpdateScrollPosition", scrollTop);
-            }
-        }, true); // 'true' agar menangkap scroll di dalam elemen (bubbling)
+    document.addEventListener("scroll", () => {
+    const scrollContainer = document.getElementById("scrollContainer");
+    if (scrollContainer) {
+    const scrollTop = scrollContainer.scrollTop;
+    dotNetObject.invokeMethodAsync("UpdateScrollPosition", scrollTop);
+    }
+    }, true); // 'true' agar menangkap scroll di dalam elemen (bubbling)
     };
 
     // Ambil posisi scroll saat ini dari elemen container tertentu
     window.getScrollPositionInContainer = (containerId) => {
-        try {
-            const container = document.getElementById(containerId);
-            if (container && typeof container.scrollTop === "number") {
-                return Math.round(container.scrollTop);
-            } else {
-                console.warn(`Container dengan ID '${containerId}' tidak ditemukan atau tidak memiliki scrollTop.`);
-                return 0;
-            }
-        } catch (error) {
-            console.error("Terjadi kesalahan saat mengambil posisi scroll:", error);
-            return 0;
-        }
+    try {
+    const container = document.getElementById(containerId);
+    if (container && typeof container.scrollTop === "number") {
+    return Math.round(container.scrollTop);
+    } else {
+    console.warn(`Container dengan ID '${containerId}' tidak ditemukan atau tidak memiliki scrollTop.`);
+    return 0;
+    }
+    } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil posisi scroll:", error);
+    return 0;
+    }
     };
 
     // Set posisi scroll ke nilai tertentu di elemen container
     window.setScrollPositionInContainer = (containerId, position) => {
-        try {
-            const container = document.getElementById(containerId);
-            if (container) {
-                container.scrollTop = position;
-            } else {
-                console.warn(`Container dengan ID '${containerId}' tidak ditemukan.`);
-            }
-        } catch (error) {
-            console.error("Terjadi kesalahan saat mengatur posisi scroll:", error);
-        }
+    try {
+    const container = document.getElementById(containerId);
+    if (container) {
+    container.scrollTop = position;
+    } else {
+    console.warn(`Container dengan ID '${containerId}' tidak ditemukan.`);
+    }
+    } catch (error) {
+    console.error("Terjadi kesalahan saat mengatur posisi scroll:", error);
+    }
     };
 </script>
 <style>
@@ -74,10 +75,10 @@
     button,
     .bottom-nav,
     .bottom-sheet-overlay {
-        user-select: none; /* Mencegah seleksi teks */
-        -webkit-user-select: none; /* Untuk browser berbasis WebKit (Chrome, Safari) */
-        -moz-user-select: none; /* Untuk Firefox */
-        -ms-user-select: none; /* Untuk Internet Explorer/Edge lama */
+    user-select: none; /* Mencegah seleksi teks */
+    -webkit-user-select: none; /* Untuk browser berbasis WebKit (Chrome, Safari) */
+    -moz-user-select: none; /* Untuk Firefox */
+    -ms-user-select: none; /* Untuk Internet Explorer/Edge lama */
     }
 
     .modal-overlay {
@@ -257,64 +258,64 @@
     @@import url('https://fonts.googleapis.com/css2?family=Lato');
 
     .container-utama{
-        background-color: #fff;
+    background-color: #fff;
     }
     .header {
-        background-color: #6282c8 !important;
-        color:white;
-        height: 178px;
-        padding-top: 30px;
+    background-color: #6282c8 !important;
+    color:white;
+    height: 178px;
+    padding-top: 30px;
     }
     .profile-img {
-        width: 40px;
-        height: 40px;
-        object-fit: cover;
-        border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
     }
     .greeting {
-        font-size: 12px;
-        opacity: 0.9;
+    font-size: 12px;
+    opacity: 0.9;
     }
 
     .username {
-        font-size: 16px;
-        font-weight: 600;
-        margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
     }
     .notifikasi-container{
-        width: 28px;
-        height: 28px;
-        background-color:#fff;
-        object-fit: cover;
-        border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    background-color:#fff;
+    object-fit: cover;
+    border-radius: 50%;
     }
     .notifikasi-container button {
-        width: 28px;
-        height: 28px;
-        background-color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        border: none;
-        padding: 0;
+    width: 28px;
+    height: 28px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: none;
+    padding: 0;
     }
 
     .badge-notif-custom {
-        position: absolute;
-        top: 4.5px;
-        right: 6px;
-        width: 8px;
-        height: 8px;
-        background-color: #be2d39;
-        border-radius: 50%;
+    position: absolute;
+    top: 4.5px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background-color: #be2d39;
+    border-radius: 50%;
     }
 
 
     .page {
-        height: calc(100vh - 220px);
-        overflow: auto;
+    height: calc(100vh - 220px);
+    overflow: auto;
     }
     .page::-webkit-scrollbar {
     height: 0; /* Menyembunyikan scrollbar horizontal */
@@ -494,6 +495,7 @@
     opacity: 0.9;
     margin-left:16px;
     margin-top:5px;
+    margin-bottom:11px;
     }
 
     .header-bar button {
@@ -532,7 +534,7 @@
     }
 </style>
 <!-- #region Style RcpUtama Pantheon -->
-    
+
 <style>
     @*google icon*@
     @@font-face {
@@ -569,13 +571,13 @@
     }
 
     body {
-        overflow-x: hidden !important;
-        overflow: hidden !important;
-        padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow: hidden !important;
+    padding: 0 !important;
     }
 
     ul {
-        list-style-type: none;
+    list-style-type: none;
     }
 
 
@@ -712,22 +714,22 @@
     }*/
 
     .badge-notif {
-        font-size: 10px;
-        position: absolute;
-        border-radius: 4px;
-        text-align: center;
-        min-width: 20px; /* Pastikan ada ukuran minimum */
-        height: 16px; /* Sesuaikan agar teks tetap di tengah */
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        padding: 2px;
-        top: 5px;
-        right:1px !important;
-        background: #EF4444;
-        color: white;
+    font-size: 10px;
+    position: absolute;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 20px; /* Pastikan ada ukuran minimum */
+    height: 16px; /* Sesuaikan agar teks tetap di tengah */
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 2px;
+    top: 5px;
+    right:1px !important;
+    background: #EF4444;
+    color: white;
     }
 
 
@@ -3757,7 +3759,7 @@
                 </div>
             </div>
             <div class="notifikasi-container">
-                <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; ModalNotifikasi?.Show(); RefreshViewState.IsEnabled = false;})">
+                <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; StartTimerNotifikasi(); ModalNotifikasi?.Show(); RefreshViewState.IsEnabled = false;})">
                     <span class="badge-notif-custom"></span>
                     <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">notifications</span>
                 </button>
@@ -3793,6 +3795,98 @@
             </button>
         </div>
     </div>
+
+    <PthModal @ref="ModalNotifikasi">
+        <div class="header-bar">
+            <button type="button" @onclick="(() => { ModalNotifikasi.Close(); StopTimerNotifikasi(); })" class="btn button-with-icon btn-default pesan">
+                <span style="scale: 1.2;" class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            </button>
+            <span>@($"{($"Notifikasi")}")</span>
+        </div>
+        <div class="portal-content-container">
+            <div class="portal-content-container-default">
+                <div class="portal-content-wrapper">
+                    <div class="portal-content">
+                        <div class="portal-stacklayout">
+                            <div class="portal-notificationpane">
+                                @if (DtNotifikasi.Any())
+                                {
+                                    <!-- Ketika ada data notification -->
+                                    <div class="portal-notificationpane-header">
+                                        <div class="portal-notificationpane-header-content">
+                                            <div class="portal-notification-dismisscontainer">
+                                                <div>
+                                                    <a role="link" class="portal-notificationpane-activitylog-link" @onclick="ProsesDismissAll">@($"{($"Hapus Notifikasi")}")</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="portal-notificationpane-top">
+                                        <ul class="portal-notificationpane-list">
+                                            @foreach (var notif in DtNotifikasi.OrderByDescending(x => x.WaktuProsesNotifikasi))
+                                            {
+                                                <li class="portal-notification-li @(notif.IsBeingRemoved ? "removing" : "")">
+                                                    <div class="portal-notificationmenu-notification-wrapper">
+                                                        <div class="portal-notificationmenu-notification">
+                                                            <div class="portal-notificationmenu-notification-title">
+                                                                <div class="portal-notificationmenu-notification-title-icon">
+                                                                    <span class="material-symbols-outlined" style="scale:.9;vertical-align: middle;color: #428000; font-variation-settings:'FILL' 1, 'wght' 200, 'GRAD' 80, 'opsz' 24">data_check</span>
+                                                                </div>
+                                                                <div class="portal-notificationmenu-notification-title-text">@notif.Form</div>
+                                                            </div>
+                                                            <div class="portal-notificationmenu-notification-description">
+                                                                <span style="visibility:hidden;">
+                                                                    <img src="" class="rzi rz-navigation-item-icon" style="height: 25px; width: 25px; display: flex;" />
+                                                                </span>
+                                                                @(notif?.IsiPesan ?? "")
+                                                            </div>
+                                                            <div class="portal-notification-inlineform"></div>
+                                                            <div class="portal-notification-time-info">
+                                                                @{
+                                                                    TimeSpan span = (DateTimeOffset.UtcNow - (notif?.WaktuProsesNotifikasi ?? DateTimeOffset.UtcNow));
+                                                                    if (span.Days > 0)
+                                                                        notif.TimeInfo = $"{span.Days} hari lalu";
+                                                                    else if (span.Hours > 0)
+                                                                        notif.TimeInfo = $"{span.Hours} jam lalu";
+                                                                    else if (span.Minutes > 0)
+                                                                        notif.TimeInfo = $"{span.Minutes} menit lalu";
+                                                                    else
+                                                                        notif.TimeInfo = $"{span.Seconds} detik lalu";
+
+                                                                    var targetId = $"dropdown-notifikasi-action-{notif.IdNotifikasi}";
+                                                                }
+
+                                                                @*<span class="material-symbols-outlined notifikasi-more" tabindex="0" title="More content actions">more_horiz</span>*@
+                                                                <div class="portal-notification-time-info-text">@notif.TimeInfo</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="portal-notificationmenu-notification-dismissicon">
+                                                            <button class="portal-btn-close button-with-icon" @onclick="(() => { ProsesHapusNotifikasi(notif); })"><span class="material-symbols-outlined">close</span></button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="portal-notificationpane-top">
+                                        <div class="portal-notification-empty">
+                                            <div class="portal-notification-empty-icon"><span class="material-symbols-outlined" style="scale: 4">notifications</span></div>
+                                            <div class="nodata-content">@($"Belum ada notifikasi baru saat ini")</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </PthModal>
 </CascadingValue>
 <!-- #endregion -->
 
@@ -3808,6 +3902,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        DtNotifikasi.Add(new uimT9Notifikasi
+        {
+            IdNotifikasi = Guid.NewGuid(),
+            IdUser_Pengirim = Guid.Parse("00000001-0000-0000-0000-000000000000"),
+            IdUser_Penerima = Guid.Parse("00000001-0000-0000-0000-000000000000"),
+            UserPengirim_NamaPanggilan = "AUTO",
+            UserPenerima_NamaPanggilan = "AUTO",
+            IsRead = false,
+            WaktuProsesNotifikasi = DateTimeOffset.Now,
+            IsiPesan = "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem",
+            JenisPesan = "Bukan Dari User Login",
+            NilaiPK = "564a0000-1779-e460-94b3-08dd1867a8cd",
+            Form = "Pembayaran Berhasil",
+        });
     }
 
     public bool IsAnyModalOpen =>
@@ -3848,17 +3956,13 @@
         {
             RefreshViewState.IsEnabled = true;
             _svcStatusBar.SetStatusBarColor(Color.FromArgb("#333333"), true);
-            //URL_SignalR = "https://asSignalR.azurewebsites.net/chathub";
-            // SSR = new ClsServisSignalR();
-            // SSR.TerimaPesan(ssr_TerimaPesan);
-            // try
-            // {
-            //     await SSR.MulaiKoneksi("dbAvernus_Evo"); //SignalR - Connect ke klien tertentu pada Hub
-
-            //     //var b = 0;
-            //     //var a = 100 / b;
-            // }
-            // catch (OperationCanceledException oc_ex) { }
+            SSR = new ClsServisSignalR();
+            SSR.TerimaPesan(ssr_TerimaPesan);
+            try
+            {
+                await SSR.MulaiKoneksi("LesKita"); //SignalR - Connect ke klien tertentu pada Hub                
+            }
+            catch (OperationCanceledException oc_ex) { }
 
             SetActiveTab("beranda", false);
             
@@ -3931,75 +4035,47 @@
     public bool TampilkanNotifikasi { get; set; } = false;
     public PthModal? ModalNotifikasi;
     public PthBottomSheet? BottomSheetNotifikasi;
-    // public List<uimT9Notifikasi> DtNotifikasi { get; set; } = new();
-    // public uimT9Notifikasi T9NotifikasiDipilih { get; set; } = new();
-    // private async void ProsesTampilkanBottomSheetMore(uimT9Notifikasi psr)
-    // {
-    //     T9NotifikasiDipilih = psr;
-    //     BottomSheetNotifikasi?.ShowBottomSheet();
-    //     StateHasChanged();
-    // }
+    public List<uimT9Notifikasi> DtNotifikasi { get; set; } = new();
+    public uimT9Notifikasi T9NotifikasiDipilih { get; set; } = new();
+    private async void ProsesDismissAll()
+    {
+        DtNotifikasi.Clear();
+        //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
+        StateHasChanged();
+        //TampilkanDropdownDismissAllNotification = !TampilkanDropdownDismissAllNotification;
+    }
 
-    // private async void ProsesDismissNotifikasiPersonal()
-    // {
-    //     DtNotifikasi.RemoveAll(x => x.JenisPesan == "Simpan Dari User Login");
-    //     //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
-    //     await InvokeAsync(StateHasChanged);
-    // }
-    // private async void ProsesDismissNotifikasiDariUserLain()
-    // {
-    //     //TampilkanDropdownDismissAllNotification = false;
-    //     DtNotifikasi.RemoveAll(x => x.JenisPesan != "Simpan Dari User Login");
-    //     //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
-    //     await InvokeAsync(StateHasChanged);
-    // }
-    // private async void ProsesDismissAll()
-    // {
-    //     DtNotifikasi.Clear();
-    //     //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
-    //     StateHasChanged();
-    //     //TampilkanDropdownDismissAllNotification = !TampilkanDropdownDismissAllNotification;
-    // }
+    private async void ProsesHapusNotifikasi(uimT9Notifikasi psr)
+    {
+        psr.IsBeingRemoved = true;
+        DtNotifikasi.Remove(psr);
 
-    // private async void ProsesHapusNotifikasi(uimT9Notifikasi psr)
-    // {
-    //     psr.IsBeingRemoved = true;
-    //     DtNotifikasi.Remove(psr);
-
-    //     //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
-    //     StateHasChanged();
-    // }
+        //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
+        StateHasChanged();
+    }
 
     private System.Timers.Timer Timer;
     private string UrlInfoNotifikasi { get; set; } = "";
-    private void TampilkanInfoNotifikasi()
+    private async void StartTimerNotifikasi()
     {
-        // string paramUrlDataBaru = EncryptPendek("DataBaru");
-        // string dec = DecryptPendek(paramUrlDataBaru);
-        // UrlInfoNotifikasi = $"/Informasi/InfoNotifikasi/{paramUrlDataBaru}";
-        //ProsesMuatForm(form.Form, false);
-        //TampilkanNotificationSection = true;
+        Timer = new System.Timers.Timer(60000); // 1 detik
+        Timer.Elapsed += (sender, args) =>
+        {
+            InvokeAsync(UpdateTimeInfoNotifikasi);
+        };
+        Timer.Start();
+
+        await ProsesMarkNotifikasiSudahDibaca();
     }
-    // private async void StartTimerNotifikasi()
-    // {
-    //     Timer = new System.Timers.Timer(60000); // 1 detik
-    //     Timer.Elapsed += (sender, args) =>
-    //     {
-    //         InvokeAsync(UpdateTimeInfoNotifikasi);
-    //     };
-    //     Timer.Start();
 
-    //     await ProsesMarkNotifikasiSudahDibaca();
-    // }
-
-    // private void UpdateTimeInfoNotifikasi()
-    // {
-    //     foreach (var notif in DtNotifikasi)
-    //     {
-    //         notif.TimeInfo = ProsesHitungTimer((DateTimeOffset)notif.WaktuProsesNotifikasi);
-    //     }
-    //     StateHasChanged();
-    // }
+    private void UpdateTimeInfoNotifikasi()
+    {
+        foreach (var notif in DtNotifikasi)
+        {
+            notif.TimeInfo = ProsesHitungTimer((DateTimeOffset)notif.WaktuProsesNotifikasi);
+        }
+        StateHasChanged();
+    }
 
     private string ProsesHitungTimer(DateTimeOffset waktuProses)
     {
@@ -4014,33 +4090,33 @@
             return $"{span.Seconds} detik lalu";
     }
 
-    // public async void StopTimerNotifikasi()
-    // {
+    public async void StopTimerNotifikasi()
+    {
 
-    //     Timer?.Stop();
-    //     Timer?.Dispose();
-    //     Timer = null;
+        Timer?.Stop();
+        Timer?.Dispose();
+        Timer = null;
 
-    //     if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() > 0)
-    //     {
-    //         await ProsesMarkNotifikasiSudahDibaca();
-    //     }
-    // }
+        if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() > 0)
+        {
+            await ProsesMarkNotifikasiSudahDibaca();
+        }
+    }
 
-    // public async Task ProsesMarkNotifikasiSudahDibaca(uimT9Notifikasi psr)
-    // {
-    //     psr.IsRead = true;
-    //     //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
-    //     StateHasChanged();
-    // }
-    // async Task ProsesMarkNotifikasiSudahDibaca()
-    // {
-    //     foreach (var notif in DtNotifikasi)
-    //     {
-    //         notif.IsRead = true;
-    //     }
-    //     await InvokeAsync(StateHasChanged);
-    // }
+    public async Task ProsesMarkNotifikasiSudahDibaca(uimT9Notifikasi psr)
+    {
+        psr.IsRead = true;
+        //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
+        StateHasChanged();
+    }
+    async Task ProsesMarkNotifikasiSudahDibaca()
+    {
+        foreach (var notif in DtNotifikasi)
+        {
+            notif.IsRead = true;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
     #endregion
 
     #region Message
@@ -4129,17 +4205,44 @@
         #endregion
 
     #region SignalR
-        // public ClsServisSignalR SSR;
-        // public event NotifikasiSignalDiterimaEventHandler? NotifikasiSignalDiterima;
-        // public delegate void NotifikasiSignalDiterimaEventHandler(PesanSignalR psr);
-        // public async void ssr_TerimaPesan(PesanSignalR psr)
-        // {
-        //     NotifikasiSignalDiterima?.Invoke(psr);
-        // }
+        public ClsServisSignalR SSR;
+        // public event PaymentBerhasilEventHandler? PaymentBerhasilDiterima;
+        // public delegate void PaymentBerhasilEventHandler(PesanSignalR psr);
+        
+        public async void ssr_TerimaPesan(PesanSignalR psr)
+        {
+            //NotifikasiSignalDiterima?.Invoke(psr);
+            if (psr != null && psr.JenisPesan == "Notifikasi")
+            {
+                var notif = new uimT9Notifikasi
+                {
+                    IdNotifikasi = Guid.NewGuid(),
+                    IdUser_Pengirim = Guid.Parse("00000001-0000-0000-0000-000000000000"),
+                    IdUser_Penerima = Guid.Parse("00000001-0000-0000-0000-000000000000"),
+                    UserPengirim_NamaPanggilan = "AUTO",
+                    UserPenerima_NamaPanggilan = "AUTO",
+                    IsRead = false,
+                    WaktuProsesNotifikasi = DateTimeOffset.Now,
+                    IsiPesan = psr.IsiPesan,
+                    JenisPesan = "Bukan Dari User Login",
+                    //NilaiPK = psr.IdTransaksi,
+                    Form = psr.NamaForm,
+                };
+                DtNotifikasi.Add(notif);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
 
         public async Task KirimSignalR()
         {
-
+            // try
+            // {
+            //     await SSR.KirimPesan( jenisPesan: "Notifikasi", namaForm:"Pembayaran Berhasil", statusAction:"Insert", namaFieldPK: "", nilaiPK:"00000001-0000-0000-0000-000000000000", waktuProses:DateTime.Now, isiPesan: "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem", idUser:Guid.Parse("00000001-0000-0000-0000-000000000000"), User_NamaPanggilan:"AUTO", idUserPenerima: Guid.Parse("00000001-0000-0000-0000-000000000000"), userPenerima_NamaPanggilan:"AUTO");
+            //         await Task.Delay(30000);
+            // }
+            // catch (Exception ex)
+            // {
+            // }
         }
     #endregion
 

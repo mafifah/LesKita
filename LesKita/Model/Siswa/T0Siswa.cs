@@ -12,6 +12,7 @@ public class T0Siswa
     public string? Alamat { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    public string? Email { get; set; }
 
     public List<T1Order>? ListT1Order { get; set; }
 

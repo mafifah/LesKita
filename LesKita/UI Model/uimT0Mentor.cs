@@ -2,7 +2,7 @@
 
 namespace LesKita;
 
-public class uimT0Guru : T0Guru
+public class uimT0Mentor : T0Mentor
 {
     public int Jarak { get; set; } = 0;
     public int JumlahKlien { get; set; } = 0;
