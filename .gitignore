@@ -10,10 +10,8 @@
 *.user
 *.userosscache
 *.sln.docstates
-# Ignore sensitive credentials
 *.credentials.json
 *.appsettings.json
-
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -365,5 +363,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/LesKita/appsettings.json
-/LesKita/credentials.json
