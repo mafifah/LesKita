@@ -1,5 +1,15 @@
-﻿<h3>RcpAkun</h3>
-
+﻿@page "/akun"
+@inject NavigationManager Navigation
+<button @onclick="@(() => { Navigation.NavigateTo("/login"); })">Login</button>
+<button @onclick="@ProsesLogOut">Logout</button>
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
 
+    private void ProsesLogOut()
+    {
+        Navigation.NavigateTo("auth/logout", forceLoad: true);
+    }
 }

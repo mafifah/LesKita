@@ -613,6 +613,7 @@
     public List<uimT0Mentor> DtMentor { get; set; } = new();
 
     private DotNetObjectReference<RcpBeranda>? dotNetRef;
+    
     protected override async Task OnInitializedAsync()
     {
         if (Http.BaseAddress == null) Http.BaseAddress = new Uri("https://localhost:7068/"); // ganti sesuai port kamu

@@ -2,6 +2,10 @@ using Blazored.LocalStorage;
 using DevExpress.Blazor;
 using LesKita;
 using LesKita.Components;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using System.IdentityModel.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +19,31 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<RefreshViewState>();
 builder.Services.AddSingleton<ISvcStatusBar, svcStatusBar>();
 builder.Services.AddSingleton<ClsServisSignalR>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<ClsServisDrive>();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+{
+    var config = builder.Configuration.GetSection("Authentication:Google");
+    options.ClientId = config["ClientId"];
+    options.ClientSecret = config["ClientSecret"];
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -35,7 +63,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseCors("AllowAll");
 app.UseAntiforgery();
 app.MapControllers();
@@ -43,4 +73,11 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapHub<SignalRHub>("/signalrhub");
+app.MapGet("/login-google", async context =>
+{
+    await context.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
+    {
+        RedirectUri = "/"
+    });
+});
 app.Run();

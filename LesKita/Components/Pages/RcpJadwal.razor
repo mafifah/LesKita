@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@inject ClsServisDrive Drive
 <style>
     .header{
         background-color: @(IsTampilkanDetailJadwal ? "" : "#f2f2f2 !important");
@@ -324,4 +325,22 @@ else
     }
 
 
+    #region Upload dan Read Materi
+
+    async Task ProsesUpload(string file)
+    {
+        var data = await Drive.GetAllFilesAsync(); //untuk get data di google drive secara keseluruhan
+        //delete semua data di google drive
+        foreach (var item in data)
+        {
+            await Drive.DeleteFileAsync(item.Id);
+        }
+        await Drive.UploadFileAsync(file);
+    }
+
+    async Task Read(string idFile)
+    {
+        var data = await Drive.ReadFileContentAsync(idFile);
+    }
+    #endregion
 }
