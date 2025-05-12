@@ -15,6 +15,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<RefreshViewState>();
 builder.Services.AddSingleton<ISvcStatusBar, svcStatusBar>();
 builder.Services.AddSingleton<ClsServisSignalR>();
+builder.Services.AddSingleton<ClsServisDrive>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
