@@ -1,17 +1,17 @@
 ﻿@using System.Globalization
 <style>
     .header{
-        background-color:#f2f2f2 !important;
+        background-color: @(IsTampilkanDetailJadwal ? "" : "#f2f2f2 !important");
         height: 258px !important;
     }
     .page{
         height: calc(100vh - 300px) !important;
     }
     .header div {
-        visibility: hidden;
+    visibility: hidden;
     }
     .container-utama{
-        background-color:#f2f2f2 !important
+    background-color: @(IsTampilkanDetailJadwal ? "" : "#f2f2f2 !important");
     }
 
     .date-header {
@@ -26,121 +26,226 @@
     }
 
     .date-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
     }
 
     .day {
-        margin-bottom: 4px;
-        color: #555;
+    margin-bottom: 4px;
+    color: #555;
     }
-        .day.active{
-            font-weight:750;
-        }
+    .day.active{
+    font-weight:750;
+    }
 
     .circle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #ffff;
-        font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffff;
+    font-weight: 600;
     }
 
-        .circle.active {
-            background-color: #6282c8;
-            color: white;
-        }
+    .circle.active {
+    background-color: #6282c8;
+    color: white;
+    }
 
     .schedule-wrapper {
-        padding: 0 20px 20px 20px;
-        font-family: 'Segoe UI', sans-serif;
+    padding: 0 20px 20px 20px;
+    font-family: 'Segoe UI', sans-serif;
     }
 
     .schedule-row {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
     }
 
     .time {
-        width: 50px;
-        font-weight: 400;
-        color: #555;
+    width: 50px;
+    font-weight: 400;
+    color: #555;
     }
 
     .schedule-card {
-        background: white;
-        border-radius: 12px;
-        padding: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        display: flex;
-        flex: 1;
-        gap: 12px;
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex: 1;
+    gap: 12px;
     }
 
     .color-bar {
-        width: 5px;
-        border-radius: 5px;
+    width: 5px;
+    border-radius: 5px;
     }
 
     .card-content .title {
-        font-weight: 600;
-        margin-bottom: 4px;
+    font-weight: 600;
+    margin-bottom: 4px;
     }
 
     .card-content .desc {
-        font-size: 13px;
-        color: #888;
+    font-size: 13px;
+    color: #888;
     }
 
     .title-mentoring {
-        font-size: 32px !important;
-        font-weight: 600;
-        margin: 20px;
-        position: fixed;
-        top: 30px;
-        width: 10px;
-        color: #333;
+    font-size: 32px !important;
+    font-weight: 600;
+    margin: 20px;
+    position: fixed;
+    top: 30px;
+    width: 10px;
+    color: #333;
     }
 </style>
-<span class="title-mentoring">Jadwal mentoring</span>
+<style>
+    .header-detail-jadwal{
+    display: flex;
+    position: fixed;
+    align-items: center;
+    gap: 10px;
+    top: 30px;
+    margin-left: -1px;
+    left: 20px;
 
-<div class="date-header">
-    @foreach (var d in DateHeaders)
-    {
-        <div class="date-item">
-            <div class="day @(d.IsToday ? "active" : "")">@d.Day</div>
-            <div class="circle @(d.IsToday ? "active" : "")" @onclick="() => PilihTanggal(d)">@d.Date.ToString("dd")</div>
-        </div>
     }
-</div>
+    .header-detail-jadwal span{
+    color: #b8bde8;
+    font-size:28px;
+    }
 
-<div class="schedule-wrapper">
-    @foreach (var item in DtJadwal.Where(x => x.Tanggal?.Date == SelectedDate.Date).OrderBy(x => x.JamMulai))
+    .header-detail-jadwal div{
+    color: #b8bde8;
+    }
+    .deskripsi-sesi{
+    position: fixed;
+    top: 80px;
+    color:white;
+    }
+    .lampiran-container{
+        position: fixed;
+        top: 190px;
+        border-radius: 35px;
+    }
+    .lampiran-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    margin-bottom:15px;
+    }
+
+    .unduh-btn {
+    border-radius: 6px;
+    padding: 4px 8px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    color: #6282c8;
+    border: 0.5px solid #6282c8;
+    }
+
+    .unduh-btn:active,
+    .unduh-btn:hover
     {
-        <div class="schedule-row">
-            <div class="time">@item.JamMulai?.ToString(@"hh\:mm")</div>
-            <div class="schedule-card">
-                <div class="color-bar" style="background-color:@item.WarnaKode"></div>
-                <div class="card-content">
-                    <div class="title">Sesi dengan @item.Mentor_Nama</div>
-                    <div class="desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+    background-color: #6282c8;
+    color: #fff;
+    }
+
+    .card-content-lampiran{
+        display:flex;
+        gap:5px;
+    }
+</style>
+@if (!IsTampilkanDetailJadwal)
+{
+    <span class="title-mentoring">Jadwal mentoring</span>
+
+    <div class="date-header">
+        @foreach (var d in DateHeaders)
+        {
+            <div class="date-item">
+                <div class="day @(d.IsToday ? "active" : "")">@d.Day</div>
+                <div class="circle @(d.IsToday ? "active" : "")" @onclick="() => PilihTanggal(d)">@d.Date.ToString("dd")</div>
+            </div>
+        }
+    </div>
+
+    <div class="schedule-wrapper">
+        @foreach (var item in DtJadwal.Where(x => x.Tanggal?.Date == SelectedDate.Date).OrderBy(x => x.JamMulai))
+        {
+            <div class="schedule-row" @onclick="@(() => { ProsesPilihJadwal(item); })">
+                <div class="time">@item.JamMulai?.ToString(@"hh\:mm")</div>
+                <div class="schedule-card">
+                    <div class="color-bar" style="background-color:@item.WarnaKode"></div>
+                    <div class="card-content">
+                        <div class="title">Sesi dengan @item.Mentor_Nama</div>
+                        <div class="desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+                    </div>
                 </div>
             </div>
+        }
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-2xl p-4 shadow-md max-w-md mx-auto lampiran-container">
+        <!-- Header -->
+        <div class="header-detail-jadwal">
+            <span class="material-symbols-outlined" aria-hidden="true" @onclick="@(() => { IsTampilkanDetailJadwal = false; DrJadwalDipilih = new(); StateHasChanged(); })">arrow_back</span>
+            <div class="absolute top-4 left-4 font-bold">Detail Sesi</div>
         </div>
-    }
-</div>
+        <div class="deskripsi-sesi">
+            <!-- Title & Author -->
+            <div class="mb-2">
+                <h2 class="text-2xl font-bold text-gray-800">3D Illustration Course</h2>
+                <p class="text-sm text-gray-500">Leo Nikuma Arindao</p>
+            </div>
+        </div>
+        <!-- Lessons Summary -->
+        <div class="mb-4">
+            <p class="text-sm text-gray-600 text-muted">
+                This course will be teach the basic how to..... from beginning to finish. 12 Lessons more than 1 hour.
+            </p>
+        </div>
+        @foreach (var item in DtJadwal.Take(4))
+        {
+            <div class="lampiran-card">
+                <div class="card-content-lampiran">
+                    <span class="material-symbols-outlined" style="color:@DrJadwalDipilih.WarnaKode;font-size:42">
+                        description
+                    </span>
+                    <div class="title">Lampiran A</div>
+                </div>
+                <button class="unduh-btn">Unduh File</button>
+            </div>
+        }
+
+    </div>
+
+}
 
 @code {
     [CascadingParameter]
     public RcpUtama RcpUtama { get; set; }
     private List<DateHeader> DateHeaders = new();
     private List<uimT2Jadwal> DtJadwal = new();
+    private uimT2Jadwal DrJadwalDipilih = new();
+    private bool IsTampilkanDetailJadwal = false;
+    private string FileUrl = "abc";
 
     protected override void OnInitialized()
     {
@@ -204,6 +309,13 @@
                 };
         }).ToList();
     }
+
+    private async Task ProsesPilihJadwal(uimT2Jadwal jadwal)
+    {
+        DrJadwalDipilih = jadwal;
+        IsTampilkanDetailJadwal = true;
+    }
+
     public class DateHeader
     {
         public string Day => Date.ToString("ddd", new CultureInfo("id-ID"));

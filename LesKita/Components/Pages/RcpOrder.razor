@@ -1,296 +1,222 @@
 ﻿<style>
     .page {
+    background-color: #f9fafb;
+    height: calc(100vh - 40px) !important;
+    }
+
+    .header {
+    display: none !important;
+    }
+
+    .card-modern {
     background-color: #fff;
-    height:calc(100vh - 40px) !important;
-    }
-
-    .header{
-    display:none !important;
-    }
-    /*  .header {
-    background-color: #fff !important;
-    }
-    .input-group{
-    border: solid 1px #BFC9D9 !important;
-    background-color: #BFC9D9 !important;
-    }
-    .search-icon {
-    background-color: #fff !important;
-    color: #8D96AA !important;
-    }
-
-    .search-input {
-    background-color: #fff !important;
-    color: black !important;
-    }
-
-    .button-panel-header {
-    color: black !important;
-    } */
-    .content-penugasan {
-        padding-left: 10px;
-        padding-top: 4px;
-    }
-
-    .filter-buttons {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: white;
-    padding: 5px;
-    transition: box-shadow 0.05s ease-in-out;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    .cards-container {
-    padding: 10px;
-    }
-
-    .top-card {
-    flex: 1;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 16px;
+    margin: 12px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 110px;
-    }
-
-    .card-body {
-    padding: 10px;
-    }
-
-    .card-number {
-    font-size: 26px;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    }
-
-    .card-text {
-    font-size: 12px;
-    font weight: 600;
-    color: #555;
-    }
-
-    .arrow {
-    border: solid black;
-    border-width: 0 1px 1px 0;
-    display: inline-block;
-    padding: 3px;
-    }
-
-    .down {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    }
-
-    .card {
-        flex: 1 1 100%;
-        box-sizing: border-box;
-        position: relative;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 10px;
-        margin: 5px;
-    }
-
-    .selected.first-item .selected-contact-icon {
-    background-color: #333;
-    color: white;
-    }
-
-    .listbox-item-template-contact {
-    display: flex;
-    align-items: center;
-    }
-
-    .listbox-item-template-avatar {
-    width: 50px; /* Tetap memberikan lebar */
-    aspect-ratio: 1 / 1; /* Membuatnya tetap bulat */
-    background-color: gray;
-    display: flex;
-    justify-content: center;
-    border-radius: 50%; /* Membuatnya benar-benar lingkaran */
-    }
-
-
-    .listbox-item-template-initial {
-    color: white;
-    font-weight: bold;
-    }
-
-    .listbox-item-template-text {
-    display: flex;
-    flex-direction: column;
-    margin-left: 8px;
-    }
-
-    .listbox-item-template-text-nama {
-    color: #333;
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 0 !important;
-    }
-
-    .listbox-item-template-text-alamat-customer {
-        font-size: 10px;
-        opacity: 0.6;
-        margin-bottom: 0;
-        color: #333;
-    }
-
-    .assignment-header {
-    display: flex;
-    align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    border-bottom: 1px solid #eee;
+    font-family: 'Segoe UI', sans-serif;
+    border: 1px solid #eee;
     }
 
-    .header-icon {
-    font-size: 26px;
-    color: #333;
-    }
-
-    .header-content {
-    font-size: 12px;
-    flex: 1;
+    .card-header {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    line-height: 1.1;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 0rem 0rem 1rem 0rem !important;
     }
 
-    .header-title {
-    font-weight: 600;
-    margin: 0;
-    }
+    .status-badge {
 
-    .header-date {
-    color: #666;
-    margin: 0;
-    font-size: 10px;
-    }
-
-    .header-badge {
-        padding: 0px 8px;
-        border-radius: 3px;
-        font-size: 12px;
-    }
-
-        .header-badge.done{
-            background-color: rgb(214, 255, 222);
-            color: rgb(3, 172, 14);
-        }
-
-        .header-badge.waiting {
-            background-color: #fdf5e6; /* krem lembut */
-            color: #a67c00; /* cokelat kekuningan, cocok untuk status "menunggu" */
-        }
-        .header-badge.active {
-            background-color: #d3e3fd; /* biru sedang */
-            color: #588ddf; /* putih agar kontras dengan biru */
-        }
-        .header-badge.cancel {
-            background-color:#ffeaef;
-            color: #ef144a;
-        }
-
-
-    .header-menu {
-    cursor: pointer;
-    font-size: 20px;
-    color: #333;
-    }
-
-    .assignment-date {
-    font-weight: bold;
-    }
-
-    .assignment-route {
-    color: #555;
-    }
-
-    .income-section {
-    margin-top: 12px;
-    }
-
-    .income-label {
-    color: #666;
-    font-size: 10px;
-    margin: 0;
-    line-height: 1.2;
-    }
-
-    .income-amount {
     font-size: 12px;
     font-weight: 600;
-    color: #333;
-    margin: 0;
-    line-height: 1.2;
+    padding: 4px 10px;
+    border-radius: 8px;
     }
+
+    .status-badge.done {
+    background-color: rgb(214, 255, 222);
+    color: rgb(3, 172, 14);
+    }
+
+    .status-badge.waiting {
+    background-color: #fdf5e6; /* krem lembut */
+    color: #a67c00; /* cokelat kekuningan, cocok untuk status "menunggu" */
+    }
+
+    .status-badge.active {
+    background-color: #d3e3fd; /* biru sedang */
+    color: #588ddf; /* putih agar kontras dengan biru */
+    }
+
+    .status-badge.cancel {
+    background-color: #ffeaef;
+    color: #ef144a;
+    }
+
+    .time-label {
+    color: #555;
+    font-size: 12px;
+    font-weight:700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    }
+
+    .card-content {
+    display: flex;
+    gap: 12px;
+    }
+
+    .card-content img {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    }
+
+    .card-info-title {
+    font-weight: 600;
+    color: #333;
+    }
+
+    .card-info-sub {
+    font-size: 12px;
+    color: #999;
+    }
+
+    .card-customer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+
+    .customer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    }
+
+    .customer-info img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    }
+
+    .customer-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    }
+
+    .customer-role {
+    font-size: 10px;
+    color: #888;
+    }
+
+    .card-footer {
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    color: #777;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 0rem 0rem 0rem !important;
+    }
+
+    .btn-action {
+        background-color: #6282c8;
+        color: white;
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .action-order{
+        width: 35px;
+        height: 35px;
+        background-color: #f1f5f9;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .action-order span{
+            cursor: pointer;
+            font-size:18px;
+            color: #6282c8;
+        }
+
+    .action-order:hover,
+    .action-order:active
+    {
+        background-color: #6282c8;
+    }
+
+        .action-order span:hover,
+        .action-order span:active
+        {
+            color: #fff;
+        }
 </style>
 
-<div class="filter-buttons">
-    <div class="cards-container d-flex gap-1">
-        <div class="top-card flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="background-color: #D4EDDA;">
-            <div class="card-body text-center">
-                <p class="card-number">@DtOrder.Where(x => x.IsAktif).Count()</p>
-                @* <p class="card-text">Pendapatan Mei 2025</p> *@
-                <p class="card-text">Jumlah Order Aktif</p>
-            </div>
-        </div>
-        @* <div class="top-card flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="background-color: #FFE4E1;">
-            <div class="card-body text-center">
-                <p class="card-number">0</p>
-                <p class="card-text">Pendapatan belum dicairkan</p>
-            </div>
-        </div> *@
-        <div class="top-card flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="background-color: #FDF5E6;">
-            <div class="card-body text-center">
-                <p class="card-number">@DtOrder.Where(x => x.IsDone).Count()</p>
-                <p class="card-text">Jumlah Order Selesai</p>
-            </div>
-        </div>
-    </div>
-</div>
 @foreach (var item in DtOrder)
 {
-    <div class="card">
-        <div class="assignment-header">
-            <!-- Left icon -->
-            <i class="header-icon material-symbols-outlined">receipt</i>
-
-            <!-- Middle content -->
-            <div class="header-content">
-                <p class="header-title">@GetFormattedDate(item.TanggalPemesanan)</p>
-                <p class="header-date">@item.JumlahSesi Sesi</p>
-            </div>
-
-            <!-- Right content -->
-            <span class="header-badge @(item.IsCancel ? "cancel" :!item.IsPaid ? "waiting" :item.IsDone ? "done" :item.IsAktif ? "active" : "")">
-                @GetStatusOrder(item)
+    <div class="card-modern">
+        <!-- Header -->
+        <div class="card-header">
+            <span class="status-badge @(item.IsCancel ? "cancel" :!item.IsPaid ? "waiting" :item.IsDone ? "done" :item.IsAktif ? "active" : "")">@GetStatusOrder(item)</span>
+            <span class="time-label">
+                @GetFormattedDate(item.TanggalPemesanan)
             </span>
         </div>
-        <div class="listbox-item-template-contact">
-            <div class="listbox-item-template-avatar">
-                <p class="listbox-item-template-initial">@GenerateInitials(item.Mentor_Nama)</p>
+
+        <!-- Customer -->
+        <div class="card-customer">
+            <div class="customer-info">
+                <img src="https://randomuser.me/api/portraits/women/39.jpg" alt="Avatar">
+                <div>
+                    <div class="customer-name">@item.Mentor_Nama</div>
+                    <div class="customer-role">@item.Mentor_Alamat</div>
+                </div>
             </div>
-            <div class="listbox-item-template-text">
-                <p class="listbox-item-template-text-nama">@item.Mentor_Nama</p>
-                <div class="border-line"></div>
-                <p class="listbox-item-template-text-alamat-customer">@item.Mentor_Alamat</p>
+            @if (item.IsAktif || item.IsPaid)
+            {
+                <div style="display: flex; gap: 8px;">
+                    <div class="action-order">
+                        <span class="material-symbols-outlined">
+                            call
+                        </span>
+                    </div>
+                    <div class="action-order">
+                        <span class="material-symbols-outlined">
+                            chat
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (item.IsDone)
+        {
+            <!-- Footer -->
+            <div class="card-footer">
+                <span></span>
+                <button class="btn-action">Beri Ulasan</button>
             </div>
-        </div>
-        <div class="income-section">
-            <p class="income-label">Total</p>
-            <p class="income-amount">@($"Rp {GetThousandSeparator(item.Total)}")</p>
-        </div>
+        }
+        
     </div>
+
 }
 @code {
 
