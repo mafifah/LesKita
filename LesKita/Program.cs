@@ -80,4 +80,19 @@ app.MapGet("/login-google", async context =>
         RedirectUri = "/"
     });
 });
+app.MapPost("/upload-audio", async (HttpRequest request) =>
+{
+    var file = request.Form.Files["file"];
+    if (file is null) return Results.BadRequest();
+
+    var uploadsDir = Path.Combine(app.Environment.WebRootPath, "uploads");
+    Directory.CreateDirectory(uploadsDir);
+
+    var filePath = Path.Combine(uploadsDir, file.FileName);
+    await using var stream = File.Create(filePath);
+    await file.CopyToAsync(stream);
+
+    // Kirim URL relatif ke Blazor
+    return Results.Text($"/uploads/{file.FileName}");
+});
 app.Run();

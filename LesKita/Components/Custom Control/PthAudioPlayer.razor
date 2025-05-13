@@ -1,5 +1,5 @@
 ﻿@inject IJSRuntime JS
-
+@namespace LesKita.Components
 <style>
 
     .player {
@@ -25,12 +25,12 @@
                 place-content: center;
                 font-size: @(IsPlaying ? "1.3rem" : "1.25rem");
                 background-color: transparent;
-                color: #409ADF;
+                color: #6282c8;
                 cursor: pointer;
             }
 
                 .player .control i:hover {
-                    color: #204d70;
+                    color: #3a5db4;
                 }
 
         .player .detail {
@@ -63,8 +63,8 @@
 
         const wavesurfer = WaveSurfer.create({
             container: waveElement,
-            waveColor: "#a1a1a1",
-            progressColor: "#409ADF",
+            waveColor: "#555",
+            progressColor: "#3a5db4",
             height: 28,
             scrollParent: false
         });

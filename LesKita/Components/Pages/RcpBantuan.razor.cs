@@ -538,11 +538,6 @@ public partial class RcpBantuan
     CheckBoxContentAlignment Alignment { get; set; } = CheckBoxContentAlignment.Left;
     LabelPosition LabelPosition { get; set; } = LabelPosition.Right;
 
-    string ButtonTooltipTarget { get; set; } = "button-rekam-suara";
-    bool IsTampilkanTooltip { get; set; } = false;
-    bool IsTooltipDuaBaris { get; set; } = false;
-
-
     #region 'Buat dan Validasi Grup'
     uimT6Pesan GrupSudahAda { get; set; } = null;
 

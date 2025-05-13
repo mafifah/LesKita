@@ -123,6 +123,99 @@
     };
 
 </script>
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioBlob;
+
+    let waveMicInstance;
+    let globalStream; // <-- tambahkan ini
+    window.startRecording = async (dotNetHelper, id) => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    globalStream = stream; // Simpan stream ke variabel global
+
+    // Inisialisasi MediaRecorder seperti biasa
+    const options = { mimeType: 'audio/webm;codecs=opus' };
+    mediaRecorder = new MediaRecorder(stream, options);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = event => {
+    if (event.data.size > 0) {
+    audioChunks.push(event.data);
+    }
+    };
+
+    mediaRecorder.onstop = async () => {
+    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    window.recordedAudioBlob = audioBlob;
+    window.recordedAudioUrl = audioUrl;
+
+    // Kirim ke server
+    const formData = new FormData();
+    const fileName = `recording-${id}.webm`;
+    formData.append('file', audioBlob, fileName);
+
+    const response = await fetch('/upload-audio', {
+    method: 'POST',
+    body: formData
+    });
+
+    const serverAudioUrl = await response.text();
+
+    dotNetHelper.invokeMethodAsync('SetAudioUrl', serverAudioUrl);
+    };
+
+    mediaRecorder.start();
+
+    try{
+    // WaveSurfer setup
+    waveMicInstance = WaveSurfer.create({
+    container: '#recording_wave_mic',
+    waveColor: '#606060',
+    interact: false,
+    cursorWidth: 0,
+    height: 60,
+    plugins: [
+    WaveSurfer.microphone.create()
+    ]
+    });
+
+    waveMicInstance.on('deviceReady', () => {
+    console.log("Mic ready");
+    });
+
+    waveMicInstance.on('deviceError', err => {
+    console.error("Mic error:", err);
+    });
+
+    await waveMicInstance.microphone.start();
+    }catch(e){
+    alert('Gagal akses mic: ' + e.message);
+    console.error(e);
+    }
+    };
+
+    window.stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop();
+    }
+
+    // Stop waveMicInstance
+    if (waveMicInstance) {
+    waveMicInstance.microphone.stop();
+    waveMicInstance.destroy();
+    waveMicInstance = null;
+    }
+
+    // 🔥 PENTING: hentikan semua audio track
+    if (globalStream) {
+    globalStream.getTracks().forEach(track => track.stop());
+    globalStream = null;
+    }
+    };
+
+</script>
 <style>
 
     .portal-message {
@@ -1044,20 +1137,6 @@
 
     .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar .dxbl-calendar-footer {
     display: none !important;
-    }
-
-    .tooltip-button {
-    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
-    display: grid !important;
-    justify-content: center !important;
-    place-items: center !important;
-    top: -12px !important;
-    left: -11px !important;
-    min-width: @(IsTooltipDuaBaris ? "120px !important" : "100px !important");
-    padding: 5px;
     }
 
     .dropdown-cari-pesan {
@@ -2194,7 +2273,7 @@
 
                 @if(MessageText != "" || AudioPreviewUrl != null || IsRecording)
                 {
-                    <div class="btn-send" @onclick="@ProsesKirimPesan" id="button-kirim" @onmouseover=@(() => { IsTampilkanTooltip = true; ButtonTooltipTarget = "#button-kirim"; }) @onmouseleave=@(() => {IsTampilkanTooltip = false;})>
+                    <div class="btn-send" @onclick="@ProsesKirimPesan" id="button-kirim">
                         <button type="button" class="btn btn-link btn-send-message">
                             <span class="material-symbols-outlined" style="scale: 1.11;">send</span>
                         </button>
@@ -2202,7 +2281,7 @@
                 }
                 else
                 {
-                    <div class="btn-send" @onclick="@ProsesStartRecording" id="button-rekam-suara" @onmouseover=@(() => { IsTampilkanTooltip = true; ButtonTooltipTarget = "#button-rekam-suara";}) @onmouseleave=@(() => {IsTampilkanTooltip = false;})>
+                    <div class="btn-send" @onclick="@ProsesStartRecording" id="button-rekam-suara">
                         <button type="button" class="btn btn-send-message">
                             <span class="material-symbols-outlined" style="scale: .9;">mic</span>
                         </button>
@@ -2451,37 +2530,6 @@ CloseMode="DropDownCloseMode.Close"
 PreventCloseOnPositionTargetClick="true">
     <DxCalendar SelectedDate="@SelectedDate" MinDate="@MinDate" MaxDate="@DateTime.Now"
     SelectedDateChanged="@((DateTime newValue) => OnSelectedDateChanged(newValue))" />
-</DxDropDown>
-
-<DxDropDown @bind-IsOpen="@IsTampilkanTooltip"
-PositionMode="DropDownPositionMode.Top" Id="tooltip-pesan"
-Width="100%"
-PositionTarget="@ButtonTooltipTarget"
-CssClass="tooltip-button"
-CloseMode="DropDownCloseMode.Close"
-PreventCloseOnPositionTargetClick="true">
-    <div style="font-size:10px;">
-        @if (ButtonTooltipTarget.Contains("kirim"))
-        {
-            if(IsRecording || !string.IsNullOrEmpty(AudioPreviewUrl))
-            {
-                IsTooltipDuaBaris = false;
-                <span>Kirim Pesan Suara</span>
-            }
-            else
-            {
-                IsTooltipDuaBaris = true;
-                <span>Kirim Pesan (Enter)</span>
-                <br />
-                <span>Baris Baru (Shift+Enter)</span>
-            }
-        }
-        else
-        {
-            IsTooltipDuaBaris = false;
-            <span>Rekam Pesan Suara</span>
-        }
-    </div>
 </DxDropDown>
 
 
