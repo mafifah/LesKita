@@ -1,0 +1,172 @@
+﻿@inject IJSRuntime JS
+
+<style>
+
+    .player {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .player .info {
+            width: 200px;
+        }
+
+        .player .thumb {
+        }
+
+        .player .control {
+            width: 30px;
+        }
+
+            .player .control i {
+                display: grid;
+                place-content: center;
+                font-size: @(IsPlaying ? "1.3rem" : "1.25rem");
+                background-color: transparent;
+                color: #409ADF;
+                cursor: pointer;
+            }
+
+                .player .control i:hover {
+                    color: #204d70;
+                }
+
+        .player .detail {
+            position: absolute;
+            bottom: -3px;
+            font-family: 'Nunito Sans', sans-serif !important;
+            font-weight: 400;
+            font-size: 9px;
+            line-height: 15px;
+            white-space: normal;
+            max-width: 100%;
+            margin-bottom: 0;
+            vertical-align: baseline;
+            scrollbar-width: thin;
+            opacity: 0.7;
+        }
+</style>
+<script>
+    window.waveInstances = {};
+
+    function initializeWaveSurfer(id, src, dotNetHelper) {
+        const waveElement = document.getElementById(`${id}_wave`);
+        const playBtn = document.getElementById(`${id}_playPause`);
+
+        const timeCalculator = (value) => {
+            let second = Math.floor(value % 60);
+            let minute = Math.floor((value / 60) % 60);
+            return `${minute}:${second < 10 ? '0' + second : second}`;
+        };
+
+        const wavesurfer = WaveSurfer.create({
+            container: waveElement,
+            waveColor: "#a1a1a1",
+            progressColor: "#409ADF",
+            height: 28,
+            scrollParent: false
+        });
+
+        waveInstances[id] = { wavesurfer, playBtn, dotNetHelper };
+
+        wavesurfer.load(src);
+
+        wavesurfer.on("ready", () => {
+            dotNetHelper.invokeMethodAsync("UpdateDuration", timeCalculator(wavesurfer.getDuration()));
+        });
+
+        wavesurfer.on("audioprocess", () => {
+            dotNetHelper.invokeMethodAsync("UpdateCurrentTime", timeCalculator(wavesurfer.getCurrentTime()));
+        });
+
+        wavesurfer.on("seek", () => {
+            dotNetHelper.invokeMethodAsync("UpdateCurrentTime", timeCalculator(wavesurfer.getCurrentTime()));
+        });
+
+        wavesurfer.on("play", () => {
+            dotNetHelper.invokeMethodAsync("AudioPlay");
+        });
+
+        wavesurfer.on("pause", () => {
+            dotNetHelper.invokeMethodAsync("AudioPause");
+        });
+    }
+
+    function playPause(id) {
+        if (waveInstances[id]) {
+            waveInstances[id].wavesurfer.playPause();
+        }
+    }
+</script>
+
+<div class="player">
+    <div class="thumb" style="cursor:pointer;">
+        <div class="control">
+            <i class="@(IsPlaying ? "fa-solid fa-pause" : "fa-solid fa-play")" id="@($"{Id}_playPause")" @onclick="PlayPauseAsync"></i>
+        </div>
+    </div>
+    <div class="info">
+        <div id="@($"{Id}_wave")"></div>
+    </div>
+    <div class="@(IsPreview ? "" : "detail")" style="left:@( IsPreview == false && IsPersonalMessage ? "86px" : "39px")">
+        <div class="title">
+            <div class="time">
+                <span>@(IsPlaying ? CurrentTime : Duration)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Source { get; set; } = string.Empty;
+    [Parameter] public string Id { get; set; } = $"wave{Guid.NewGuid().ToString("N")}";
+    [Parameter] public bool IsPersonalMessage { get; set; } = false;
+    [Parameter] public bool IsPreview { get; set; } = false;
+
+    private string CurrentTime { get; set; } = "0:00";
+    private string Duration { get; set; } = "0:00";
+    private bool IsPlaying { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initializeWaveSurfer", Id, Source, DotNetObjectReference.Create(this));
+        }
+    }
+
+    private async Task PlayPauseAsync()
+    {
+        await JS.InvokeVoidAsync("playPause", Id);
+    }
+
+    [JSInvokable]
+    public void UpdateCurrentTime(string time)
+    {
+        CurrentTime = time;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void UpdateDuration(string time)
+    {
+        Duration = time;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void AudioPlay()
+    {
+        IsPlaying = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void AudioPause()
+    {
+        IsPlaying = false;
+        StateHasChanged();
+    }
+}

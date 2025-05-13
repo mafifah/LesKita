@@ -19,3 +19,21 @@ public class uimT6Pesan : T6Pesan
     public string Kategori { get; set; } = "Chat";
     public string Durasi { get; set; } = "";
 }
+
+public class Contact
+{
+    public Guid? IdUser { get; set; }
+    public string? NamaPanggilan { get; set; }
+    public string? UrlProfile { get; set; }
+    public bool IsOnline { get; set; }
+    public bool IsChecked { get; set; }
+
+}
+
+public class LinkPreviewModel
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string ImageUrl { get; set; }
+    public string Url { get; set; }
+}

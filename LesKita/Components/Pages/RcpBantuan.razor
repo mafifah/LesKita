@@ -1,14 +1,2500 @@
 ﻿@page "/gdrive"
+@using System.Globalization
+@using System.Text.RegularExpressions
+@using DevExpress.Blazor.Internal
 @inject ClsServisDrive Drive
-
-<h3>Google Drive</h3>
-
-@code {
-    
-    protected override async Task OnInitializedAsync()
-    {
-        
+<style>
+    .header {
+    display: none !important;
     }
 
-    
+    .page {
+    height: calc(100vh - 40px) !important;
+    }
+</style>
+<script>
+    window.autoResizeMemoUp = (memoClassName, chatListClassName) => {
+    const memoElement = document.querySelector(`.${memoClassName}`);
+    const chatListElement = document.querySelector(`.${chatListClassName}`);
+
+    if (!memoElement || !chatListElement) return;
+
+    const computed = window.getComputedStyle(memoElement);
+
+    const lineHeight = parseInt(computed.lineHeight, 10) || 21;
+    const paddingTop = parseInt(computed.paddingTop, 10) || 2;
+    const paddingBottom = parseInt(computed.paddingBottom, 10) || 2;
+    const borderTop = parseInt(computed.borderTopWidth, 10) || 1;
+    const borderBottom = parseInt(computed.borderBottomWidth, 10) || 1;
+
+    const maxLines = 5;
+
+    const baseHeight = lineHeight + paddingTop + paddingBottom + borderTop + borderBottom;
+
+    // Reset height dulu biar scrollHeight akurat
+    memoElement.style.height = 'auto';
+
+    let newHeight = memoElement.scrollHeight + 2; // Tambah buffer dikit supaya nggak terpotong
+
+    const minHeight = baseHeight;
+    const maxHeight = (lineHeight * maxLines) + paddingTop + paddingBottom + borderTop + borderBottom;
+
+    if (newHeight < minHeight) {
+    newHeight = minHeight;
+    }
+
+    if (newHeight > maxHeight) {
+    newHeight = maxHeight;
+    memoElement.style.overflowY = 'auto';
+    } else {
+    memoElement.style.overflowY = 'hidden';
+    }
+
+    memoElement.style.setProperty('height', `${newHeight}px`, 'important');
+
+    // === Perhitungan untuk chat-list-box ===
+    const defaultHeight = minHeight; // Tinggi standar 1 baris
+    let extraHeight = newHeight - defaultHeight;
+
+    if (extraHeight < 0) {
+    extraHeight = 0;
+    }
+
+    // === Final tinggi chat-list-box ===
+    const baseCalcHeight = 200; // Ini kamu minta jadi 200px (header + margin dsb)
+    const finalHeight = `calc(100vh - ${baseCalcHeight}px - ${extraHeight}px)`;
+
+    // Set height dengan !important supaya override aturan CSS lain
+    chatListElement.style.setProperty('height', finalHeight, 'important');
+    chatListElement.style.overflowY = 'auto';
+    };
+</script>
+<script>
+    window.chatScrollInterop = {
+    observeScroll: function (dotNetHelper) {
+    let interval = setInterval(() => {
+    let viewer = document.querySelector('.personal-chat-wrapper');
+    if (!viewer) {
+    console.log("Element viewer tidak ditemukan");
+    return;
+    }
+
+    let scrollBar = viewer.querySelector('.dxbl-scroll-viewer-vert-scroll-bar');
+    if (!scrollBar) {
+    console.log("Element scrollbar tidak ditemukan");
+    return;
+    }
+
+    let thumb = scrollBar.querySelector('.dxbl-scroll-viewer-scroll-thumb');
+    if (!thumb) return;
+
+    clearInterval(interval);
+    let lastState = null;
+    let observer = new MutationObserver(() => {
+    let style = window.getComputedStyle(thumb);
+    let transform = style.transform;
+    if (transform !== 'none' && lastState != null) {
+    dotNetHelper.invokeMethodAsync('OnScroll', transform)
+    .catch(err => console.error("Error invoking OnScroll:", err));
+    }
+    lastState = transform;
+    let translateY = 0;
+
+    if (transform.startsWith("matrix")) {
+    let values = transform.match(/matrix\(.*?,.*?,.*?,.*?, ([-\d.]+), ([-\d.]+)\)/);
+    if (values) {
+    translateY = parseFloat(values[2]);
+    }
+    }
+
+    let maxTranslateY = scrollBar.clientHeight - thumb.clientHeight;
+    let isAtBottom = translateY >= maxTranslateY || Math.abs(maxTranslateY - translateY) < 1;
+    console.log("Y", translateY);
+    console.log("Max Y", maxTranslateY);
+    console.log("isBottom", isAtBottom);
+    dotNetHelper.invokeMethodAsync('TampilkanButtonScrollToBottom', isAtBottom)
+    .catch(err => console.error("Error invoking ScrollBottom:", err));
+    });
+
+    observer.observe(thumb, { attributes: true, attributeFilter: ['style'] });
+    console.log("Observer untuk scroll pada panel pesan telah dimulai.");
+    }, 500);
+    }
+    };
+
+</script>
+<style>
+
+    .portal-message {
+    color: #292827;
+    border-color: #d6d6d6;
+    background-color: #ffffff;
+    outline: 0 !important;
+    width: 480px;
+    overflow: initial;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+    box-sizing: border-box;
+    z-index: 80;
+    position: fixed;
+    right: 0;
+    line-height: normal;
+    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+    }
+
+    .portal-new-message {
+    color: #292827;
+    border-color: #d6d6d6;
+    background-color: #ffffff;
+    outline: 0 !important;
+    width: 480px;
+    overflow: initial;
+    display: none;
+    flex-flow: column nowrap;
+    height: 100vh;
+    box-sizing: border-box;
+    z-index: 80;
+    position: fixed;
+    right: 0;
+    line-height: normal;
+    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+    }
+
+    .search-people-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    }
+
+    .btn-action-search {
+    margin-top: .2rem;
+    position: absolute;
+    right: 25px;
+    cursor: pointer;
+    z-index: 1;
+    }
+
+    .btn-action-new-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 15px;
+    gap: 10px;
+    padding: 10px 10px;
+    background-color: #F7F7F7;
+    cursor: pointer;
+    }
+
+    .btn-action-new-group:hover {
+    background-color: rgba(217, 217, 217, 0.4);
+    ;
+    }
+
+    .btn-action-new-group:focus {
+    background-color: rgba(217, 217, 217, 0.8) !important;
+    }
+
+    .btn-action-new-group:active {
+    background-color: rgba(217, 217, 217, 0.8) !important;
+    }
+
+    .tag-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    background-color: #D9D9D9;
+    width: fit-content;
+    padding: 0px 11px;
+    border-radius: 15px;
+    cursor: pointer;
+    }
+
+    .tag-wrapper:hover {
+    background-color: #C9C9C9;
+    cursor: pointer;
+    }
+
+    .tag-wrapper:focus {
+    background-color: #BCBCBC;
+    cursor: pointer;
+    }
+
+    .list-contact-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 25px;
+    }
+
+    .list-contact-initial {
+    padding-top: .55rem;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    margin: 0 !important;
+    }
+
+    .list-recently-contacted {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    }
+
+    .contact-data-wrapper-member {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    }
+
+    .list-contact-add-member-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    }
+
+    .list-contact-add-member-wrapper:hover {
+    background-color: rgba(217, 217, 217, 0.4);
+    }
+
+    .list-contact-add-member-wrapper:focus {
+    background-color: rgba(217, 217, 217, 0.8) !important;
+    }
+
+    .list-contact-add-member-wrapper:active {
+    background-color: rgba(217, 217, 217, 0.9) !important;
+    }
+
+    .contact-data-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    }
+
+    .contact-data-wrapper:hover {
+    background-color: rgba(217, 217, 217, 0.4);
+    cursor: pointer;
+    }
+
+    .contact-data-wrapper:focus {
+    background-color: rgba(217, 217, 217, 0.8) !important;
+    cursor: pointer;
+    }
+
+    .contact-data-wrapper:active {
+    background-color: rgba(217, 217, 217, 0.9) !important;
+    cursor: pointer;
+    }
+
+    .list-contact-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #8D8D8D;
+    border-radius: 50% !important;
+    text-align: center;
+    }
+
+    .btn-action-icon {
+    padding: 10px;
+    background-color: #EEEEEE;
+    border-radius: 50%;
+    }
+
+
+    .portal-add-member {
+    color: #292827;
+    border-color: #d6d6d6;
+    background-color: #ffffff;
+    outline: 0 !important;
+    width: 480px;
+    overflow: initial;
+    display: none;
+    flex-flow: column nowrap;
+    height: 100vh;
+    box-sizing: border-box;
+    z-index: 80;
+    position: fixed;
+    right: 0;
+    line-height: normal;
+    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+    }
+
+    .portal-title-text-add-member {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    flex: 0 1 auto;
+    margin-right: 16px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    visibility: visible;
+    }
+
+    .portal-title-toprow-add-member {
+    display: flex;
+    visibility: visible;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    }
+
+    .portal-title-text-new-message {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    flex: 0 1 auto;
+    margin-right: 16px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    visibility: visible;
+    }
+
+    .portal-create-group {
+    color: #292827;
+    border-color: #d6d6d6;
+    background-color: #ffffff;
+    outline: 0 !important;
+    width: 480px;
+    overflow: initial;
+    display: none;
+    flex-flow: column nowrap;
+    height: 100vh;
+    box-sizing: border-box;
+    z-index: 80;
+    position: fixed;
+    right: 0;
+    line-height: normal;
+    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+    }
+
+    .input-group-name {
+    background-color: #F7F7F7;
+    border: none !important;
+    width: 100vh;
+    height: 2.5rem;
+    border-radius: 5px;
+    }
+
+    .icon-active {
+    color: #0078D4 !important;
+    }
+
+    .avatar-group-wrapper {
+    padding: 10px;
+    border-radius: 50%;
+    background-color: #ECECEC;
+    width: 3rem;
+    text-align: center
+    }
+
+    .avatar-group-wrapper:hover {
+    background-color: rgba(217, 217, 217, 0.6);
+    color: white;
+    cursor: pointer;
+    }
+
+    .avatar-group-wrapper:focus {
+    background-color: rgba(217, 217, 217, 0.8);
+    color: white;
+    cursor: pointer;
+    }
+
+    .avatar-group-wrapper:active {
+    background-color: rgba(217, 217, 217, 0.9);
+    color: white;
+    cursor: pointer;
+    }
+
+    .btn-icon-sticker {
+    color: #BFBFBF;
+    scale: 1
+    }
+
+    .btn-icon-sticker:hover {
+    scale: 1.2;
+    color: #0078D4;
+    }
+
+    .btn-send {
+    height: 30.6px !important; /* Pastikan tombol memenuhi tinggi parent */
+    }
+
+    .btn-send-message {
+    background-color: #0078D4 !important;
+    color: white !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important; /* Tengah secara vertikal */
+    justify-content: center !important;
+    height: 29.6px !important; /* Pastikan tombol memenuhi tinggi parent */
+    }
+
+    .btn-send-message:hover {
+    background-color: #006EC2;
+    box-shadow: none !important;
+    color: white;
+    }
+
+    .btn-send-message:focus {
+    background-color: #005DA4;
+    box-shadow: none !important;
+    }
+
+    .btn-icon-attach {
+    color: #BFBFBF;
+    scale: .8
+    }
+
+    .btn-icon-attach:hover {
+    scale: 1;
+    color: #0078D4;
+    }
+
+    .btn-chat-more-personal {
+    background-color: #fff !important;
+    padding: 0 !important;
+    height: 1.5rem !important;
+    }
+
+    .btn-chat-more-personal:hover,
+    .btn-chat-more-personal:focus {
+    background-color: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+    box-shadow: none !important;
+    }
+
+    .btn-chat-more-personal:active {
+    background-color: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+    box-shadow: none !important;
+    }
+
+    .btn-chat-more-recipient {
+    background-color: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 1.5rem !important;
+    }
+
+    .btn-chat-more-recipient:hover,
+    .btn-chat-more-recipient:focus {
+    background-color: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+    box-shadow: none !important;
+    }
+
+    .btn-chat-more-recipient:active {
+    background-color: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+    box-shadow: none !important;
+    }
+
+    .dxbl-list-box[data-dx-focus-hidden]:focus {
+    box-shadow: none;
+    }
+
+    .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):hover:not(.dxbl-list-box-item-focused):not(:focus), .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):hover:not(.dxbl-list-box-item-focused):not(:focus) {
+    background-color: transparent;
+    cursor: default;
+    }
+
+    .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):focus, .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):focus {
+    background-color: transparent !important;
+    cursor: default;
+    }
+
+    .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):active, .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):active {
+    background-color: transparent !important;
+    cursor: default;
+    }
+
+    .dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled), .dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > tbody > tr:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled), .dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled), .dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > tbody > tr:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled) {
+    cursor: pointer !important;
+    }
+
+    .list-message-panel.dxbl-list-box:not([data-dx-focus-hidden]):not(.dxbl-list-box-multi-select) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
+    background-color: transparent !important;
+    }
+
+    .btn-icon-back {
+    color: #0078D4;
+    scale: 1.5;
+    margin-left: -8px;
+    margin-top: 3px;
+    }
+
+    .btn-icon-back:hover {
+    color: #005A9E;
+    }
+
+    .btn-icon-back:focus {
+    color: #005A9E;
+    }
+
+    .btn-icon-next {
+    color: #0078D4;
+    font-weight: 500;
+    margin-bottom: 2px;
+    }
+
+    .btn-icon-next:hover {
+    color: #005A9E;
+    }
+
+    .btn-icon-next:focus {
+    color: #005A9E;
+    }
+
+    .btn-icon-next:active {
+    color: #005A9E;
+    }
+
+    .btn-icon-back-text {
+    color: #0078D4;
+    font-weight: 500;
+    margin-bottom: 2px;
+    }
+
+    .btn-icon-back-text:hover {
+    color: #005A9E;
+    }
+
+    .btn-icon-back-text:focus {
+    color: #005A9E;
+    }
+
+    .btn-icon-back-text:active {
+    color: #005A9E;
+    }
+
+
+    .personal-chat-wrapper.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:hover {
+    background: none;
+    background-color: transparent !important;
+    cursor: default !important;
+    }
+
+    .personal-chat-wrapper.dxbl-list-box:not([data-dx-focus-hidden]):not(.dxbl-list-box-multi-select) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
+    background: none;
+    background-color: transparent !important;
+    }
+
+    .personal-chat-wrapper.dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
+    background: none;
+    background-color: transparent !important;
+    }
+
+    .portal-personal-message-bottom {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    background-color: #F9FAFC;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 50px;
+    }
+
+    .personal-chat-input-message-small {
+    border-radius: 5px !important;
+    padding-left: 3rem;
+    width: 100%;
+    }
+
+    .btn-action-sticker-new {
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
+    margin-top: 5px;
+    margin-left: .5rem;
+    scale: 1;
+    bottom: 0;
+    }
+
+    .btn-action-attach {
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
+    margin-top: 5px;
+    margin-left: 1.8rem;
+    bottom: 0;
+    }
+
+    .portal-reply-message-wrapper-bottom-small {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0000001A;
+    padding: 5px 9px;
+    margin-bottom: 7px;
+    }
+
+    .portal-reply-message-wrapper-bottom-small .pesan-dikutip {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 500 !important;
+    font-size: 11px !important;
+    line-height: 20px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 402px;
+    }
+
+    .portal-link-preview-wrapper-bottom-small {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    background-color: #F0F8FF;
+    border: 1px solid #E0E0E6;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
+    margin: 0
+    }
+
+    .portal-link-preview-wrapper-bottom-small:hover {
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+    }
+
+    .portal-link-preview-wrapper-bottom-small:active,
+    .portal-link-preview-wrapper-bottom-small:focus {
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
+    }
+
+    .default-link-icon {
+    width: 70px; /* Biar mengikuti parent */
+    height: 70px; /* Sesuaikan dengan parent */
+    aspect-ratio: 1 / 1; /* Memastikan bentuk selalu kotak */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #E3E3E3; /* Warna default */
+    border-radius: 5px; /* Opsional: Jika ingin rounded */
+    margin-right: 8px;
+    }
+
+    .default-link-icon span {
+    font-size: 30px; /* Ukuran ikon */
+    color: #A6A6A6;
+    }
+
+    .preview-title {
+    color: black;
+    font-size: 14px;
+    }
+
+    .preview-title, .preview-url {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 340px;
+    margin: 0;
+    }
+
+    .preview-url {
+    color: #B0B0B0;
+    font-size: 10px;
+    }
+
+    .preview-description {
+    color: #4F4F4F;
+    font-size: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    max-height: 3em;
+    margin: 0;
+    line-height: 1.3;
+    }
+
+    .cancel-button {
+    display: flex;
+    align-items: center; /* Pusatkan secara vertikal */
+    justify-content: center; /* Pusatkan secara horizontal */
+    width: 70px;
+    height: 70px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    }
+
+    .cancel-button:hover {
+    background-color: #E3E3E3;
+    }
+
+    .cancel-button:active,
+    .cancel-button:focus {
+    background-color: #D1D1D1;
+    }
+
+    .btn-icon-next.disabled,
+    .btn-icon-back-text.disabled
+    .portal-notification-dismisscontainer.disabled {
+    pointer-events: none;
+    }
+
+    .btn-icon-next.disabled,
+    .btn-icon-back-text.disabled,
+    .portal-notification-dismisscontainer.disabled .portal-notificationpane-activitylog-link {
+    color: #c6c6c6 !important;
+    }
+
+    .chat-component-wrapper-personal-message,
+    .chat-component-wrapper-recipient-message {
+    font-size: 12px !important;
+    }
+
+    .chat-component-header .sender {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 500 !important;
+    font-size: 11px !important;
+    line-height: 22px !important;
+    margin-top: 20px !important;
+    margin-left: 8px !important;
+    }
+
+
+    .dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:not([dxbl-top-virtual-spacer-element]) + li.dxbl-list-box-group-item::before {
+    content: none !important;
+    }
+
+    .portal-header.pesan {
+    height: @(TampilkanPersonalMessageSection ? "52px !important" : "64px !important");
+    }
+
+    .portal-notificationmenu-notification-wrapper.pesan {
+    padding: 10px 10px 10px 0px;
+    }
+
+
+    @@keyframes growFade {
+    0% {
+    transform: scale(0);
+    opacity: 0;
+    }
+
+    60% {
+    transform: scale(1.1);
+    opacity: 1;
+    }
+
+    100% {
+    transform: scale(1);
+    }
+    }
+
+    .chat-component-wrapper-personal .btn-action-chat-dropdown {
+    padding-right: 10px;
+    }
+
+    .btn-action-chat-dropdown {
+    display: block; /* Supaya awalnya tidak muncul */
+    }
+
+    .btn-action-chat-dropdown.show {
+    visibility: visible;
+    opacity: 1;
+    animation: growFade 0.3s ease-out;
+    }
+
+    .btn-action-chat-dropdown.hide {
+    visibility: hidden;
+    opacity: 0;
+    }
+
+    .display-profile-grup {
+    width: 28px;
+    height: 28px;
+    border-radius: 50% !important;
+    align-self: flex-start;
+    background-color: #8D8D8D;
+    box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.6);
+    }
+
+
+    .display-profile-grup-initial {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    }
+
+    .portal-notificationpane.pesan {
+    background-image: url('/images/Background-FC-portrait-revd.svg') !important;
+    background-color: #faf7f4;
+    background-repeat: no-repeat !important;
+    background-size: cover !important; /* Menyesuaikan dengan ukuran */
+    background-position: center !important;
+    }
+
+    .dxbl-list-box.cw-640.ch-360 {
+    background-color: transparent !important;
+    }
+
+    .dxbl-list-box.cw-640.ch-360.personal-chat-wrapper .dxbl-scroll-viewer {
+    background-color: none !important;
+    background: none;
+    }
+
+    .content-chat {
+    padding-top: 3px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    box-sizing: border-box;
+    -webkit-user-select: text;
+    }
+
+    .content-chat .chat-component-time > p {
+    margin-bottom: 0px !important;
+    }
+
+    .content-chat .chat-component-time > span {
+    margin-bottom: -3px !important;
+    }
+
+    .pesan-teks > span {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 19px;
+    white-space: normal;
+    max-width: 100%;
+    margin-bottom: 0;
+    vertical-align: baseline;
+    scrollbar-width: thin;
+    }
+
+    .pesan-teks-time {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-weight: 400;
+    font-size: 9px;
+    line-height: 15px;
+    white-space: normal;
+    max-width: 100%;
+    margin-bottom: 0;
+    vertical-align: baseline;
+    scrollbar-width: thin;
+    }
+
+    .pesan-teks-system {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 21px !important;
+    color: #00000080;
+    }
+
+    .memo-wrapper {
+    position: relative;
+    width: 100%;
+    }
+
+    .auto-grow-up-memo {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    }
+
+    .memo-textarea-grow-up {
+    line-height: 21px;
+    box-sizing: border-box;
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    min-height: 25px;
+    height: 25px;
+    max-height: calc(21px * 5); /* Tetap 5 baris */
+
+    resize: none;
+    overflow-y: hidden;
+    width: 100%;
+    }
+
+    .chat-list-box {
+    height: calc(100vh - 200px) !important;
+    }
+
+    .personal-chat-wrapper.dxbl-list-box {
+    --dxbl-list-box-disabled-opacity: 1 !important;
+    }
+
+    .dxbl-list-box-empty-data-item {
+    display: none !important;
+    }
+
+    .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    align-self: center;
+    margin-left: 47%;
+    animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+    0% {
+    transform: rotate(0deg);
+    }
+
+    100% {
+    transform: rotate(360deg);
+    }
+    }
+
+    .scroll-to-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 60px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+    backdrop-filter: blur(10px); /* Efek blur */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Border tipis */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1), -2px -2px 5px rgba(255, 255, 255, 0.3);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    }
+
+    /* Efek hover */
+    .scroll-to-bottom:hover {
+    background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+    }
+
+    /* Efek klik */
+    .scroll-to-bottom:active {
+    background: rgba(0, 0, 0, 0.2) !important; /* Warna transparan */
+    }
+
+
+    .portal-personal-action {
+    display: flex;
+    gap: 15px;
+    position: fixed;
+    right: 7px;
+    color: #333;
+    }
+
+    .button-chat-back {
+    border-radius: 5px;
+    }
+
+    .button-telepon-pesan,
+    .button-cari-pesan {
+    width: 35px;
+    height: 35px;
+    display: flex; /* Mengaktifkan flexbox */
+    align-items: center; /* Pusatkan secara vertikal */
+    justify-content: center; /* Pusatkan secara horizontal */
+    border-radius: 5px;
+    }
+
+    .button-chat-back:hover,
+    .button-telepon-pesan:hover,
+    .button-cari-pesan:hover {
+    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    }
+
+    .button-chat-back:active,
+    .button-telepon-pesan:active,
+    .button-cari-pesan:active {
+    background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    }
+
+    .dropdown-calendar-cari-pesan {
+    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
+    width: max-content;
+    }
+
+    .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar {
+    background-color: transparent !important;
+    }
+
+    .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar .dxbl-calendar-footer {
+    display: none !important;
+    }
+
+    .tooltip-button {
+    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
+    display: grid !important;
+    justify-content: center !important;
+    place-items: center !important;
+    top: -12px !important;
+    left: -11px !important;
+    min-width: @(IsTooltipDuaBaris ? "120px !important" : "100px !important");
+    padding: 5px;
+    }
+
+    .dropdown-cari-pesan {
+    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
+    height: 50px;
+    position: relative !important;
+    top: 10px !important;
+    right: 0px !important;
+    left: 12px !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    }
+
+
+
+    .search-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /*background: #f7f5f3;*/
+    background-color: transparent;
+    padding-left: 8px;
+    padding-top: 9.5px;
+    padding-bottom: 5px;
+    padding-right: 11px;
+    width: max-content;
+    }
+
+    .search-input-chat {
+    display: flex;
+    justify-content: space-between;
+    background-color: #ffff;
+    min-width: 280px;
+    border-radius: 5px !important;
+    border-bottom: 2px solid darkgray;
+    }
+
+    .search-input-chat:focus-within {
+    border-bottom: 2px solid #409adf; /* Warna border bawah saat fokus */
+    }
+
+    .search-input-chat .dxbl-text-edit {
+    border: none;
+    background-color: #ffff;
+    border-radius: 5px !important;
+    min-width: 243px;
+    }
+
+    .search-count {
+    font-size: 10px;
+    color: #bdbcbb;
+    align-content: center;
+    padding-right: 12px;
+    cursor: text;
+    }
+
+    .close-btn-search {
+    width: 36px;
+    justify-content: center;
+    }
+
+    .nav-btn, .close-btn-search {
+    background: none;
+    border: none;
+    border-radius: 5px;
+    display: inline-flex;
+    height: 31px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: -1.3px;
+    }
+
+    .nav-btn > span {
+    color: black;
+    }
+
+    .nav-btn:disabled {
+    cursor: not-allowed; /* Ubah kursor menjadi tanda larangan */
+    opacity: 0.5; /* Kurangi transparansi untuk indikasi disabled */
+    pointer-events: none; /* Mencegah event hover dan klik */
+    }
+
+    .nav-btn:hover,
+    .close-btn-search:hover {
+    background: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    }
+
+    .nav-btn:active,
+    .close-btn-search:active {
+    background: rgba(0, 0, 0, 0.2) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    }
+
+    .btn-pressed {
+    background: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    }
+
+    .btn-pressed:hover {
+    background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+    backdrop-filter: blur(10px) !important; /* Efek blur */
+    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+    }
+
+    .vertical-line {
+    width: 0.1px; /* Lebar garis */
+    height: 18px; /* Tinggi garis */
+    background-color: #aaa97a; /* Warna garis */
+    margin: 0 5px; /* Jarak dari elemen lain */
+    }
+
+    .panel-chat {
+    display: @(TampilkanPersonalMessageSection ? "block" : "none");
+    }
+
+    .panel-pesan {
+    display: @(!TampilkanPersonalMessageSection ? "block" : "none");
+    }
+
+    .action-btn-container {
+    position: relative;
+    top: 1px;
+    }
+
+    .personal-chat-wrapper.dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:not([dxbl-bottom-virtual-spacer-element]):not([dxbl-top-virtual-spacer-element]):not(.dxbl-list-box-group-item) {
+    padding-top: 0px;
+    padding-bottom: 3px;
+    }
+
+    .chat-item {
+    position: relative;
+    transition: background-color 0.3s ease;
+    }
+
+    .chat-item.chat-component-wrapper-recipient-message.callout::before {
+    content: "";
+    position: absolute;
+    top: 3.5px;
+    left: -12.1px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+    transform: rotate(270deg);
+    z-index: 2;
+    }
+    /* Segitiga shadow */
+    .chat-item.chat-component-wrapper-recipient-message.callout::after {
+    content: "";
+    position: absolute;
+    top: 4.5px; /* Geser sedikit ke bawah */
+    left: -13px; /* Geser sedikit ke kiri */
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(0, 0, 0, 0.2); /* Shadow lebih buram */
+    transform: rotate(270deg);
+    z-index: 1; /* Shadow di belakang */
+    filter: blur(1px); /* Blur agar lebih halus */
+    }
+
+    .chat-item.chat-component-wrapper-personal-message.callout::before {
+    content: "";
+    position: absolute;
+    top: 3.5px;
+    right: -11.3px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #EAF6FF;
+    transform: rotate(90deg);
+    z-index: 2;
+    }
+
+    .chat-item.chat-component-wrapper-personal-message.callout::after {
+    content: "";
+    position: absolute;
+    top: 4.5px;
+    right: -11.6px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(0, 0, 0, 0.2); /* Shadow lebih buram */
+    transform: rotate(90deg);
+    z-index: 1; /* Shadow di belakang */
+    filter: blur(1px); /* Blur agar lebih halus */
+    }
+
+
+    .chat-item::after {
+    pointer-events: none; /* Supaya tidak mengganggu klik */
+    transition: opacity 0.5s ease-in-out;
+    }
+
+    .chat-item.highlight {
+    animation: flash-highlight 1s ease-in-out;
+    }
+
+    @@keyframes flash-highlight {
+    0% {
+    background-color: #606060;
+    }
+
+    100% {
+    background-color: transparent;
+    }
+    }
+
+    .btn-send[disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+    }
+
+    .btn-lihat-grup {
+    font-size: 12px !important;
+    }
+
+    .recording-ui-wrapper {
+    width: -webkit-fill-available !important;
+    display: flex !important;
+    justify-content: right !important;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0px 4px 4px;
+    box-sizing: border-box;
+    height: 32px;
+    }
+
+    .animasi-recording {
+    display: flex !important;
+    gap: 6px;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    }
+
+    .dot-red {
+    width: 5px;
+    height: 5px;
+    background: red;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+    }
+
+    @@keyframes blink {
+    0%, 100% {
+    opacity: 1;
+    }
+
+    50% {
+    opacity: 0;
+    }
+    }
+
+    .recording-timer {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 15px;
+    white-space: nowrap;
+    padding: 0;
+    margin: 0;
+    }
+
+    .btn-reset-recording {
+    background-color: transparent !important;
+    border-radius: 5px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    }
+
+    .btn-reset-recording:hover {
+    background: rgba(0, 0, 0, 0.07) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    }
+
+    .btn-reset-recording:active {
+    background: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    }
+
+    .wave-animation {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    height: 24px;
+    }
+
+    .wave-animation .bar {
+    width: 2px;
+    background-color: gray;
+    animation: wave 1s infinite ease-in-out;
+    border-radius: 1px;
+    }
+
+    /* Tambahkan lebih banyak bar */
+    .wave-animation .bar:nth-child(1) {
+    animation-delay: 0s;
+    }
+
+    .wave-animation .bar:nth-child(2) {
+    animation-delay: 0.1s;
+    }
+
+    .wave-animation .bar:nth-child(3) {
+    animation-delay: 0.2s;
+    }
+
+    .wave-animation .bar:nth-child(4) {
+    animation-delay: 0.3s;
+    }
+
+    .wave-animation .bar:nth-child(5) {
+    animation-delay: 0.4s;
+    }
+
+    .wave-animation .bar:nth-child(6) {
+    animation-delay: 0.5s;
+    }
+
+    .wave-animation .bar:nth-child(7) {
+    animation-delay: 0.6s;
+    }
+
+    .wave-animation .bar:nth-child(8) {
+    animation-delay: 0.7s;
+    }
+
+    .wave-animation .bar:nth-child(9) {
+    animation-delay: 0.8s;
+    }
+
+    .wave-animation .bar:nth-child(10) {
+    animation-delay: 0.9s;
+    }
+
+    @@keyframes wave {
+    0%, 100% {
+    height: 6px;
+    }
+
+    25% {
+    height: 16px;
+    }
+
+    50% {
+    height: 20px;
+    }
+
+    75% {
+    height: 12px;
+    }
+    }
+
+    .recording-paused-ui {
+    width: -webkit-fill-available !important;
+    display: flex !important;
+    justify-content: right !important;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 0px 4px 4px;
+    box-sizing: border-box;
+    height: 32px;
+    }
+
+    @*style search control pesan*@
+    .filter-container-pesan {
+    /* padding: 10px 20px; */
+    display: flex;
+    background-color: white;
+    justify-content: space-between;
+    padding-right: 6px;
+    position: relative;
+    bottom: 7px;
+    }
+
+    .filter-input-pesan-wrapper {
+    cursor: text;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 24px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: @(SearchPesanFocus ? "#409ADF" : "#808080");
+    margin-top: 5px;
+    margin-left: 10px;
+    }
+
+    .search-icon-pesan {
+    padding: 0 0px 0 4px;
+    box-sizing: border-box;
+    height: 26px;
+    width: 22px;
+    display: flex;
+    align-items: center;
+    color: #1c1c1c;
+    }
+
+    .filter-input-pesan {
+    font-size: 13px;
+    border: none;
+    background-color: white;
+    color: #212529;
+    box-sizing: border-box;
+    height: 22px;
+    width: 198px;
+    text-indent: 10px;
+    }
+
+
+    .filter-input-pesan:focus {
+    outline: none;
+    border: none;
+    }
+
+    /* .filter-input:focus + .search-icon,
+    .filter-input:focus ~ .search-icon {
+    color: #135995;
+    }
+
+    .fiter-input:focus */
+
+
+    .clear-icon-hidden-pesan {
+    visibility: hidden;
+    }
+
+    .filter-input-pesan.dxbl-text-edit .dxbl-edit-btn-clear {
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    visibility: @(string.IsNullOrEmpty(SearchTextPesan) ? "hidden" : "visible");
+    }
+
+    .filter-input-pesan.dxbl-text-edit .dxbl-text-edit-input {
+    max-width: 178px !important;
+    }
+
+    .portal-notificationpane-activitylog-link.panel-pesan {
+    }
+
+    .portal-notificationmenu-arrow.panel-pesan {
+    }
+
+    .portal-notification-bottom.panel-pesan {
+    text-decoration: none !important; /* hilangkan underline */
+    cursor: pointer !important;
+    }
+
+    .portal-notification-bottom.panel-pesan:hover {
+    text-decoration: underline !important;
+    }
+
+    /* Target input di dalam DxTextBox khusus berdasarkan class */
+    .input-message-search input::placeholder,
+    .input-group-name input::placeholder {
+    color: #606060 !important; /* Ganti sesuai warna yang diinginkan */
+    opacity: 1 !important; /* pastikan placeholder tidak transparan */
+    }
+
+    .listbox-item-template-text-message.pesan-suara {
+    display: flex;
+    }
+
+    .listbox-item-template-text-message.pesan-suara .durasi {
+    align-content: center;
+    }
+
+    .voice-note {
+    display: flex;
+    gap: 15px;
+    }
+
+    .voice-note .display-profile-grup {
+    width: 32px !important;
+    height: 32px !important;
+    }
+
+    .voice-note-mic {
+    display: flex;
+    justify-content: center; /* Horizontal center */
+    align-items: center; /* Vertical center */
+    width: 17px;
+    height: 17px;
+    border-radius: 50% !important;
+    background-color: #409ADF;
+    position: absolute;
+    bottom: 15px;
+    left: 20px;
+    }
+
+    .voice-note-mic.non-personal-message {
+    left: auto !important;
+    right: -6px !important;
+    }
+
+    .text-pesan-dikutip {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 402px;
+    line-height: 15px !important;
+    }
+</style>
+@*Dialog message*@
+<div class="portal-notificationpane @(TampilkanPersonalMessageSection ? "pesan" : "")">
+    <div class="panel-chat">
+        <div class="portal-personal-message">
+            @{
+                var userPenerima = new Contact();
+                if (!DtPesanAktif.StatusGrup && DtPesanAktif.ListT7Pesan_Anggota is not null) userPenerima = DtContact.FirstOrDefault(y => y.IdUser == DtPesanAktif.ListT7Pesan_Anggota.FirstOrDefault(x => x.IdUser_Anggota != IdUser).IdUser_Anggota);
+            }
+            <div class="portal-personal-header">
+                <span class="button-chat-back material-symbols-outlined" @onclick="async () => { SearchText = string.Empty; DtPercakapan.Clear(); DtPercakapanSearch.Clear(); IsTampilkanPanelSearchPesan = false; TampilkanPersonalMessageSection = false; TampilkanListMessageSection = true; await TampilkanListMessageSection_StateChanged.InvokeAsync(TampilkanListMessageSection); DtPesanAktif = new(); PesanDikutip = null; DtAnggota_GrupBaru.Clear(); }" style="scale: 1.5; opacity: .8; cursor: pointer">arrow_left_alt</span>
+                <div class="portal-personal-avatar">
+                    @if (DtPesanAktif.StatusGrup)
+                    {
+                        if (string.IsNullOrEmpty(DtPesanAktif.IconGrup))
+                        {
+                            <p class="portal-personal-initial">
+                                @GenerateInitials(DtPesanAktif.NamaGrup)
+                            </p>
+                        }
+                        else
+                        {
+                            <img src="@DtPesanAktif.IconGrup" alt="Profile Photo"  />
+                        }
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(userPenerima.UrlProfile))
+                        {
+                            <p class="portal-personal-initial">
+                                @GenerateInitials(userPenerima.NamaPanggilan)
+                            </p>
+                        }
+                        else
+                        {
+                            <img src="@userPenerima.UrlProfile" alt="Profile Photo"  />
+                        }
+                    }
+
+                </div>
+                <div class="portal-personal-text-wrapper">
+                    <p class="portal-personal-username">
+                        @if (DtPesanAktif.StatusGrup)
+                            @DtPesanAktif.NamaGrup
+                        else
+                            @userPenerima.NamaPanggilan
+
+                    </p>
+                    <div class="portal-personal-status-wrapper">
+                        @if (DtPesanAktif.StatusGrup == false)
+                        {
+                            <div class="portal-personal-status-circle"></div>
+                            <p class="portal-personal-status">Online Now</p>
+
+                        }
+                        else
+                        {
+                            var keteranganGrup = "";
+                            if(DtPesanAktif.ListT7Pesan_Anggota is not null){
+                                keteranganGrup = string.Join(", ",
+                                (from pesan in DtPesanAktif.ListT7Pesan_Anggota
+                                    join contact in DtContact on pesan.IdUser_Anggota equals contact.IdUser
+                                    select contact.NamaPanggilan).Distinct() // Menghindari duplikasi nama jika diperlukan
+                                );
+                            }
+
+                            <p class="portal-personal-status">@keteranganGrup</p>
+                        }
+                    </div>
+                </div>
+                <div class="portal-personal-action">
+                    <div class="button-telepon-pesan" style="cursor:default" title="For Preview purpose only">
+                        <span class="material-symbols-outlined">call</span>
+                    </div>
+                    <div class="button-cari-pesan" style="cursor:default" id="button-cari-pesan-id" @onclick="@TampilkanPanelSearch">
+                        <span class="material-symbols-outlined">search</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (IsLoadingMoreMessages)
+        {
+            <div class="spinner"></div>
+        }
+        <DxListBox @ref="@lbxPercakapan" Data="@DtPercakapan.Where(x => x.IsVisible).OrderBy(x => x.WaktuSend).ToList()" @bind-Value="@PercakapanDipilih" GroupFieldName="@nameof(uimT7Pesan_Percakapan.TanggalPesan)" CssClass="cw-640 ch-360 personal-chat-wrapper chat-list-box" ListRenderMode="ListRenderMode.Entire" Enabled="false">
+            <GroupHeaderDisplayTemplate>
+                @{
+                    var tanggalHariIni = DateTime.UtcNow.Date;
+                    var tanggalKemarin = tanggalHariIni.AddDays(-1);
+                    var satuMingguLalu = tanggalHariIni.AddDays(-7);
+                    var text = "";
+                    DateTime parsedDate;
+
+                    if (DateTime.TryParseExact(context.DisplayText, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+                    {
+                        if (parsedDate == tanggalHariIni)
+                            text = "Hari Ini";
+                        else if (parsedDate == tanggalKemarin)
+                            text = "Kemarin";
+                        else if (parsedDate > satuMingguLalu)
+                            text = parsedDate.ToString("dddd", new CultureInfo("id-ID"));
+                        else
+                            text = parsedDate.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    }
+                    else
+                    {
+                        text = context.DisplayText;
+                    }
+                }
+                <div class="personal-chat-timeline-line">
+                    <span class="personal-chat-timeline-label">@text</span>
+                </div>
+            </GroupHeaderDisplayTemplate>
+            <ItemDisplayTemplate>
+                <div class="@(context.DataItem.StatusSystem ? "chat-component-wrapper-system-true" : (context.DataItem.IsMine ? "chat-component-wrapper-personal" : "chat-component-wrapper"))" style="padding-left:@(context.DataItem.IsMine == false && DtPesanAktif.StatusGrup == false ? "10px":"")"
+                @onmouseover="(() => {IdPesanDihover = context.DataItem.IdDetilPesan;})" @onmouseleave="() => { if (!TampilkanChatDropdown) IdPesanDihover = null; }">
+                    @{
+                        var dtChat = DtPercakapan.Where(x => x.StatusSystem == false).ToList().OrderBy(x => x.WaktuSend.Value.UtcDateTime).ToList();
+                        var prevPesan = dtChat.IndexOf(context.DataItem) > 0 ? dtChat[dtChat.IndexOf(context.DataItem) - 1] : null;
+                        var tampilkanNama = prevPesan == null
+                        || prevPesan.IdUser_Pengirim != context.DataItem.IdUser_Pengirim
+                        || prevPesan.WaktuSend?.Date != context.DataItem.WaktuSend?.Date;
+                    }
+                    @if (context.DataItem.IsMine && context.DataItem.StatusSystem == false)
+                    {
+                        <div class="btn-action-chat-dropdown @(IdPesanDihover.HasValue && context.DataItem.IdDetilPesan != null && IdPesanDihover.Value.Equals(context.DataItem.IdDetilPesan) ? "show" : "hide")">
+                            <button id="@($"chat-dropdown-more-{context.DataItem.IdDetilPesan}")" type="button" class="btn btn-link btn-chat-more-personal" @onclick="() => { IdDetilPesanAktif = context.DataItem.IdDetilPesan; TampilkanChatDropdown = !TampilkanChatDropdown; }">
+                                <span class="material-symbols-outlined" style="scale: .8">keyboard_arrow_down</span>
+                            </button>
+                        </div>
+
+                        <div class="chat-item @(context.DataItem.IsMine ? "chat-component-wrapper-personal-message" : "chat-component-wrapper-recipient-message") @(tampilkanNama ? "callout":"")" id="@context.DataItem.IdDetilPesan">
+                            @{
+                                if (context.DataItem.IdDetilPesan_Terkutip is not null)
+                                {
+                                    //var dataPesanTerkutip = DtPercakapan.FirstOrDefault(x => x.IdDetilPesan == context.DataItem.IdDetilPesan_Terkutip);
+                                    var pengirim = "";
+                                    var warna = DtAnggota_GrupBaru.FirstOrDefault(x => x.IdUser_Anggota == context.DataItem?.PesanTerkutip_IdUserPengirim)?.Warna;
+                                    if (context.DataItem?.PesanTerkutip_IdUserPengirim != null)
+                                    {
+                                        pengirim = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem?.PesanTerkutip_IdUserPengirim)?.NamaPanggilan;
+
+                                        if (context.DataItem?.PesanTerkutip_IdUserPengirim == IdUser)
+                                        {
+                                            pengirim = "Anda";
+                                        }
+                                    }
+                                    <div style="padding: 5px 5px 0 5px;cursor:pointer" @onclick="(() => ScrollPesanTerkutip((Guid)context.DataItem.IdDetilPesan_Terkutip))">
+                                        @{
+                                            var style = $"border-left: 8px solid {warna};";
+                                        }
+                                        <div class="portal-reply-message-wrapper" style="@style">
+                                            <p style="margin-bottom: @(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "0px" : "5px"); color: @warna; font-weight:500;">@pengirim</p>
+                                            <p class="@(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "" : "text-pesan-dikutip")" style="margin-bottom: 5px; font-weight:400;display:@(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "flex" : "-webkit-box")">
+                                                @if(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-")){
+                                                    <span class="material-symbols-outlined" style="scale:.8;margin-left: -5px;">
+                                                        mic
+                                                    </span>
+                                                    <span style="line-height:22px !important;">@context.DataItem.PesanTerkutip_Durasi</span>
+                                                }else{
+                                                    @((MarkupString)context.DataItem?.PesanTerkutip_IsiPesan?.Replace("new-line", "<br />"))
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(context.DataItem?.LinkPreview_Title))
+                                {
+                                    <div style="padding: 5px 5px 0 5px">
+                                        <div class="portal-link-preview-wrapper-bottom-small" @onclick="() => ProsesBukaLinkPreview(context.DataItem?.LinkPreview_Url)">
+                                            <div class="d-flex justify-content-start">
+                                                @if (!string.IsNullOrEmpty(context.DataItem?.LinkPreview_ImageUrl))
+                                                {
+                                                    <div class="default-link-icon">
+                                                        <img src="@context.DataItem.LinkPreview_ImageUrl" alt="Preview Image" style="width: @(context.DataItem.LinkPreview_ImageUrl.Contains("sdatafile") ? "50px" : "70px")" />
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="default-link-icon">
+                                                        <span class="material-symbols-outlined">link</span>
+                                                    </div>
+                                                }
+                                                <div style="display: flex; flex-direction: column; justify-content: center;">
+                                                    <p class="preview-title" style="font-size: 12px; width: 250px">@context.DataItem.LinkPreview_Title</p>
+                                                    @if (!string.IsNullOrEmpty(context.DataItem.LinkPreview_Description))
+                                                    {
+                                                        <p class="preview-description" style="opacity:0.8">@context.DataItem.LinkPreview_Description</p>
+                                                    }
+                                                    <p class="preview-url" style="width: 250px">@context.DataItem.LinkPreview_Url</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            <div class="content-chat" style="@(context.DataItem.IsiPesan.Contains("pesan-suara-") ? "padding-top:0px !important;padding-bottom:0px !important;" : "")">
+                                <div class="chat-content" style="padding-top:@(context.DataItem.IsiPesan.Contains("pesan-suara-") ? "11px" : "")">
+                                    <div style="position: relative; word-wrap: break-word;">
+                                        @if (context.DataItem.IsiPesan.Contains("pesan-suara-"))
+                                        {
+                                            var contactUser = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem.IdUser_Pengirim);
+
+                                            <div class="voice-note">
+                                                <div class="display-profile-grup" style="box-shadow:none !important;">
+                                                    @if (string.IsNullOrEmpty(contactUser.UrlProfile))
+                                                    {
+                                                        <p class="display-profile-grup-initial">
+                                                            @GenerateInitials(contactUser.NamaPanggilan)
+                                                        </p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="@contactUser.UrlProfile" alt="Profile Photo" />
+                                                    }
+
+                                                    <div class="voice-note-mic">
+                                                        <span class="material-symbols-outlined" style="font-size:13px;color:white;">
+                                                            mic
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <PthAudioPlayer Source="@context.DataItem.IsiPesan" IsPersonalMessage="true"></PthAudioPlayer>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="pesan-teks" style="min-height: 0px; visibility: visible; -webkit-user-select: text;">
+                                                @if (string.IsNullOrEmpty(context.DataItem.LinkPreview_Url))
+                                                {
+                                                    <span>@((MarkupString)HighlightText(context.DataItem.IsiPesan, SearchText))</span>
+                                                }
+                                                else
+                                                {
+                                                    string hasil = context.DataItem.IsiPesan.Replace(context.DataItem.LinkPreview_Url, "").Trim();
+                                                    <span>
+                                                        <a href="@context.DataItem.LinkPreview_Url" target="_blank" rel="noopener noreferrer">
+                                                            @((MarkupString)HighlightText(@context.DataItem.LinkPreview_Url, SearchText))
+                                                        </a>
+                                                        @((MarkupString)HighlightText(hasil, SearchText))
+                                                    </span>
+                                                }
+                                            </span>
+                                        }
+                                        <span>
+                                            <span style="height: 0; padding-top: 0; padding-bottom: 0; vertical-align: middle; visibility: hidden; display: inline-flex; padding-left: 4px; line-height: 15px; padding-right: 4px; width: 60px;">
+                                                <span style="width: 19px; flex-shrink: 0; flex-grow: 0;">
+                                                </span>
+                                                <span style="flex-shrink: 0; flex-grow: 0;">
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="chat-component-time">
+                                    <div class="chat-component-time-child">
+                                        <span class="pesan-teks-time" style="vertical-align: top; opacity: 0.7;">@context.DataItem.WaktuSend?.ToLocalTime().ToString("HH.mm", CultureInfo.InvariantCulture)</span>
+                                        @{
+
+                                            if (DtPesanAktif.StatusGrup == false)
+                                            {
+                                                var statusPesan = new T8Pesan_Terima();
+                                                if (context.DataItem.ListT8Pesan_Terima != null) statusPesan = context.DataItem.ListT8Pesan_Terima.FirstOrDefault(x => x.IdUser_Penerima != IdUser);
+                                                if (statusPesan != null && statusPesan.WaktuRead != null) context.DataItem.IsRead = true;
+                                            }
+                                            else
+                                            {
+                                                var totalAnggota = DtPesanAktif.ListT7Pesan_Anggota.Count() - 1;
+                                                var totalAnggotaSudahBaca = context.DataItem.ListT8Pesan_Terima?.Where(x => x.WaktuRead != null).ToList().Count();
+                                                if (totalAnggotaSudahBaca >= totalAnggota) context.DataItem.IsRead = true;
+                                            }
+                                        }
+                                        <span class="material-symbols-outlined" style="scale: .7;color: @(context.DataItem.IsRead == true ? "#0078D4" : "#00000066")">done_all</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (context.DataItem.StatusSystem == false)
+                    {
+                        var pengirim = "";
+                        var warna = "";
+                        var urlProfile = "";
+                        if(DtAnggota_GrupBaru.Count() > 0) warna = DtAnggota_GrupBaru.FirstOrDefault(x => x.IdUser_Anggota == context.DataItem.IdUser_Pengirim)?.Warna;
+                        if (context.DataItem.IdUser_Pengirim != null)
+                        {
+                            pengirim = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem.IdUser_Pengirim).NamaPanggilan;
+                            urlProfile = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem.IdUser_Pengirim).UrlProfile;
+                            if (context.DataItem.IdUser_Pengirim == IdUser)
+                            {
+                                pengirim = "Anda";
+                            }
+                        }
+
+                        if (DtPesanAktif.StatusGrup)
+                        {
+                            <div class="display-profile-grup" style="visibility:@(tampilkanNama ? "visible !important;" : "hidden !important;")">
+                                @if(string.IsNullOrEmpty(urlProfile)){
+                                    <p class="display-profile-grup-initial">
+                                        @GenerateInitials(pengirim)
+                                    </p>
+                                }
+                                else
+                                {
+                                    <img src="@urlProfile" alt="Profile Photo"  />
+                                }
+
+                            </div>
+                        }
+                        <div class="chat-item @(context.DataItem.IsMine ? "chat-component-wrapper-personal-message" : "chat-component-wrapper-recipient-message") @(tampilkanNama ? "callout":"")" id="@context.DataItem.IdDetilPesan" @onmouseover="(() => {IdPesanDihover = context.DataItem.IdDetilPesan;})" @onmouseleave="() => IdPesanDihover = null">
+                            @if (DtPesanAktif.StatusGrup)
+                            {
+                                if (tampilkanNama)
+                                {
+
+                                    <div class="chat-component-header">
+                                        <p class="sender" style="color: @warna; display: @(context.DataItem.IsMine ? "none" : "flex")">@(context.DataItem.IsMine ? null : pengirim)</p>
+                                    </div>
+                                }
+
+                            }
+
+                            @{
+                                if (context.DataItem.IdDetilPesan_Terkutip != null)
+                                {
+                                    //var dataPesanTerkutip = DtPercakapan.FirstOrDefault(x => x.IdDetilPesan == context.DataItem.IdDetilPesan_Terkutip);
+                                    var pengirimPesanTerkutip = "";
+                                    var warnaPesanTerkutip = DtAnggota_GrupBaru.FirstOrDefault(x => x.IdUser_Anggota == context.DataItem?.PesanTerkutip_IdUserPengirim)?.Warna;
+
+                                    if (context.DataItem?.PesanTerkutip_IdUserPengirim != null)
+                                    {
+                                        pengirimPesanTerkutip = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem?.PesanTerkutip_IdUserPengirim)?.NamaPanggilan;
+                                        if (context.DataItem?.PesanTerkutip_IdUserPengirim == IdUser)
+                                        {
+                                            pengirimPesanTerkutip = "Anda";
+                                        }
+                                    }
+                                    <div style="padding: 5px 5px 0 5px;cursor:pointer;" @onclick="(() => ScrollPesanTerkutip((Guid)context.DataItem.IdDetilPesan_Terkutip))">
+                                        @{
+                                            var style = $"border-left: 8px solid {warnaPesanTerkutip};";
+                                        }
+                                        <div class="portal-reply-message-wrapper" style="@style">
+                                            <p style="margin-bottom: 5px;color: @warnaPesanTerkutip; font-weight:500;">@pengirimPesanTerkutip</p>
+                                            <p class="@(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "" : "text-pesan-dikutip")" style="margin-bottom: 5px; font-weight:400;display:@(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "flex" : "-webkit-box")">
+                                                @if (context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-"))
+                                                {
+                                                    <span class="material-symbols-outlined" style="scale:.8;margin-left: -5px;">
+                                                        mic
+                                                    </span>
+                                                    <span style="line-height:22px !important;">@context.DataItem.PesanTerkutip_Durasi</span>
+                                                }
+                                                else
+                                                {
+                                                    @((MarkupString)context.DataItem?.PesanTerkutip_IsiPesan?.Replace("new-line", "<br />"))
+                                                }
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(context.DataItem?.LinkPreview_Title))
+                                {
+                                    <div style="padding: 5px 5px 0 5px">
+                                        <div class="portal-link-preview-wrapper-bottom-small" @onclick="() => ProsesBukaLinkPreview(context.DataItem?.LinkPreview_Url)">
+                                            <div class="d-flex justify-content-start">
+                                                @if (!string.IsNullOrEmpty(context.DataItem.LinkPreview_ImageUrl))
+                                                {
+                                                    <div class="default-link-icon">
+                                                        <img src="@context.DataItem.LinkPreview_ImageUrl" alt="Preview Image" style="width: @(context.DataItem.LinkPreview_ImageUrl.Contains("sdatafile") ? "50px" : "70px")" />
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="default-link-icon">
+                                                        <span class="material-symbols-outlined">link</span>
+                                                    </div>
+                                                }
+                                                <div style="display: flex; flex-direction: column; justify-content: center;">
+                                                    <p class="preview-title" style="font-size: 14px; width: 250px">@context.DataItem.LinkPreview_Title</p>
+                                                    @if (!string.IsNullOrEmpty(context.DataItem.LinkPreview_Description))
+                                                    {
+                                                        <p class="preview-description" style="opacity:0.8">@context.DataItem.LinkPreview_Description</p>
+                                                    }
+                                                    <p class="preview-url" style="width: 250px">@context.DataItem.LinkPreview_Url</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            @{
+                                if (!string.IsNullOrEmpty(context.DataItem.JenisAttachment))
+                                {
+                                    <div class="portal-document-message-wrapper">
+                                        <div style="background-color: white; padding: 10px 15px">
+                                            <span class="fa-solid fa-file" aria-hidden="true" style="color: #699BF7;scale: 1.5"></span>
+                                        </div>
+                                        <div class="portal-name-document-wrapper">
+                                            <p style="margin-bottom: 0px; font-weight: 500;">@context.DataItem.NamaDokumen</p>
+                                            <p style="margin-bottom: 0px">@context.DataItem.SizeDokumen</p>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                            <div class="content-chat" style="@(context.DataItem.IsiPesan.Contains("pesan-suara-") ? "padding-top:11px !important;padding-bottom:0px !important;" : "")">
+                                <div class="chat-content" style="padding-top:@(context.DataItem.IsiPesan.Contains("pesan-suara-") && tampilkanNama == false ? "11px" : "")">
+                                    <div style="position: relative; word-wrap: break-word;">
+                                        @if (context.DataItem.IsiPesan.Contains("pesan-suara-"))
+                                        {
+                                            var contactUser = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem.IdUser_Pengirim);
+                                            <div class="voice-note">
+                                                <PthAudioPlayer Source="@context.DataItem.IsiPesan"></PthAudioPlayer>
+                                                <div class="display-profile-grup" style="box-shadow:none !important;">
+                                                    @if (string.IsNullOrEmpty(contactUser.UrlProfile))
+                                                    {
+                                                        <p class="display-profile-grup-initial">
+                                                            @GenerateInitials(contactUser.NamaPanggilan)
+                                                        </p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="@contactUser.UrlProfile" alt="Profile Photo"  />
+                                                    }
+
+                                                    <div class="voice-note-mic non-personal-message">
+                                                        <span class="material-symbols-outlined" style="font-size:13px;color:white;">
+                                                            mic
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="pesan-teks" style="min-height: 0px; visibility: visible; -webkit-user-select: text;">
+                                                @if(string.IsNullOrEmpty(context.DataItem.LinkPreview_Url)){
+                                                    <span>@((MarkupString)HighlightText(context.DataItem.IsiPesan, SearchText))</span>
+                                                }
+                                                else
+                                                {
+                                                    string hasil = context.DataItem.IsiPesan.Replace(context.DataItem.LinkPreview_Url, "").Trim();
+                                                    <span>
+                                                        <a href="@context.DataItem.LinkPreview_Url" target="_blank" rel="noopener noreferrer">
+                                                            @((MarkupString)HighlightText(@context.DataItem.LinkPreview_Url, SearchText))
+                                                        </a>
+                                                        @((MarkupString)HighlightText(hasil, SearchText))
+                                                    </span>
+                                                }
+                                            </span>
+                                        }
+                                        <span>
+                                            <span style="height: 0; padding-top: 0; padding-bottom: 0; vertical-align: middle; visibility: hidden; display: inline-flex; padding-left: 4px; line-height: 15px; padding-right: 4px; width: 40px;">
+                                                <span style="width: 19px; flex-shrink: 0; flex-grow: 0;">
+                                                </span>
+                                                <span style="flex-shrink: 0; flex-grow: 0;">
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="chat-component-time" style="right:@(context.DataItem.IsiPesan.Contains("pesan-suara-") ? "45px !important;" : "")">
+                                    <div class="chat-component-time-child">
+                                        <span class="pesan-teks-time" style="vertical-align: top; opacity: 0.7;">@context.DataItem.WaktuSend?.ToLocalTime().ToString("HH.mm", CultureInfo.InvariantCulture)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="btn-action-chat-dropdown @(IdPesanDihover.HasValue && context.DataItem.IdDetilPesan != null && IdPesanDihover.Value.Equals(context.DataItem.IdDetilPesan) ? "show" : "hide")">
+                            <button id="@($"chat-dropdown-more-{context.DataItem.IdDetilPesan}")" type="button" class="btn btn-link btn-chat-more-recipient" @onclick="() => { IdDetilPesanAktif = context.DataItem.IdDetilPesan; TampilkanChatDropdown = !TampilkanChatDropdown; }">
+                                <span class="material-symbols-outlined" style="scale: .8">keyboard_arrow_down</span>
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="chat-component-wrapper-system">
+                            <p class="pesan-teks-system">@context.DataItem.IsiPesan</p>
+                        </div>
+                    }
+                </div>
+            </ItemDisplayTemplate>
+        </DxListBox>
+        @if (IsTampilkanButtonScrollToBottom)
+        {
+            <button class="scroll-to-bottom" @onclick="(() => { lbxPercakapan.MakeItemVisible(DtPercakapan.IndexOf(DtPercakapan.Last()) + 1); })">
+                <span class="material-symbols-outlined" style="color: #333;cursor: pointer">arrow_downward</span>
+            </button>
+        }
+        <div class="portal-personal-message-bottom">
+            @if (PesanDikutip != null)
+            {
+                var pengirim = DtContact.FirstOrDefault(x => x.IdUser == PesanDikutip.IdUser_Pengirim).NamaPanggilan;
+                var warnaPesanTerkutip = DtAnggota_GrupBaru.FirstOrDefault(x => x.IdUser_Anggota == PesanDikutip.IdUser_Pengirim).Warna;
+                if (PesanDikutip.IdUser_Pengirim == IdUser) pengirim = "Anda";
+                <div>
+                    <div class="portal-reply-message-wrapper-bottom-small" style="@($"border-left: 8px solid {warnaPesanTerkutip};")">
+                        <div style="display: flex; flex-direction: column">
+                            <p class="pesan-dikutip" style="margin-bottom: 0; color: @warnaPesanTerkutip; font-weight: 500;">@pengirim</p>
+                            <p class="pesan-dikutip" style="margin-bottom: 0;display:@(PesanDikutip.IsiPesan.Contains("pesan-suara-") ? "flex" : "")">
+                                @if (PesanDikutip.IsiPesan.Contains("pesan-suara-"))
+                                {
+                                    <span class="material-symbols-outlined" style="scale:.8;margin-left: -5px;">
+                                        mic
+                                    </span>
+                                    <span>@PesanDikutip.Durasi</span>
+                                }
+                                else
+                                {
+                                    @((MarkupString)PesanDikutip.IsiPesan.Replace("new-line", "<br />"))
+                                }
+
+                            </p>
+                        </div>
+                        <div @onclick="@(() => { PesanDikutip = null; MessageBox.FocusAsync(); StateHasChanged(); })">
+                            <span class="material-symbols-outlined" style="color: #545454;cursor: pointer">cancel</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (DrLinkPreview?.Title != null)
+            {
+                <div>
+                    <div class="portal-reply-message-wrapper-bottom-small" style="padding: 0; background-color: #F7F7F8; border: 1px solid #E0E0E6; border-radius: 5px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);">
+                        <div class="d-flex justify-content-start">
+                            @if (!string.IsNullOrEmpty(DrLinkPreview.ImageUrl))
+                            {
+                                <div class="default-link-icon">
+                                    <img src="@DrLinkPreview.ImageUrl" alt="Preview Image" style="width: @(DrLinkPreview.ImageUrl.Contains("sdatafile") ? "50px" : "70px")" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="default-link-icon">
+                                    <span class="material-symbols-outlined">link</span>
+                                </div>
+                            }
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <p class="preview-title" style="font-size: 14px">@DrLinkPreview.Title</p>
+                                @if (!string.IsNullOrEmpty(DrLinkPreview.Description))
+                                {
+                                    <p class="preview-description" style="opacity:0.8">@DrLinkPreview.Description</p>
+                                }
+                                <p class="preview-url">@DrLinkPreview.Url</p>
+                            </div>
+                        </div>
+                        <div class="cancel-button" @onclick="@(() => { DrLinkPreview = null; MessageBox.FocusAsync(); StateHasChanged(); })">
+                            <span class="material-symbols-outlined" style="color: #545454; scale: 0.85;">cancel</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="action-send-wrapper">
+                @if (!IsRecording && AudioPreviewUrl == null)
+                {
+                    <div class="input-message-wrapper">
+                        <div class="btn-action-sticker-new">
+                            <span class="material-symbols-outlined btn-icon-attach">note_stack</span>
+                        </div>
+                        <div class="btn-action-attach" id="attach-dropdown" @onclick="() => TampilkanAttachDropdown = !TampilkanAttachDropdown">
+                            <span class="material-symbols-outlined btn-icon-attach">attach_file</span>
+                        </div>
+                        <div class="memo-wrapper">
+                            <DxMemo @ref="@MessageBox" @bind-Text="@MessageText"
+                            ResizeMode="MemoResizeMode.Disabled"
+                            NullText="Type your message"
+                            CssClass="cw-320 personal-chat-input-message-small auto-grow-up-memo"
+                            InputId="tbInputBinding"
+                            Rows="1"
+                            TextAreaCssClass="memo-textarea-grow-up"
+                            @onkeydown="OnEnterPress"
+                            @oninput="UpdateRows" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @if (AudioPreviewUrl == null)
+                    {
+                        <!-- UI saat sedang merekam -->
+                        <div class="recording-ui-wrapper">
+                            <div class="btn-reset-recording" @onclick="ProsesResetRecording">
+                                <span class="material-symbols-outlined" style="scale:1">delete</span>
+                            </div>
+                            <div class="animasi-recording">
+                                <span class="dot-red"></span>
+                                <span class="recording-timer">@RecordingDuration</span>
+                            </div>
+                            <div id="@($"recording_wave_mic")" style="width: 20%;"></div>
+                            <div class="btn-reset-recording" @onclick="@ProsesStopRecording">
+                                <span class="material-symbols-outlined" style="scale:1">pause</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- UI saat PAUSE rekaman -->
+                        <div class="recording-paused-ui bg-light" style="cursor:pointer;">
+                            <div class="btn-reset-recording" @onclick="ProsesResetRecording">
+                                <span class="material-symbols-outlined" style="scale:1">delete</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(AudioPreviewUrl))
+                            {
+                                <PthAudioPlayer Source="@AudioPreviewUrl" IsPreview="true"></PthAudioPlayer>
+                            }
+                        </div>
+                    }
+                }
+
+                @if(MessageText != "" || AudioPreviewUrl != null || IsRecording)
+                {
+                    <div class="btn-send" @onclick="@ProsesKirimPesan" id="button-kirim" @onmouseover=@(() => { IsTampilkanTooltip = true; ButtonTooltipTarget = "#button-kirim"; }) @onmouseleave=@(() => {IsTampilkanTooltip = false;})>
+                        <button type="button" class="btn btn-link btn-send-message">
+                            <span class="material-symbols-outlined" style="scale: 1.11;">send</span>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="btn-send" @onclick="@ProsesStartRecording" id="button-rekam-suara" @onmouseover=@(() => { IsTampilkanTooltip = true; ButtonTooltipTarget = "#button-rekam-suara";}) @onmouseleave=@(() => {IsTampilkanTooltip = false;})>
+                        <button type="button" class="btn btn-send-message">
+                            <span class="material-symbols-outlined" style="scale: .9;">mic</span>
+                        </button>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-pesan">
+        @if(DtPesan.Count() > 0)
+        {
+            <div class="portal-notificationpane-header" style="padding: 0 10px 10px 17px !important;">
+                <div class="portal-notificationpane-header-content">
+                    <div class="portal-notification-dismisscontainer">
+                        <div class="filter-container-pesan">
+                            <div class="filter-input-pesan-wrapper" @onclick="(() => { SearchPesanFocus = true; txbSearchPesan.FocusAsync(); })">
+                                <div class="search-icon-pesan">
+                                    <span class="material-symbols-outlined"
+                                            style="color: @(SearchPesanFocus ? "#135995" : "#1c1c1c"); scale: .7;opacity: .65;transform: scaleX(-1);">
+                                        search
+                                    </span>
+                                </div>
+                                <DxTextBox @ref="txbSearchPesan"
+                                            BindValueMode="@BindValueMode.OnInput"
+                                            @bind-Text="FilterTextPesan"
+                                            @onblur="@(() => { SearchPesanFocus = false; })"
+                                            NullText="Cari obrolan"
+                                            CssClass="filter-input-pesan">
+                                    <Buttons>
+                                        <DxEditorClearButtonInternal ClearButtonClick="@(() => FilterTextPesan = string.Empty)"></DxEditorClearButtonInternal>
+                                    </Buttons>
+                                </DxTextBox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (DtPesan_Ditampilkan.OrderBy(x => x.WaktuProses).Count() > 0)
+        {
+            <div class="portal-notificationpane-top-message">
+                <ul class="portal-notificationpane-list">
+                    @*<li class="portal-notification-li">
+            <div class="portal-notificationmenu-notification-wrapper">
+            <div class="portal-notificationmenu-notification-description">No Messages</div>
+            </div>
+            </li>*@
+
+                    <li class="portal-notification-li-message">
+                        <div class="portal-notificationmenu-notification-wrapper pesan">
+                            <DxListBox Data="@DtPesan_Ditampilkan.OrderByDescending(x => x.WaktuProses).ToList()"
+                            @bind-Value="@DtPesanAktif" GroupFieldName="@(string.IsNullOrEmpty(FilterTextPesan) ? "" : "Kategori")"
+                            CssClass="cw-640 ch-360 list-message-panel">
+                                <GroupHeaderDisplayTemplate>
+                                    @{
+                                        var text = "";
+                                        if(context.DisplayText == "Chats") text = "Chat";
+                                        if(context.DisplayText == "Contacts") text = "Kontak";
+                                        if (context.DisplayText == "Groups") text = "Grup";
+                                        if (context.DisplayText == "Messages") text = "Pesan";
+                                    }
+                                    <span style="color: #a1a1a1;margin-left: -5px;">@text</span>
+                                </GroupHeaderDisplayTemplate>
+                                <ItemDisplayTemplate>
+                                    <div class="listbox-item-template" title="@(context.DataItem.Notes.Contains("pesan-suara-") ? "" : $"{context.DataItem.Notes}")" @onclick="async () => { ProsesPilihPesan(context.DataItem); TampilkanPersonalMessageSection = true; TampilkanListMessageSection = false; StateHasChanged(); }">
+                                        @{
+                                            var userPenerima = new Contact();
+                                            if (!context.DataItem.StatusGrup) userPenerima = DtContact.FirstOrDefault(y => y.IdUser == context.DataItem?.ListT7Pesan_Anggota?.FirstOrDefault(x => x.IdUser_Anggota != IdUser).IdUser_Anggota);
+                                        }
+                                        <div class="listbox-item-template-avatar">
+                                            @if(context.DataItem.StatusGrup){
+                                                if (string.IsNullOrEmpty(context.DataItem.IconGrup))
+                                                {
+                                                    <p class="listbox-item-template-initial">
+                                                        @GenerateInitials(context.DataItem.NamaGrup)
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <img src="@context.DataItem.IconGrup" alt="Profile Photo"  />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if(string.IsNullOrEmpty(userPenerima?.UrlProfile))
+                                                {
+                                                    <p class="listbox-item-template-initial">
+                                                        @GenerateInitials(userPenerima.NamaPanggilan)
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <img src="@userPenerima.UrlProfile" alt="Profile Photo"  />
+                                                }
+                                            }                                        
+                                        </div>
+                                        <div class="listbox-item-template-text">
+                                            <p class="listbox-item-template-text-username">
+                                                @if (context.DataItem.StatusGrup)
+                                                    @((MarkupString)HighlightText(context.DataItem.NamaGrup, SearchTextPesan, true))
+                                                else
+                                                    @((MarkupString)HighlightText(userPenerima.NamaPanggilan, SearchTextPesan, true))
+
+                                            </p>
+                                            @if (context.DataItem.Notes.Contains("pesan-suara-"))
+                                            {
+                                                if(context.DataItem.StatusGrup){
+                                                    var names = Regex.Matches(context.DataItem.Notes, @"^(.*?):", RegexOptions.Multiline)
+                                        .Cast<Match>()
+                                        .Select(m => m.Groups[1].Value)
+                                        .ToList().FirstOrDefault();
+                                                    <p class="listbox-item-template-text-message pesan-suara">
+                                                        <span class="durasi">@names:</span>
+                                                        <span class="material-symbols-outlined" style="scale:.8;">mic</span>
+                                                        <span class="durasi">@context.DataItem.Durasi</span>
+                                                    </p>
+                                                }else{
+                                                    <p class="listbox-item-template-text-message pesan-suara">
+                                                        <span class="material-symbols-outlined" style="scale:.8;margin-left: -6px;">
+                                                            mic
+                                                        </span>
+                                                        <span class="durasi">@context.DataItem.Durasi</span>
+                                                    </p>
+                                                }
+                                            }
+                                            else{
+                                                <p class="listbox-item-template-text-message">@((MarkupString)HighlightText(context.DataItem.Notes, SearchTextPesan, true))</p>
+                                            }
+                                        </div>
+                                        <div class="listbox-item-template-time">
+                                            <p class="listbox-item-template-time-text">
+                                                @(context.DataItem.WaktuProses?.ToLocalTime().Date == DateTimeOffset.Now.Date
+                                                ? context.DataItem.WaktuProses?.ToLocalTime().ToString("HH.mm", CultureInfo.InvariantCulture)
+                                                : context.DataItem.WaktuProses?.ToLocalTime().Date == DateTimeOffset.Now.AddDays(-1).Date
+                                                ? "Kemarin"
+                                                : context.DataItem.WaktuProses?.ToLocalTime().ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+
+                                            </p>
+                                            @if (context.DataItem.StatusMessage == "Unread Multiple" && context.DataItem.TotalUnreadMessage != "0" && context.DataItem.IsMine == false)
+                                            {
+                                                <div class="listbox-item-template-unread-notif">
+                                                    <p style="font-size: 10px;">@context.DataItem.TotalUnreadMessage</p>
+                                                </div>
+                                            }
+                                            else if (context.DataItem.IsMine)
+                                            {
+                                                <span class="material-symbols-outlined" style="scale: .7;position:fixed;margin-top:12px;color: @(context.DataItem.StatusMessage == "read" ? "#0078D4" : "#00000066")">done_all</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </ItemDisplayTemplate>
+                            </DxListBox>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        }
+        else if(DtPesan.Count() < 1)
+        {
+            <div class="portal-notificationpane-top">
+                <div class="portal-notification-empty">
+                    <div class="portal-notification-empty-icon"><span class="material-symbols-outlined" style="scale: 4">mail</span></div>
+                    <div class="nodata-content">Belum ada pesan baru saat ini</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="portal-notificationpane-top">
+                <div class="portal-notification-empty">
+                    <div class="portal-notification-empty-icon"><span class="material-symbols-outlined" style="scale: 4;visibility:hidden">mail</span></div>
+                    <div class="nodata-content">Tidak ditemukan data yang sesuai</div>
+                </div>
+            </div>
+        }
+                            
+    </div>
+</div>
+
+
+@*Dropdown chat more*@
+<DxDropDown @bind-IsOpen="@TampilkanChatDropdown"
+PositionMode="DropDownPositionMode.Bottom"
+Width="max(7vw, 100px)"
+PositionTarget="@($"#chat-dropdown-more-{IdDetilPesanAktif}")"
+CloseMode="DropDownCloseMode.Close"
+PreventCloseOnPositionTargetClick="true">
+    <div class="chat-dropdown-more">
+        <div class="chat-btn-action" @onclick="ProsesReplyPercakapan">
+            <span class="material-symbols-outlined" style="scale: .8;margin-right: 5px">reply</span>
+            <p style="margin-bottom: 0px">Balas</p>
+        </div>
+        <div class="chat-btn-action">
+            <span class="material-symbols-outlined" style="scale: .8;margin-right: 5px">content_copy</span>
+            <p style="margin-bottom: 0px">Salin</p>
+        </div>
+    </div>
+</DxDropDown>
+
+<DxDropDown @bind-IsOpen="@IsTampilkanPanelSearchPesan"
+PositionMode="DropDownPositionMode.Bottom"
+Width="100%"
+PositionTarget="#button-cari-pesan-id"
+CssClass="dropdown-cari-pesan"
+CloseMode="DropDownCloseMode.Close" CloseOnOutsideClick="false"
+PreventCloseOnPositionTargetClick="true">
+    <div class="search-container">
+        <div class="search-input-chat">
+            <DxTextBox @ref="@TxbSearchChat" NullText="Cari..." @bind-Text="SearchText" @oninput="@(e => OnSearchTextChanged(e.Value.ToString()))"></DxTextBox>
+            <span class="search-count" @onclick="@(() => {  TxbSearchChat.FocusAsync(); })">@(JumlahChatDitemukan > 0 ? $"{JumlahChatDitemukan}/{DtPercakapan.Where(x => x.StatusSystem == false).Count()}" : "")</span>
+        </div>
+        <div class="action-btn-container">
+            <button class="nav-btn" @onclick="TampilkanPencarianSebelumnya" disabled="@(JumlahChatDitemukan < 1)">
+                <span class="material-symbols-outlined" style="scale:1">
+                    expand_less
+                </span>
+            </button>
+            <button class="nav-btn" @onclick="TampilkanPencarianSelanjutnya" disabled="@(JumlahChatDitemukan < 1)">
+                <span class="material-symbols-outlined" style="scale:1">
+                    keyboard_arrow_down
+                </span>
+            </button>
+            <button class="nav-btn @(IsTampilkanCalendarSearchPesan ? "btn-pressed":"")" id="nav-btn-calendar-pesan" @onclick="@(() => { IsTampilkanCalendarSearchPesan = !IsTampilkanCalendarSearchPesan; })">
+                <span class="material-symbols-outlined" style="scale:0.8">
+                    calendar_month
+                </span>
+            </button>
+        </div>
+        <div class="vertical-line"></div>
+        <div class="action-btn-container">
+            <div class="nav-btn close-btn-search" @onclick="@(() => { IsTampilkanCalendarSearchPesan = false; IsTampilkanPanelSearchPesan = false; JumlahChatDitemukan = 0; SearchText=""; DtPercakapanSearch.Clear(); ChatAktif = null; })">
+                <span class="material-symbols-outlined" style="scale:.9">
+                    close
+                </span>
+            </div>
+        </div>
+    </div>
+</DxDropDown>
+<DxDropDown @bind-IsOpen="@IsTampilkanCalendarSearchPesan"
+PositionMode="DropDownPositionMode.Bottom"
+Width="100%"
+PositionTarget="#nav-btn-calendar-pesan"
+CssClass="dropdown-calendar-cari-pesan"
+CloseMode="DropDownCloseMode.Close"
+PreventCloseOnPositionTargetClick="true">
+    <DxCalendar SelectedDate="@SelectedDate" MinDate="@MinDate" MaxDate="@DateTime.Now"
+    SelectedDateChanged="@((DateTime newValue) => OnSelectedDateChanged(newValue))" />
+</DxDropDown>
+
+<DxDropDown @bind-IsOpen="@IsTampilkanTooltip"
+PositionMode="DropDownPositionMode.Top" Id="tooltip-pesan"
+Width="100%"
+PositionTarget="@ButtonTooltipTarget"
+CssClass="tooltip-button"
+CloseMode="DropDownCloseMode.Close"
+PreventCloseOnPositionTargetClick="true">
+    <div style="font-size:10px;">
+        @if (ButtonTooltipTarget.Contains("kirim"))
+        {
+            if(IsRecording || !string.IsNullOrEmpty(AudioPreviewUrl))
+            {
+                IsTooltipDuaBaris = false;
+                <span>Kirim Pesan Suara</span>
+            }
+            else
+            {
+                IsTooltipDuaBaris = true;
+                <span>Kirim Pesan (Enter)</span>
+                <br />
+                <span>Baris Baru (Shift+Enter)</span>
+            }
+        }
+        else
+        {
+            IsTooltipDuaBaris = false;
+            <span>Rekam Pesan Suara</span>
+        }
+    </div>
+</DxDropDown>
+
+
+@code{
+    private string iconClass = string.Empty;
+
+    private void AddIconActiveClass()
+    {
+        iconClass = "icon-active";
+    }
+
+    private void RemoveIconActiveClass()
+    {
+        iconClass = string.Empty;
+    }
 }
