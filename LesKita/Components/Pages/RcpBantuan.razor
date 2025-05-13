@@ -431,7 +431,7 @@
     }
 
     .btn-send-message {
-    background-color: #0078D4 !important;
+        background-color: #6282c8 !important;
     color: white !important;
     margin: 0 !important;
     display: flex !important;
@@ -441,13 +441,13 @@
     }
 
     .btn-send-message:hover {
-    background-color: #006EC2;
+            background-color: #3a5db4;
     box-shadow: none !important;
     color: white;
     }
 
     .btn-send-message:focus {
-    background-color: #005DA4;
+            background-color: #3a5db4;
     box-shadow: none !important;
     }
 
@@ -772,7 +772,7 @@
     }
 
     .portal-header.pesan {
-    height: @(TampilkanPersonalMessageSection ? "52px !important" : "64px !important");
+        height: @(TampilkanPersonalMessageSection ? "52px !important" : "64px !important");
     }
 
     .portal-notificationmenu-notification-wrapper.pesan {
@@ -839,7 +839,7 @@
 
     .portal-notificationpane.pesan {
     background-image: url('/images/Background-FC-portrait-revd.svg') !important;
-    background-color: #faf7f4;
+    /*background-color: #faf7f4;*/
     background-repeat: no-repeat !important;
     background-size: cover !important; /* Menyesuaikan dengan ukuran */
     background-position: center !important;
@@ -2350,7 +2350,7 @@
                                             }
                                             else if (context.DataItem.IsMine)
                                             {
-                                                <span class="material-symbols-outlined" style="scale: .7;position:fixed;margin-top:12px;color: @(context.DataItem.StatusMessage == "read" ? "#0078D4" : "#00000066")">done_all</span>
+                                                <span class="material-symbols-outlined" style="scale: .7;position:fixed;margin-top:12px;color: @(context.DataItem.StatusMessage == "read" ? "#3a5db4" : "#00000066")">done_all</span>
                                             }
                                         </div>
                                     </div>

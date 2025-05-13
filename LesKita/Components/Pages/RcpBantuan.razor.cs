@@ -179,8 +179,15 @@ public partial class RcpBantuan
             DtPesan.Add(pesan);
         }
         DtContact_Ditampilkan = DtContact;
+        var pesan1 = DtPesan.FirstOrDefault();
+        pesan1.IsMine = false;
+        pesan1.StatusMessage = "Unread Multiple";
+        pesan1.TotalUnreadMessage = "3";
         DtPesan_Ditampilkan = DtPesan;
 
+        var pesan2 = DtPesan.LastOrDefault();
+        pesan2.IsMine = true;
+        pesan2.StatusMessage = "read";
         if (DtPesan.Count > 0)
         {
             DtAnggota.AddRange(DtPesan.SelectMany(x => x.ListT7Pesan_Anggota).Adapt<List<uimT7Pesan_Anggota>>());
@@ -1298,11 +1305,6 @@ public partial class RcpBantuan
                 File.Delete(localFilePath);
             }
         }
-    }
-
-    void ProsesPlayPesanSuara(string idAudio)
-    {
-
     }
     #endregion
 
