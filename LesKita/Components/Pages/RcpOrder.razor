@@ -172,32 +172,32 @@
 </style>
 <style>
     .rating-place {
-        display: flex;
-        width: -webkit-fill-available;
-        align-items: center;
-        justify-content: center;
+    display: flex;
+    width: -webkit-fill-available;
+    align-items: center;
+    justify-content: center;
     }
 
     .komentar {
-        width: -webkit-fill-available;
+    width: -webkit-fill-available;
     }
 
     .komentar textarea {
-        width: -webkit-fill-available;
+    width: -webkit-fill-available;
     }
     .btn-review {
-        width: -webkit-fill-available;
-        background-color: #3a5db4;
-        border:none;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
+    width: -webkit-fill-available;
+    background-color: #3a5db4;
+    border:none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
     }
 
-        .btn-review:hover,
-        .btn-review:active {
-            background-color: #2f4da1;
-        }
+    .btn-review:hover,
+    .btn-review:active {
+    background-color: #2f4da1;
+    }
 </style>
 @foreach (var item in DtOrder)
 {
@@ -259,13 +259,15 @@
         <div class="space-x-1 mb-4 rating-place">
             @for (int i = 0; i < 5; i++)
             {
-                <span @onclick="() => SetRating(i + 1)"
-                  class="material-symbols-outlined cursor-pointer transition duration-150"
-                  style="font-size: 45px; color:@(GetStarClass(i))">
-                star
+                var index = i;  // Salin ke variabel lokal agar tidak tertimpa
+                <span @onclick="() => SetRating(index + 1)"
+                      style="font-size: 40px; color:@(index < currentRating ? "gold" : "gray")"
+                      class="material-symbols-sharp cursor-pointer">
+                    <i class="fa @(i < currentRating ? "fa-star" : "fa regular fa-star")" aria-hidden="true"></i>
                 </span>
             }
         </div>
+
 
         <div class="komentar">
             <p class="text-sm mb-2" style="font-size: 16px;font-weight: 600;">Tell us more (optional)</p>
@@ -399,16 +401,13 @@
     }
 
     #region Rating
-    private int selectedRating = 0;
+    int currentRating = 0;
 
-    private void SetRating(int rating)
+    void SetRating(int rating)
     {
-        selectedRating = rating;
-    }
-
-    private string GetStarClass(int index)
-    {
-        return index < selectedRating ? "yellow" : "gray";
+        Console.WriteLine($"[DEBUG] Rating clicked: {rating}");
+        currentRating = rating;
+        StateHasChanged();
     }
     #endregion
 }

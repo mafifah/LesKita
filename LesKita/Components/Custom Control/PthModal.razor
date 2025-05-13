@@ -1,8 +1,8 @@
 ﻿@namespace LesKita.Components
 @using Microsoft.JSInterop
 @* Full-Screen Modal *@
-<div class="modal-overlay @(IsVisible ? "show" : "hide")" onclick="Close">
-    <div class="modal-container @(IsVisible ? "slide-up" : "slide-down")" onclick:stopPropagation>
+<div class="modal-overlay @(IsVisible ? "show" : "hide")" @onclick="Close">
+    <div class="modal-container @(IsVisible ? "slide-up" : "slide-down")" @onclick:stopPropagation>
         <div class="modal-content" style="@Style">
             @ChildContent
         </div>
@@ -101,7 +101,7 @@
     {
         IsVisible = false;
         StateHasChanged();
-        await Task.Delay(400); // Tunggu animasi selesai
+        //await Task.Delay(400); // Tunggu animasi selesai
         SetBodyScrollLock(false);
     }
 
