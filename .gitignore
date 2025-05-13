@@ -363,3 +363,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/LesKita/appsettings.Development.json
+/LesKita/credentials.json
+/LesKita/appsettings.json
