@@ -1,4 +1,5 @@
-﻿<style>
+﻿@using LesKita.Components
+<style>
     .page {
     background-color: #f9fafb;
     height: calc(100vh - 40px) !important;
@@ -132,44 +133,72 @@
     }
 
     .btn-action {
-        background-color: #6282c8;
-        color: white;
-        font-size: 12px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
+    background-color: #6282c8;
+    color: white;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
     }
 
     .action-order{
-        width: 35px;
-        height: 35px;
-        background-color: #f1f5f9;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    width: 35px;
+    height: 35px;
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     }
 
-        .action-order span{
-            cursor: pointer;
-            font-size:18px;
-            color: #6282c8;
-        }
+    .action-order span{
+    cursor: pointer;
+    font-size:18px;
+    color: #6282c8;
+    }
 
     .action-order:hover,
     .action-order:active
     {
-        background-color: #6282c8;
+    background-color: #6282c8;
     }
 
-        .action-order span:hover,
-        .action-order span:active
-        {
-            color: #fff;
+    .action-order span:hover,
+    .action-order span:active
+    {
+    color: #fff;
+    }
+</style>
+<style>
+    .rating-place {
+        display: flex;
+        width: -webkit-fill-available;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .komentar {
+        width: -webkit-fill-available;
+    }
+
+    .komentar textarea {
+        width: -webkit-fill-available;
+    }
+    .btn-review {
+        width: -webkit-fill-available;
+        background-color: #3a5db4;
+        border:none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+        .btn-review:hover,
+        .btn-review:active {
+            background-color: #2f4da1;
         }
 </style>
-
 @foreach (var item in DtOrder)
 {
     <div class="card-modern">
@@ -206,21 +235,53 @@
                 </div>
             }
         </div>
-        @if (item.IsDone)
+        @if (item.IsAktif)
         {
             <!-- Footer -->
             <div class="card-footer">
                 <span></span>
-                <button class="btn-action">Beri Ulasan</button>
+                <button class="btn-action" @onclick="@ProsesSelesaikanPesanan">
+                    Selesai
+                </button>
             </div>
         }
-        
+
     </div>
 
 }
-@code {
 
-    private string? _filterAktif = string.Empty;
+<PthBottomSheet @ref="BottomSheetReview">
+    <div class="max-w-sm mx-auto mt-10 p-6 bg-white rounded-xl shadow-md relative">
+        <!-- Tap to rate -->
+        <p class="text-sm mb-2" style="font-size: 16px;font-weight: 600;">Tap to rate</p>
+
+        <!-- Stars Placeholder (can be made interactive later) -->
+        <div class="space-x-1 mb-4 rating-place">
+            @for (int i = 0; i < 5; i++)
+            {
+                <span @onclick="() => SetRating(i + 1)"
+                  class="material-symbols-outlined cursor-pointer transition duration-150"
+                  style="font-size: 45px; color:@(GetStarClass(i))">
+                star
+                </span>
+            }
+        </div>
+
+        <div class="komentar">
+            <p class="text-sm mb-2" style="font-size: 16px;font-weight: 600;">Tell us more (optional)</p>
+            <textarea placeholder="Why this rating?" class="w-full border border-gray-300 rounded-md p-2 text-sm mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
+
+        </div>
+
+
+        <!-- Submit Button -->
+        <button class="text-white py-2 text-sm font-semibold btn-review">Selesaikan Pesanan</button>
+    </div>
+
+</PthBottomSheet>
+
+@code {
+    public PthBottomSheet BottomSheetReview { get; set; }
     private List<T1Order> DtOrder = new();
 
     protected override async Task OnInitializedAsync()
@@ -331,4 +392,23 @@
 
         return "Status Tidak Diketahui";
     }
+
+    public async Task ProsesSelesaikanPesanan()
+    {
+        BottomSheetReview.ShowBottomSheet();
+    }
+
+    #region Rating
+    private int selectedRating = 0;
+
+    private void SetRating(int rating)
+    {
+        selectedRating = rating;
+    }
+
+    private string GetStarClass(int index)
+    {
+        return index < selectedRating ? "yellow" : "gray";
+    }
+    #endregion
 }
