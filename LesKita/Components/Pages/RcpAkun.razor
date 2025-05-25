@@ -1,13 +1,292 @@
-﻿@page "/akun"
+﻿@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-<button @onclick="@(() => { Navigation.NavigateTo("/login"); })">Login</button>
-<button @onclick="@ProsesLogOut">Logout</button>
-@code {
-    protected override async Task OnInitializedAsync()
+@inject IJSRuntime JSR
+@inject IDbContextFactory<LesKitaDbContext> DbFactory
+<style>
+    .page {
+    background-color: #fff;
+    height: calc(100vh - 40px) !important;
+    }
+
+    .header {
+    display: none !important;
+    }
+
+    .profile-container {
+    margin: 5rem auto;
+    padding: 1.5rem;
+    border-radius: 20px;
+    font-family: sans-serif;
+    text-align: center;
+    }
+
+    .avatar-circle {
+    background: #eee;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #555;
+    font-size: 1.5rem;
+    }
+
+    .join-date {
+    font-size: 0.9rem;
+    color: #888;
+    }
+
+    .card {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    text-align: left;
+    border-radius: 15px;
+    border: 0.5px solid rgba(0, 0, 0, .1);
+    }
+
+    .card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    }
+
+    .info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    gap: 10px;
+    }
+
+    .info-row.notifikasi {
+    justify-content: space-between;
+    }
+
+    /* Toggle Switch */
+    .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    }
+
+    .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    }
+
+    .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: 0.4s;
+    }
+
+    .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+    }
+
+    .switch input:checked + .slider {
+    background-color: #6282c8;
+    }
+
+    .switch input:checked + .slider:before {
+    transform: translateX(18px);
+    }
+
+    .editable-input {
+    border: none;
+    border-bottom: 0.5px solid rgba(0, 0, 0, .1);
+    background: transparent;
+    padding: 4px;
+    width: 100%;
+    font-size: 0.95rem;
+    outline: none; /* Hilangkan garis biru default browser */
+    transition: border-color 0.3s ease;
+    }
+
+    .editable-input:focus {
+    border: none;
+    border-bottom: 0.5px solid #6282c8;
+    outline: none;
+    }
+
+    .update-button {
+    margin-top: 2rem;
+    background-color: #6282c8;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.8rem 0;
+    width: 100%;
+    border-radius: 40px;
+    transition: background 0.3s;
+    }
+
+    .update-button:hover,
+    .update-button:active {
+    background-color: #2f4da1;
+    }
+
+    /* Sign out button */
+    .signout-button {
+    margin-top: 2rem;
+    background-color: #f7f7f7;
+    color: #6a46e5;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.8rem 0;
+    width: 100%;
+    border-radius: 40px;
+    transition: background 0.3s;
+    }
+
+    .signout-button:hover {
+    background: rgba(106, 70, 229, 0.08);
+    }
+</style>
+<div class="profile-container">
+    <div class="avatar-circle">
+        <span>A</span>
+    </div>
+    <h2>@DtUser.Nama</h2>
+    <p class="join-date">Joined @DtUser.WaktuInsert.Value.ToString("MMMM dd, yyyy")</p>
+
+    <div class="card">
+        <h3>General</h3>
+        <div class="info-row">
+            <span class="material-symbols-outlined" style="font-size:25px;">person</span>
+            <input class="editable-input" @bind="@DtUser.Nama" />
+        </div>
+        <div class="info-row">
+            <span class="material-symbols-outlined" style="font-size: 21px;">mail</span>
+            <input class="editable-input" @bind="@DtUser.Email" />
+        </div>
+        <div class="info-row">
+            <span class="material-symbols-outlined" style="font-size:21px;">call</span>
+            <input class="editable-input" @bind="@DtUser.NoTelepon" />
+        </div>
+        <div class="info-row">
+            <span class="material-symbols-outlined" style="font-size:22px;">location_on</span>
+            <input class="editable-input" @bind="DtUser.Alamat" />
+        </div>
+        <div class="info-row">
+            <span class="material-symbols-outlined" style="font-size:22px;">location_on</span>
+            <select class="editable-input" id="role" @bind="DtUser.Role" style="padding: 6px; border-radius: 8px; border: 1px solid #ccc;">
+                <option value="">Pilih</option>
+                <option value="Siswa">Siswa</option>
+                <option value="Mentor">Mentor</option>
+            </select>
+        </div>
+    </div>
+    <div class="card">
+        <h3>Notifikasi</h3>
+        <div class="info-row notifikasi">
+            <div class="label" style="display:flex;gap:10px;">
+                <span class="material-symbols-outlined" style="font-size:21px;">notifications</span>
+                <span>Aktifkan Notifikasi</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" @bind="DtUser.StatusNotifikasi" />
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    @if (!DtUser.Nama.Contains("Tamu"))
     {
+        <button class="update-button" @onclick="@ProsesPerbaruiData">Perbarui Data</button>
+        <button class="signout-button" @onclick="ProsesLogOut">Sign out</button>
+    }
+    else
+    {
+        <button class="signout-button" @onclick="@(() => { Navigation.NavigateTo("/login"); })">Log In</button>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public RcpUtama RcpUtama { get; set; }
+
+    public uimT2User DtAwal = new();
+    public uimT2User DtUser = new();
+    public LesKitaDbContext DbContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var user = RcpUtama.User;
+        DtUser = user;
+        DbContext = DbFactory.CreateDbContext();
         
     }
 
+    private async Task ProsesPerbaruiData()
+    {
+        if (DtUser.Nama == "Tamu") return;
+
+        var existingUser = DbContext.T2User.FirstOrDefault(x => x.IdUser == DtUser.IdUser);
+
+        if (existingUser != null)
+        {
+            DtUser.Adapt(existingUser); // salin ke instance yang sedang ditracking
+
+            if (DtUser.Role == "Mentor")
+            {
+                var mentor = DbContext.T0Mentor.FirstOrDefault(x => x.IdUser == DtUser.IdUser);
+                if (mentor != null)
+                {
+                    DtUser.Adapt(mentor); // salin properti ke entitas yang dilacak
+                }
+            }
+            else if (DtUser.Role == "Siswa")
+            {
+                var siswa = DbContext.T0Siswa.FirstOrDefault(x => x.IdUser == DtUser.IdUser);
+                if (siswa != null)
+                {
+                    DtUser.Adapt(siswa);
+                }
+            }
+        }
+        else
+        {
+            DbContext.T2User.Add(DtUser);
+
+            if (DtUser.Role == "Mentor")
+            {
+                var mentor = DtUser.Adapt<T0Mentor>();
+                DbContext.T0Mentor.Add(mentor);
+            }
+            else if (DtUser.Role == "Siswa")
+            {
+                var siswa = DtUser.Adapt<T0Siswa>();
+                DbContext.T0Siswa.Add(siswa);
+            }
+        }
+
+        await DbContext.SaveChangesAsync();
+    }
+
+
+    
     private void ProsesLogOut()
     {
         Navigation.NavigateTo("auth/logout", forceLoad: true);

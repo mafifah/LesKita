@@ -18,12 +18,14 @@ public class T1Order
     public DateTimeOffset? Siswa_Usia { get; set; }
     public string? Siswa_Alamat { get; set; }
     public string? Siswa_Email { get; set; }
+    public string? Siswa_NoTelepon { get; set; }
 
     public string? Mentor_Nama { get; set; }
     public DateTimeOffset? Mentor_TanggalLahir { get; set; }
     public DateTimeOffset? Mentor_Usia { get; set; }
     public string? Mentor_Alamat { get; set; }
     public string? Mentor_Email { get; set; }
+    public string? Mentor_NoTelepon { get; set; }
     public bool IsPaid { get; set; } = false;
     public bool IsAktif { get; set; } = false;
     public bool IsCancel { get; set; } = false;

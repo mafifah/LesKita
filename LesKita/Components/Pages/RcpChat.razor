@@ -5,11 +5,11 @@
 @inject ClsServisDrive Drive
 <style>
     .header {
-    display: none !important;
+        display: none !important;
     }
 
     .page {
-    height: calc(100vh - 40px) !important;
+        height: calc(100vh - 40px) !important;
     }
 </style>
 <script>
@@ -219,649 +219,649 @@
 <style>
 
     .portal-message {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+        color: #292827;
+        border-color: #d6d6d6;
+        background-color: #ffffff;
+        outline: 0 !important;
+        width: 480px;
+        overflow: initial;
+        display: flex;
+        flex-flow: column nowrap;
+        height: 100vh;
+        box-sizing: border-box;
+        z-index: 80;
+        position: fixed;
+        right: 0;
+        line-height: normal;
+        box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
     }
 
     .portal-new-message {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: none;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+        color: #292827;
+        border-color: #d6d6d6;
+        background-color: #ffffff;
+        outline: 0 !important;
+        width: 480px;
+        overflow: initial;
+        display: none;
+        flex-flow: column nowrap;
+        height: 100vh;
+        box-sizing: border-box;
+        z-index: 80;
+        position: fixed;
+        right: 0;
+        line-height: normal;
+        box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
     }
 
     .search-people-input {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
     }
 
     .btn-action-search {
-    margin-top: .2rem;
-    position: absolute;
-    right: 25px;
-    cursor: pointer;
-    z-index: 1;
+        margin-top: .2rem;
+        position: absolute;
+        right: 25px;
+        cursor: pointer;
+        z-index: 1;
     }
 
     .btn-action-new-group {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 15px;
-    gap: 10px;
-    padding: 10px 10px;
-    background-color: #F7F7F7;
-    cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 15px;
+        gap: 10px;
+        padding: 10px 10px;
+        background-color: #F7F7F7;
+        cursor: pointer;
     }
 
-    .btn-action-new-group:hover {
-    background-color: rgba(217, 217, 217, 0.4);
-    ;
-    }
+        .btn-action-new-group:hover {
+            background-color: rgba(217, 217, 217, 0.4);
+            ;
+        }
 
-    .btn-action-new-group:focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    }
+        .btn-action-new-group:focus {
+            background-color: rgba(217, 217, 217, 0.8) !important;
+        }
 
-    .btn-action-new-group:active {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    }
+        .btn-action-new-group:active {
+            background-color: rgba(217, 217, 217, 0.8) !important;
+        }
 
     .tag-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 5px;
-    background-color: #D9D9D9;
-    width: fit-content;
-    padding: 0px 11px;
-    border-radius: 15px;
-    cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        background-color: #D9D9D9;
+        width: fit-content;
+        padding: 0px 11px;
+        border-radius: 15px;
+        cursor: pointer;
     }
 
-    .tag-wrapper:hover {
-    background-color: #C9C9C9;
-    cursor: pointer;
-    }
+        .tag-wrapper:hover {
+            background-color: #C9C9C9;
+            cursor: pointer;
+        }
 
-    .tag-wrapper:focus {
-    background-color: #BCBCBC;
-    cursor: pointer;
-    }
+        .tag-wrapper:focus {
+            background-color: #BCBCBC;
+            cursor: pointer;
+        }
 
     .list-contact-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        margin-top: 25px;
     }
 
     .list-contact-initial {
-    padding-top: .55rem;
-    color: white;
-    font-weight: 500;
-    font-size: 16px;
-    margin: 0 !important;
+        padding-top: .55rem;
+        color: white;
+        font-weight: 500;
+        font-size: 16px;
+        margin: 0 !important;
     }
 
     .list-recently-contacted {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
     }
 
     .contact-data-wrapper-member {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
     }
 
     .list-contact-add-member-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
     }
 
-    .list-contact-add-member-wrapper:hover {
-    background-color: rgba(217, 217, 217, 0.4);
-    }
+        .list-contact-add-member-wrapper:hover {
+            background-color: rgba(217, 217, 217, 0.4);
+        }
 
-    .list-contact-add-member-wrapper:focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    }
+        .list-contact-add-member-wrapper:focus {
+            background-color: rgba(217, 217, 217, 0.8) !important;
+        }
 
-    .list-contact-add-member-wrapper:active {
-    background-color: rgba(217, 217, 217, 0.9) !important;
-    }
+        .list-contact-add-member-wrapper:active {
+            background-color: rgba(217, 217, 217, 0.9) !important;
+        }
 
     .contact-data-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
     }
 
-    .contact-data-wrapper:hover {
-    background-color: rgba(217, 217, 217, 0.4);
-    cursor: pointer;
-    }
+        .contact-data-wrapper:hover {
+            background-color: rgba(217, 217, 217, 0.4);
+            cursor: pointer;
+        }
 
-    .contact-data-wrapper:focus {
-    background-color: rgba(217, 217, 217, 0.8) !important;
-    cursor: pointer;
-    }
+        .contact-data-wrapper:focus {
+            background-color: rgba(217, 217, 217, 0.8) !important;
+            cursor: pointer;
+        }
 
-    .contact-data-wrapper:active {
-    background-color: rgba(217, 217, 217, 0.9) !important;
-    cursor: pointer;
-    }
+        .contact-data-wrapper:active {
+            background-color: rgba(217, 217, 217, 0.9) !important;
+            cursor: pointer;
+        }
 
     .list-contact-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: #8D8D8D;
-    border-radius: 50% !important;
-    text-align: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: #8D8D8D;
+        border-radius: 50% !important;
+        text-align: center;
     }
 
     .btn-action-icon {
-    padding: 10px;
-    background-color: #EEEEEE;
-    border-radius: 50%;
+        padding: 10px;
+        background-color: #EEEEEE;
+        border-radius: 50%;
     }
 
 
     .portal-add-member {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: none;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+        color: #292827;
+        border-color: #d6d6d6;
+        background-color: #ffffff;
+        outline: 0 !important;
+        width: 480px;
+        overflow: initial;
+        display: none;
+        flex-flow: column nowrap;
+        height: 100vh;
+        box-sizing: border-box;
+        z-index: 80;
+        position: fixed;
+        right: 0;
+        line-height: normal;
+        box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
     }
 
     .portal-title-text-add-member {
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 28px;
-    flex: 0 1 auto;
-    margin-right: 16px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    visibility: visible;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 28px;
+        flex: 0 1 auto;
+        margin-right: 16px;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        visibility: visible;
     }
 
     .portal-title-toprow-add-member {
-    display: flex;
-    visibility: visible;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+        display: flex;
+        visibility: visible;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .portal-title-text-new-message {
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 28px;
-    flex: 0 1 auto;
-    margin-right: 16px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    visibility: visible;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 28px;
+        flex: 0 1 auto;
+        margin-right: 16px;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        visibility: visible;
     }
 
     .portal-create-group {
-    color: #292827;
-    border-color: #d6d6d6;
-    background-color: #ffffff;
-    outline: 0 !important;
-    width: 480px;
-    overflow: initial;
-    display: none;
-    flex-flow: column nowrap;
-    height: 100vh;
-    box-sizing: border-box;
-    z-index: 80;
-    position: fixed;
-    right: 0;
-    line-height: normal;
-    box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
+        color: #292827;
+        border-color: #d6d6d6;
+        background-color: #ffffff;
+        outline: 0 !important;
+        width: 480px;
+        overflow: initial;
+        display: none;
+        flex-flow: column nowrap;
+        height: 100vh;
+        box-sizing: border-box;
+        z-index: 80;
+        position: fixed;
+        right: 0;
+        line-height: normal;
+        box-shadow: 0 24px 54px rgba(0,0,0,.15),0 4.5px 13.5px rgba(0,0,0,.08);
     }
 
     .input-group-name {
-    background-color: #F7F7F7;
-    border: none !important;
-    width: 100vh;
-    height: 2.5rem;
-    border-radius: 5px;
+        background-color: #F7F7F7;
+        border: none !important;
+        width: 100vh;
+        height: 2.5rem;
+        border-radius: 5px;
     }
 
     .icon-active {
-    color: #0078D4 !important;
+        color: #0078D4 !important;
     }
 
     .avatar-group-wrapper {
-    padding: 10px;
-    border-radius: 50%;
-    background-color: #ECECEC;
-    width: 3rem;
-    text-align: center
+        padding: 10px;
+        border-radius: 50%;
+        background-color: #ECECEC;
+        width: 3rem;
+        text-align: center
     }
 
-    .avatar-group-wrapper:hover {
-    background-color: rgba(217, 217, 217, 0.6);
-    color: white;
-    cursor: pointer;
-    }
+        .avatar-group-wrapper:hover {
+            background-color: rgba(217, 217, 217, 0.6);
+            color: white;
+            cursor: pointer;
+        }
 
-    .avatar-group-wrapper:focus {
-    background-color: rgba(217, 217, 217, 0.8);
-    color: white;
-    cursor: pointer;
-    }
+        .avatar-group-wrapper:focus {
+            background-color: rgba(217, 217, 217, 0.8);
+            color: white;
+            cursor: pointer;
+        }
 
-    .avatar-group-wrapper:active {
-    background-color: rgba(217, 217, 217, 0.9);
-    color: white;
-    cursor: pointer;
-    }
+        .avatar-group-wrapper:active {
+            background-color: rgba(217, 217, 217, 0.9);
+            color: white;
+            cursor: pointer;
+        }
 
     .btn-icon-sticker {
-    color: #BFBFBF;
-    scale: 1
+        color: #BFBFBF;
+        scale: 1
     }
 
-    .btn-icon-sticker:hover {
-    scale: 1.2;
-    color: #0078D4;
-    }
+        .btn-icon-sticker:hover {
+            scale: 1.2;
+            color: #0078D4;
+        }
 
     .btn-send {
-    height: 30.6px !important; /* Pastikan tombol memenuhi tinggi parent */
+        height: 30.6px !important; /* Pastikan tombol memenuhi tinggi parent */
     }
 
     .btn-send-message {
         background-color: #6282c8 !important;
-    color: white !important;
-    margin: 0 !important;
-    display: flex !important;
-    align-items: center !important; /* Tengah secara vertikal */
-    justify-content: center !important;
-    height: 29.6px !important; /* Pastikan tombol memenuhi tinggi parent */
+        color: white !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important; /* Tengah secara vertikal */
+        justify-content: center !important;
+        height: 29.6px !important; /* Pastikan tombol memenuhi tinggi parent */
     }
 
-    .btn-send-message:hover {
+        .btn-send-message:hover {
             background-color: #3a5db4;
-    box-shadow: none !important;
-    color: white;
-    }
+            box-shadow: none !important;
+            color: white;
+        }
 
-    .btn-send-message:focus {
+        .btn-send-message:focus {
             background-color: #3a5db4;
-    box-shadow: none !important;
-    }
+            box-shadow: none !important;
+        }
 
     .btn-icon-attach {
-    color: #BFBFBF;
-    scale: .8
+        color: #BFBFBF;
+        scale: .8
     }
 
-    .btn-icon-attach:hover {
-    scale: 1;
-    color: #0078D4;
-    }
+        .btn-icon-attach:hover {
+            scale: 1;
+            color: #0078D4;
+        }
 
     .btn-chat-more-personal {
-    background-color: #fff !important;
-    padding: 0 !important;
-    height: 1.5rem !important;
+        background-color: #fff !important;
+        padding: 0 !important;
+        height: 1.5rem !important;
     }
 
-    .btn-chat-more-personal:hover,
-    .btn-chat-more-personal:focus {
-    background-color: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
-    box-shadow: none !important;
-    }
+        .btn-chat-more-personal:hover,
+        .btn-chat-more-personal:focus {
+            background-color: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+            box-shadow: none !important;
+        }
 
-    .btn-chat-more-personal:active {
-    background-color: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
-    box-shadow: none !important;
-    }
+        .btn-chat-more-personal:active {
+            background-color: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+            box-shadow: none !important;
+        }
 
     .btn-chat-more-recipient {
-    background-color: #fff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    height: 1.5rem !important;
+        background-color: #fff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 1.5rem !important;
     }
 
-    .btn-chat-more-recipient:hover,
-    .btn-chat-more-recipient:focus {
-    background-color: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
-    box-shadow: none !important;
-    }
+        .btn-chat-more-recipient:hover,
+        .btn-chat-more-recipient:focus {
+            background-color: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+            box-shadow: none !important;
+        }
 
-    .btn-chat-more-recipient:active {
-    background-color: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
-    box-shadow: none !important;
-    }
+        .btn-chat-more-recipient:active {
+            background-color: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+            box-shadow: none !important;
+        }
 
     .dxbl-list-box[data-dx-focus-hidden]:focus {
-    box-shadow: none;
+        box-shadow: none;
     }
 
     .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):hover:not(.dxbl-list-box-item-focused):not(:focus), .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):hover:not(.dxbl-list-box-item-focused):not(:focus) {
-    background-color: transparent;
-    cursor: default;
+        background-color: transparent;
+        cursor: default;
     }
 
     .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):focus, .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):focus {
-    background-color: transparent !important;
-    cursor: default;
+        background-color: transparent !important;
+        cursor: default;
     }
 
     .list-message-panel.dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):active, .list-message-panel.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not([dxbl-top-virtual-spacer-element]):not([dxbl-bottom-virtual-spacer-element]):active {
-    background-color: transparent !important;
-    cursor: default;
+        background-color: transparent !important;
+        cursor: default;
     }
 
     .dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled), .dxbl-list-box-render-container:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > tbody > tr:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled), .dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > li:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled), .dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > :not(.dxbl-list-box-empty-data-container) > tbody > tr:not(.dxbl-list-box-group-item):not(.dxbl-list-box-item-disabled) {
-    cursor: pointer !important;
+        cursor: pointer !important;
     }
 
     .list-message-panel.dxbl-list-box:not([data-dx-focus-hidden]):not(.dxbl-list-box-multi-select) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
-    background-color: transparent !important;
+        background-color: transparent !important;
     }
 
     .btn-icon-back {
-    color: #0078D4;
-    scale: 1.5;
-    margin-left: -8px;
-    margin-top: 3px;
+        color: #0078D4;
+        scale: 1.5;
+        margin-left: -8px;
+        margin-top: 3px;
     }
 
-    .btn-icon-back:hover {
-    color: #005A9E;
-    }
+        .btn-icon-back:hover {
+            color: #005A9E;
+        }
 
-    .btn-icon-back:focus {
-    color: #005A9E;
-    }
+        .btn-icon-back:focus {
+            color: #005A9E;
+        }
 
     .btn-icon-next {
-    color: #0078D4;
-    font-weight: 500;
-    margin-bottom: 2px;
+        color: #0078D4;
+        font-weight: 500;
+        margin-bottom: 2px;
     }
 
-    .btn-icon-next:hover {
-    color: #005A9E;
-    }
+        .btn-icon-next:hover {
+            color: #005A9E;
+        }
 
-    .btn-icon-next:focus {
-    color: #005A9E;
-    }
+        .btn-icon-next:focus {
+            color: #005A9E;
+        }
 
-    .btn-icon-next:active {
-    color: #005A9E;
-    }
+        .btn-icon-next:active {
+            color: #005A9E;
+        }
 
     .btn-icon-back-text {
-    color: #0078D4;
-    font-weight: 500;
-    margin-bottom: 2px;
+        color: #0078D4;
+        font-weight: 500;
+        margin-bottom: 2px;
     }
 
-    .btn-icon-back-text:hover {
-    color: #005A9E;
-    }
+        .btn-icon-back-text:hover {
+            color: #005A9E;
+        }
 
-    .btn-icon-back-text:focus {
-    color: #005A9E;
-    }
+        .btn-icon-back-text:focus {
+            color: #005A9E;
+        }
 
-    .btn-icon-back-text:active {
-    color: #005A9E;
-    }
+        .btn-icon-back-text:active {
+            color: #005A9E;
+        }
 
 
     .personal-chat-wrapper.dxbl-list-box:not(.dxbl-disabled):not(:disabled):not(.dxbl-readonly) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:hover {
-    background: none;
-    background-color: transparent !important;
-    cursor: default !important;
+        background: none;
+        background-color: transparent !important;
+        cursor: default !important;
     }
 
     .personal-chat-wrapper.dxbl-list-box:not([data-dx-focus-hidden]):not(.dxbl-list-box-multi-select) > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
-    background: none;
-    background-color: transparent !important;
+        background: none;
+        background-color: transparent !important;
     }
 
     .personal-chat-wrapper.dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li.dxbl-list-box-item-selected {
-    background: none;
-    background-color: transparent !important;
+        background: none;
+        background-color: transparent !important;
     }
 
     .portal-personal-message-bottom {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    background-color: #F9FAFC;
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 50px;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        background-color: #F9FAFC;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 50px;
     }
 
     .personal-chat-input-message-small {
-    border-radius: 5px !important;
-    padding-left: 3rem;
-    width: 100%;
+        border-radius: 5px !important;
+        padding-left: 3rem;
+        width: 100%;
     }
 
     .btn-action-sticker-new {
-    position: absolute;
-    cursor: pointer;
-    z-index: 1;
-    margin-top: 5px;
-    margin-left: .5rem;
-    scale: 1;
-    bottom: 0;
+        position: absolute;
+        cursor: pointer;
+        z-index: 1;
+        margin-top: 5px;
+        margin-left: .5rem;
+        scale: 1;
+        bottom: 0;
     }
 
     .btn-action-attach {
-    position: absolute;
-    cursor: pointer;
-    z-index: 1;
-    margin-top: 5px;
-    margin-left: 1.8rem;
-    bottom: 0;
+        position: absolute;
+        cursor: pointer;
+        z-index: 1;
+        margin-top: 5px;
+        margin-left: 1.8rem;
+        bottom: 0;
     }
 
     .portal-reply-message-wrapper-bottom-small {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #0000001A;
-    padding: 5px 9px;
-    margin-bottom: 7px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #0000001A;
+        padding: 5px 9px;
+        margin-bottom: 7px;
     }
 
-    .portal-reply-message-wrapper-bottom-small .pesan-dikutip {
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 500 !important;
-    font-size: 11px !important;
-    line-height: 20px !important;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 402px;
-    }
+        .portal-reply-message-wrapper-bottom-small .pesan-dikutip {
+            font-family: 'Nunito Sans', sans-serif;
+            font-weight: 500 !important;
+            font-size: 11px !important;
+            line-height: 20px !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 402px;
+        }
 
     .portal-link-preview-wrapper-bottom-small {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0;
-    background-color: #F0F8FF;
-    border: 1px solid #E0E0E6;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
-    margin: 0
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        background-color: #F0F8FF;
+        border: 1px solid #E0E0E6;
+        border-radius: 5px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
+        margin: 0
     }
 
-    .portal-link-preview-wrapper-bottom-small:hover {
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
-    }
+        .portal-link-preview-wrapper-bottom-small:hover {
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.16);
+        }
 
-    .portal-link-preview-wrapper-bottom-small:active,
-    .portal-link-preview-wrapper-bottom-small:focus {
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
-    }
+        .portal-link-preview-wrapper-bottom-small:active,
+        .portal-link-preview-wrapper-bottom-small:focus {
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
+        }
 
     .default-link-icon {
-    width: 70px; /* Biar mengikuti parent */
-    height: 70px; /* Sesuaikan dengan parent */
-    aspect-ratio: 1 / 1; /* Memastikan bentuk selalu kotak */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #E3E3E3; /* Warna default */
-    border-radius: 5px; /* Opsional: Jika ingin rounded */
-    margin-right: 8px;
+        width: 70px; /* Biar mengikuti parent */
+        height: 70px; /* Sesuaikan dengan parent */
+        aspect-ratio: 1 / 1; /* Memastikan bentuk selalu kotak */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #E3E3E3; /* Warna default */
+        border-radius: 5px; /* Opsional: Jika ingin rounded */
+        margin-right: 8px;
     }
 
-    .default-link-icon span {
-    font-size: 30px; /* Ukuran ikon */
-    color: #A6A6A6;
-    }
+        .default-link-icon span {
+            font-size: 30px; /* Ukuran ikon */
+            color: #A6A6A6;
+        }
 
     .preview-title {
-    color: black;
-    font-size: 14px;
+        color: black;
+        font-size: 14px;
     }
 
     .preview-title, .preview-url {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 340px;
-    margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 340px;
+        margin: 0;
     }
 
     .preview-url {
-    color: #B0B0B0;
-    font-size: 10px;
+        color: #B0B0B0;
+        font-size: 10px;
     }
 
     .preview-description {
-    color: #4F4F4F;
-    font-size: 10px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: break-word;
-    max-height: 3em;
-    margin: 0;
-    line-height: 1.3;
+        color: #4F4F4F;
+        font-size: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+        max-height: 3em;
+        margin: 0;
+        line-height: 1.3;
     }
 
     .cancel-button {
-    display: flex;
-    align-items: center; /* Pusatkan secara vertikal */
-    justify-content: center; /* Pusatkan secara horizontal */
-    width: 70px;
-    height: 70px;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+        display: flex;
+        align-items: center; /* Pusatkan secara vertikal */
+        justify-content: center; /* Pusatkan secara horizontal */
+        width: 70px;
+        height: 70px;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
     }
 
-    .cancel-button:hover {
-    background-color: #E3E3E3;
-    }
+        .cancel-button:hover {
+            background-color: #E3E3E3;
+        }
 
-    .cancel-button:active,
-    .cancel-button:focus {
-    background-color: #D1D1D1;
-    }
+        .cancel-button:active,
+        .cancel-button:focus {
+            background-color: #D1D1D1;
+        }
 
     .btn-icon-next.disabled,
     .btn-icon-back-text.disabled
     .portal-notification-dismisscontainer.disabled {
-    pointer-events: none;
+        pointer-events: none;
     }
 
     .btn-icon-next.disabled,
     .btn-icon-back-text.disabled,
     .portal-notification-dismisscontainer.disabled .portal-notificationpane-activitylog-link {
-    color: #c6c6c6 !important;
+        color: #c6c6c6 !important;
     }
 
     .chat-component-wrapper-personal-message,
     .chat-component-wrapper-recipient-message {
-    font-size: 12px !important;
+        font-size: 12px !important;
     }
 
     .chat-component-header .sender {
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 500 !important;
-    font-size: 11px !important;
-    line-height: 22px !important;
-    margin-top: 20px !important;
-    margin-left: 8px !important;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 500 !important;
+        font-size: 11px !important;
+        line-height: 22px !important;
+        margin-top: 20px !important;
+        margin-left: 8px !important;
     }
 
 
     .dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:not([dxbl-top-virtual-spacer-element]) + li.dxbl-list-box-group-item::before {
-    content: none !important;
+        content: none !important;
     }
 
     .portal-header.pesan {
@@ -869,729 +869,729 @@
     }
 
     .portal-notificationmenu-notification-wrapper.pesan {
-    padding: 10px 10px 10px 0px;
+        padding: 10px 10px 10px 0px;
     }
 
 
     @@keyframes growFade {
-    0% {
-    transform: scale(0);
-    opacity: 0;
-    }
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
 
-    60% {
-    transform: scale(1.1);
-    opacity: 1;
-    }
+        60% {
+            transform: scale(1.1);
+            opacity: 1;
+        }
 
-    100% {
-    transform: scale(1);
-    }
+        100% {
+            transform: scale(1);
+        }
     }
 
     .chat-component-wrapper-personal .btn-action-chat-dropdown {
-    padding-right: 10px;
+        padding-right: 10px;
     }
 
     .btn-action-chat-dropdown {
-    display: block; /* Supaya awalnya tidak muncul */
+        display: block; /* Supaya awalnya tidak muncul */
     }
 
-    .btn-action-chat-dropdown.show {
-    visibility: visible;
-    opacity: 1;
-    animation: growFade 0.3s ease-out;
-    }
+        .btn-action-chat-dropdown.show {
+            visibility: visible;
+            opacity: 1;
+            animation: growFade 0.3s ease-out;
+        }
 
-    .btn-action-chat-dropdown.hide {
-    visibility: hidden;
-    opacity: 0;
-    }
+        .btn-action-chat-dropdown.hide {
+            visibility: hidden;
+            opacity: 0;
+        }
 
     .display-profile-grup {
-    width: 28px;
-    height: 28px;
-    border-radius: 50% !important;
-    align-self: flex-start;
-    background-color: #8D8D8D;
-    box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.6);
+        width: 28px;
+        height: 28px;
+        border-radius: 50% !important;
+        align-self: flex-start;
+        background-color: #8D8D8D;
+        box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.6);
     }
 
 
     .display-profile-grup-initial {
-    height: 100%;
-    width: 100%;
-    justify-content: center;
-    color: white;
-    font-weight: 500;
-    font-size: 15px;
-    margin: 0 !important;
-    display: flex;
-    align-items: center;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        color: white;
+        font-weight: 500;
+        font-size: 15px;
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
     }
 
     .portal-notificationpane.pesan {
-    background-image: url('/images/Background-FC-portrait-revd.svg') !important;
-    /*background-color: #faf7f4;*/
-    background-repeat: no-repeat !important;
-    background-size: cover !important; /* Menyesuaikan dengan ukuran */
-    background-position: center !important;
+        background-image: url('/images/Background-FC-portrait-revd.svg') !important;
+        /*background-color: #faf7f4;*/
+        background-repeat: no-repeat !important;
+        background-size: cover !important; /* Menyesuaikan dengan ukuran */
+        background-position: center !important;
     }
 
     .dxbl-list-box.cw-640.ch-360 {
-    background-color: transparent !important;
+        background-color: transparent !important;
     }
 
-    .dxbl-list-box.cw-640.ch-360.personal-chat-wrapper .dxbl-scroll-viewer {
-    background-color: none !important;
-    background: none;
-    }
+        .dxbl-list-box.cw-640.ch-360.personal-chat-wrapper .dxbl-scroll-viewer {
+            background-color: none !important;
+            background: none;
+        }
 
     .content-chat {
-    padding-top: 3px;
-    padding-bottom: 4px;
-    padding-left: 8px;
-    padding-right: 8px;
-    box-sizing: border-box;
-    -webkit-user-select: text;
+        padding-top: 3px;
+        padding-bottom: 4px;
+        padding-left: 8px;
+        padding-right: 8px;
+        box-sizing: border-box;
+        -webkit-user-select: text;
     }
 
-    .content-chat .chat-component-time > p {
-    margin-bottom: 0px !important;
-    }
+        .content-chat .chat-component-time > p {
+            margin-bottom: 0px !important;
+        }
 
-    .content-chat .chat-component-time > span {
-    margin-bottom: -3px !important;
-    }
+        .content-chat .chat-component-time > span {
+            margin-bottom: -3px !important;
+        }
 
     .pesan-teks > span {
-    font-family: 'Nunito Sans', sans-serif !important;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 19px;
-    white-space: normal;
-    max-width: 100%;
-    margin-bottom: 0;
-    vertical-align: baseline;
-    scrollbar-width: thin;
+        font-family: 'Nunito Sans', sans-serif !important;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 19px;
+        white-space: normal;
+        max-width: 100%;
+        margin-bottom: 0;
+        vertical-align: baseline;
+        scrollbar-width: thin;
     }
 
     .pesan-teks-time {
-    font-family: 'Nunito Sans', sans-serif !important;
-    font-weight: 400;
-    font-size: 9px;
-    line-height: 15px;
-    white-space: normal;
-    max-width: 100%;
-    margin-bottom: 0;
-    vertical-align: baseline;
-    scrollbar-width: thin;
+        font-family: 'Nunito Sans', sans-serif !important;
+        font-weight: 400;
+        font-size: 9px;
+        line-height: 15px;
+        white-space: normal;
+        max-width: 100%;
+        margin-bottom: 0;
+        vertical-align: baseline;
+        scrollbar-width: thin;
     }
 
     .pesan-teks-system {
-    font-family: 'Nunito Sans', sans-serif !important;
-    font-weight: 400 !important;
-    font-size: 12px !important;
-    line-height: 21px !important;
-    color: #00000080;
+        font-family: 'Nunito Sans', sans-serif !important;
+        font-weight: 400 !important;
+        font-size: 12px !important;
+        line-height: 21px !important;
+        color: #00000080;
     }
 
     .memo-wrapper {
-    position: relative;
-    width: 100%;
+        position: relative;
+        width: 100%;
     }
 
     .auto-grow-up-memo {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
     }
 
     .memo-textarea-grow-up {
-    line-height: 21px;
-    box-sizing: border-box;
-    padding: 2px 4px;
-    border: 1px solid #ccc;
-    min-height: 25px;
-    height: 25px;
-    max-height: calc(21px * 5); /* Tetap 5 baris */
+        line-height: 21px;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        border: 1px solid #ccc;
+        min-height: 25px;
+        height: 25px;
+        max-height: calc(21px * 5); /* Tetap 5 baris */
 
-    resize: none;
-    overflow-y: hidden;
-    width: 100%;
+        resize: none;
+        overflow-y: hidden;
+        width: 100%;
     }
 
     .chat-list-box {
-    height: calc(100vh - 200px) !important;
+        height: calc(100vh - 200px) !important;
     }
 
     .personal-chat-wrapper.dxbl-list-box {
-    --dxbl-list-box-disabled-opacity: 1 !important;
+        --dxbl-list-box-disabled-opacity: 1 !important;
     }
 
     .dxbl-list-box-empty-data-item {
-    display: none !important;
+        display: none !important;
     }
 
     .spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(0, 0, 0, 0.1);
-    border-top: 2px solid #3498db;
-    border-radius: 50%;
-    align-self: center;
-    margin-left: 47%;
-    animation: spin 1s linear infinite;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        align-self: center;
+        margin-left: 47%;
+        animation: spin 1s linear infinite;
     }
 
     @@keyframes spin {
-    0% {
-    transform: rotate(0deg);
-    }
+        0% {
+            transform: rotate(0deg);
+        }
 
-    100% {
-    transform: rotate(360deg);
-    }
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .scroll-to-bottom {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    bottom: 60px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
-    backdrop-filter: blur(10px); /* Efek blur */
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Border tipis */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1), -2px -2px 5px rgba(255, 255, 255, 0.3);
-    font-size: 24px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        bottom: 60px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+        backdrop-filter: blur(10px); /* Efek blur */
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3); /* Border tipis */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1), -2px -2px 5px rgba(255, 255, 255, 0.3);
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
     }
 
-    /* Efek hover */
-    .scroll-to-bottom:hover {
-    background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
-    }
+        /* Efek hover */
+        .scroll-to-bottom:hover {
+            background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+        }
 
-    /* Efek klik */
-    .scroll-to-bottom:active {
-    background: rgba(0, 0, 0, 0.2) !important; /* Warna transparan */
-    }
+        /* Efek klik */
+        .scroll-to-bottom:active {
+            background: rgba(0, 0, 0, 0.2) !important; /* Warna transparan */
+        }
 
 
     .portal-personal-action {
-    display: flex;
-    gap: 15px;
-    position: fixed;
-    right: 7px;
-    color: #333;
+        display: flex;
+        gap: 15px;
+        position: fixed;
+        right: 7px;
+        color: #333;
     }
 
     .button-chat-back {
-    border-radius: 5px;
+        border-radius: 5px;
     }
 
     .button-telepon-pesan,
     .button-cari-pesan {
-    width: 35px;
-    height: 35px;
-    display: flex; /* Mengaktifkan flexbox */
-    align-items: center; /* Pusatkan secara vertikal */
-    justify-content: center; /* Pusatkan secara horizontal */
-    border-radius: 5px;
+        width: 35px;
+        height: 35px;
+        display: flex; /* Mengaktifkan flexbox */
+        align-items: center; /* Pusatkan secara vertikal */
+        justify-content: center; /* Pusatkan secara horizontal */
+        border-radius: 5px;
     }
 
-    .button-chat-back:hover,
-    .button-telepon-pesan:hover,
-    .button-cari-pesan:hover {
-    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    }
+        .button-chat-back:hover,
+        .button-telepon-pesan:hover,
+        .button-cari-pesan:hover {
+            background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+            backdrop-filter: blur(10px) !important; /* Efek blur */
+            -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        }
 
-    .button-chat-back:active,
-    .button-telepon-pesan:active,
-    .button-cari-pesan:active {
-    background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    }
+        .button-chat-back:active,
+        .button-telepon-pesan:active,
+        .button-cari-pesan:active {
+            background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+            backdrop-filter: blur(10px) !important; /* Efek blur */
+            -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        }
 
     .dropdown-calendar-cari-pesan {
-    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
-    width: max-content;
+        background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+        backdrop-filter: blur(10px) !important; /* Efek blur */
+        -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
+        width: max-content;
     }
 
-    .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar {
-    background-color: transparent !important;
-    }
+        .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar {
+            background-color: transparent !important;
+        }
 
-    .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar .dxbl-calendar-footer {
-    display: none !important;
-    }
+            .dropdown-calendar-cari-pesan .dxbl-dropdown-body .dxbl-calendar .dxbl-calendar-footer {
+                display: none !important;
+            }
 
     .dropdown-cari-pesan {
-    background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
-    height: 50px;
-    position: relative !important;
-    top: 10px !important;
-    right: 0px !important;
-    left: 12px !important;
-    border-radius: 0px !important;
-    box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.05) !important; /* Warna transparan */
+        backdrop-filter: blur(10px) !important; /* Efek blur */
+        -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Garis tipis untuk efek depth */
+        height: 50px;
+        position: relative !important;
+        top: 10px !important;
+        right: 0px !important;
+        left: 12px !important;
+        border-radius: 0px !important;
+        box-shadow: none !important;
     }
 
 
 
     .search-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    /*background: #f7f5f3;*/
-    background-color: transparent;
-    padding-left: 8px;
-    padding-top: 9.5px;
-    padding-bottom: 5px;
-    padding-right: 11px;
-    width: max-content;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        /*background: #f7f5f3;*/
+        background-color: transparent;
+        padding-left: 8px;
+        padding-top: 9.5px;
+        padding-bottom: 5px;
+        padding-right: 11px;
+        width: max-content;
     }
 
     .search-input-chat {
-    display: flex;
-    justify-content: space-between;
-    background-color: #ffff;
-    min-width: 280px;
-    border-radius: 5px !important;
-    border-bottom: 2px solid darkgray;
+        display: flex;
+        justify-content: space-between;
+        background-color: #ffff;
+        min-width: 280px;
+        border-radius: 5px !important;
+        border-bottom: 2px solid darkgray;
     }
 
-    .search-input-chat:focus-within {
-    border-bottom: 2px solid #409adf; /* Warna border bawah saat fokus */
-    }
+        .search-input-chat:focus-within {
+            border-bottom: 2px solid #409adf; /* Warna border bawah saat fokus */
+        }
 
-    .search-input-chat .dxbl-text-edit {
-    border: none;
-    background-color: #ffff;
-    border-radius: 5px !important;
-    min-width: 243px;
-    }
+        .search-input-chat .dxbl-text-edit {
+            border: none;
+            background-color: #ffff;
+            border-radius: 5px !important;
+            min-width: 243px;
+        }
 
     .search-count {
-    font-size: 10px;
-    color: #bdbcbb;
-    align-content: center;
-    padding-right: 12px;
-    cursor: text;
+        font-size: 10px;
+        color: #bdbcbb;
+        align-content: center;
+        padding-right: 12px;
+        cursor: text;
     }
 
     .close-btn-search {
-    width: 36px;
-    justify-content: center;
+        width: 36px;
+        justify-content: center;
     }
 
     .nav-btn, .close-btn-search {
-    background: none;
-    border: none;
-    border-radius: 5px;
-    display: inline-flex;
-    height: 31px;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    top: -1.3px;
+        background: none;
+        border: none;
+        border-radius: 5px;
+        display: inline-flex;
+        height: 31px;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: -1.3px;
     }
 
-    .nav-btn > span {
-    color: black;
-    }
+        .nav-btn > span {
+            color: black;
+        }
 
-    .nav-btn:disabled {
-    cursor: not-allowed; /* Ubah kursor menjadi tanda larangan */
-    opacity: 0.5; /* Kurangi transparansi untuk indikasi disabled */
-    pointer-events: none; /* Mencegah event hover dan klik */
-    }
+        .nav-btn:disabled {
+            cursor: not-allowed; /* Ubah kursor menjadi tanda larangan */
+            opacity: 0.5; /* Kurangi transparansi untuk indikasi disabled */
+            pointer-events: none; /* Mencegah event hover dan klik */
+        }
 
-    .nav-btn:hover,
-    .close-btn-search:hover {
-    background: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    }
+        .nav-btn:hover,
+        .close-btn-search:hover {
+            background: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+            backdrop-filter: blur(10px) !important; /* Efek blur */
+            -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        }
 
-    .nav-btn:active,
-    .close-btn-search:active {
-    background: rgba(0, 0, 0, 0.2) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    }
+        .nav-btn:active,
+        .close-btn-search:active {
+            background: rgba(0, 0, 0, 0.2) !important; /* Warna transparan */
+            backdrop-filter: blur(10px) !important; /* Efek blur */
+            -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        }
 
     .btn-pressed {
-    background: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        background: rgba(0, 0, 0, 0.07) !important; /* Warna transparan */
+        backdrop-filter: blur(10px) !important; /* Efek blur */
+        -webkit-backdrop-filter: blur(10px) !important; /* Safari */
     }
 
-    .btn-pressed:hover {
-    background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
-    backdrop-filter: blur(10px) !important; /* Efek blur */
-    -webkit-backdrop-filter: blur(10px) !important; /* Safari */
-    }
+        .btn-pressed:hover {
+            background: rgba(0, 0, 0, 0.1) !important; /* Warna transparan */
+            backdrop-filter: blur(10px) !important; /* Efek blur */
+            -webkit-backdrop-filter: blur(10px) !important; /* Safari */
+        }
 
     .vertical-line {
-    width: 0.1px; /* Lebar garis */
-    height: 18px; /* Tinggi garis */
-    background-color: #aaa97a; /* Warna garis */
-    margin: 0 5px; /* Jarak dari elemen lain */
+        width: 0.1px; /* Lebar garis */
+        height: 18px; /* Tinggi garis */
+        background-color: #aaa97a; /* Warna garis */
+        margin: 0 5px; /* Jarak dari elemen lain */
     }
 
     .panel-chat {
-    display: @(TampilkanPersonalMessageSection ? "block" : "none");
+        display: @(TampilkanPersonalMessageSection ? "block" : "none");
     }
 
     .panel-pesan {
-    display: @(!TampilkanPersonalMessageSection ? "block" : "none");
+        display: @(!TampilkanPersonalMessageSection ? "block" : "none");
     }
 
     .action-btn-container {
-    position: relative;
-    top: 1px;
+        position: relative;
+        top: 1px;
     }
 
     .personal-chat-wrapper.dxbl-list-box > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > ul > li:not([dxbl-bottom-virtual-spacer-element]):not([dxbl-top-virtual-spacer-element]):not(.dxbl-list-box-group-item) {
-    padding-top: 0px;
-    padding-bottom: 3px;
+        padding-top: 0px;
+        padding-bottom: 3px;
     }
 
     .chat-item {
-    position: relative;
-    transition: background-color 0.3s ease;
+        position: relative;
+        transition: background-color 0.3s ease;
     }
 
-    .chat-item.chat-component-wrapper-recipient-message.callout::before {
-    content: "";
-    position: absolute;
-    top: 3.5px;
-    left: -12.1px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid white;
-    transform: rotate(270deg);
-    z-index: 2;
-    }
-    /* Segitiga shadow */
-    .chat-item.chat-component-wrapper-recipient-message.callout::after {
-    content: "";
-    position: absolute;
-    top: 4.5px; /* Geser sedikit ke bawah */
-    left: -13px; /* Geser sedikit ke kiri */
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2); /* Shadow lebih buram */
-    transform: rotate(270deg);
-    z-index: 1; /* Shadow di belakang */
-    filter: blur(1px); /* Blur agar lebih halus */
-    }
+        .chat-item.chat-component-wrapper-recipient-message.callout::before {
+            content: "";
+            position: absolute;
+            top: 3.5px;
+            left: -12.1px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+            transform: rotate(270deg);
+            z-index: 2;
+        }
+        /* Segitiga shadow */
+        .chat-item.chat-component-wrapper-recipient-message.callout::after {
+            content: "";
+            position: absolute;
+            top: 4.5px; /* Geser sedikit ke bawah */
+            left: -13px; /* Geser sedikit ke kiri */
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(0, 0, 0, 0.2); /* Shadow lebih buram */
+            transform: rotate(270deg);
+            z-index: 1; /* Shadow di belakang */
+            filter: blur(1px); /* Blur agar lebih halus */
+        }
 
-    .chat-item.chat-component-wrapper-personal-message.callout::before {
-    content: "";
-    position: absolute;
-    top: 3.5px;
-    right: -11.3px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid #EAF6FF;
-    transform: rotate(90deg);
-    z-index: 2;
-    }
+        .chat-item.chat-component-wrapper-personal-message.callout::before {
+            content: "";
+            position: absolute;
+            top: 3.5px;
+            right: -11.3px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #EAF6FF;
+            transform: rotate(90deg);
+            z-index: 2;
+        }
 
-    .chat-item.chat-component-wrapper-personal-message.callout::after {
-    content: "";
-    position: absolute;
-    top: 4.5px;
-    right: -11.6px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.2); /* Shadow lebih buram */
-    transform: rotate(90deg);
-    z-index: 1; /* Shadow di belakang */
-    filter: blur(1px); /* Blur agar lebih halus */
-    }
+        .chat-item.chat-component-wrapper-personal-message.callout::after {
+            content: "";
+            position: absolute;
+            top: 4.5px;
+            right: -11.6px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(0, 0, 0, 0.2); /* Shadow lebih buram */
+            transform: rotate(90deg);
+            z-index: 1; /* Shadow di belakang */
+            filter: blur(1px); /* Blur agar lebih halus */
+        }
 
 
-    .chat-item::after {
-    pointer-events: none; /* Supaya tidak mengganggu klik */
-    transition: opacity 0.5s ease-in-out;
-    }
+        .chat-item::after {
+            pointer-events: none; /* Supaya tidak mengganggu klik */
+            transition: opacity 0.5s ease-in-out;
+        }
 
-    .chat-item.highlight {
-    animation: flash-highlight 1s ease-in-out;
-    }
+        .chat-item.highlight {
+            animation: flash-highlight 1s ease-in-out;
+        }
 
     @@keyframes flash-highlight {
-    0% {
-    background-color: #606060;
-    }
+        0% {
+            background-color: #606060;
+        }
 
-    100% {
-    background-color: transparent;
-    }
+        100% {
+            background-color: transparent;
+        }
     }
 
     .btn-send[disabled] {
-    pointer-events: none;
-    opacity: 0.5;
+        pointer-events: none;
+        opacity: 0.5;
     }
 
     .btn-lihat-grup {
-    font-size: 12px !important;
+        font-size: 12px !important;
     }
 
     .recording-ui-wrapper {
-    width: -webkit-fill-available !important;
-    display: flex !important;
-    justify-content: right !important;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 0px 4px 4px;
-    box-sizing: border-box;
-    height: 32px;
+        width: -webkit-fill-available !important;
+        display: flex !important;
+        justify-content: right !important;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0px 4px 4px;
+        box-sizing: border-box;
+        height: 32px;
     }
 
     .animasi-recording {
-    display: flex !important;
-    gap: 6px;
-    align-items: center;
-    padding: 0;
-    margin: 0;
+        display: flex !important;
+        gap: 6px;
+        align-items: center;
+        padding: 0;
+        margin: 0;
     }
 
     .dot-red {
-    width: 5px;
-    height: 5px;
-    background: red;
-    border-radius: 50%;
-    animation: blink 1s infinite;
+        width: 5px;
+        height: 5px;
+        background: red;
+        border-radius: 50%;
+        animation: blink 1s infinite;
     }
 
     @@keyframes blink {
-    0%, 100% {
-    opacity: 1;
-    }
+        0%, 100% {
+            opacity: 1;
+        }
 
-    50% {
-    opacity: 0;
-    }
+        50% {
+            opacity: 0;
+        }
     }
 
     .recording-timer {
-    font-family: 'Nunito Sans', sans-serif !important;
-    font-weight: 400;
-    font-size: 11px;
-    line-height: 15px;
-    white-space: nowrap;
-    padding: 0;
-    margin: 0;
+        font-family: 'Nunito Sans', sans-serif !important;
+        font-weight: 400;
+        font-size: 11px;
+        line-height: 15px;
+        white-space: nowrap;
+        padding: 0;
+        margin: 0;
     }
 
     .btn-reset-recording {
-    background-color: transparent !important;
-    border-radius: 5px;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+        background-color: transparent !important;
+        border-radius: 5px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
     }
 
-    .btn-reset-recording:hover {
-    background: rgba(0, 0, 0, 0.07) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    }
+        .btn-reset-recording:hover {
+            background: rgba(0, 0, 0, 0.07) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+        }
 
-    .btn-reset-recording:active {
-    background: rgba(0, 0, 0, 0.2) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    }
+        .btn-reset-recording:active {
+            background: rgba(0, 0, 0, 0.2) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+        }
 
     .wave-animation {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-    height: 24px;
+        display: flex;
+        gap: 2px;
+        align-items: center;
+        height: 24px;
     }
 
-    .wave-animation .bar {
-    width: 2px;
-    background-color: gray;
-    animation: wave 1s infinite ease-in-out;
-    border-radius: 1px;
-    }
+        .wave-animation .bar {
+            width: 2px;
+            background-color: gray;
+            animation: wave 1s infinite ease-in-out;
+            border-radius: 1px;
+        }
 
-    /* Tambahkan lebih banyak bar */
-    .wave-animation .bar:nth-child(1) {
-    animation-delay: 0s;
-    }
+            /* Tambahkan lebih banyak bar */
+            .wave-animation .bar:nth-child(1) {
+                animation-delay: 0s;
+            }
 
-    .wave-animation .bar:nth-child(2) {
-    animation-delay: 0.1s;
-    }
+            .wave-animation .bar:nth-child(2) {
+                animation-delay: 0.1s;
+            }
 
-    .wave-animation .bar:nth-child(3) {
-    animation-delay: 0.2s;
-    }
+            .wave-animation .bar:nth-child(3) {
+                animation-delay: 0.2s;
+            }
 
-    .wave-animation .bar:nth-child(4) {
-    animation-delay: 0.3s;
-    }
+            .wave-animation .bar:nth-child(4) {
+                animation-delay: 0.3s;
+            }
 
-    .wave-animation .bar:nth-child(5) {
-    animation-delay: 0.4s;
-    }
+            .wave-animation .bar:nth-child(5) {
+                animation-delay: 0.4s;
+            }
 
-    .wave-animation .bar:nth-child(6) {
-    animation-delay: 0.5s;
-    }
+            .wave-animation .bar:nth-child(6) {
+                animation-delay: 0.5s;
+            }
 
-    .wave-animation .bar:nth-child(7) {
-    animation-delay: 0.6s;
-    }
+            .wave-animation .bar:nth-child(7) {
+                animation-delay: 0.6s;
+            }
 
-    .wave-animation .bar:nth-child(8) {
-    animation-delay: 0.7s;
-    }
+            .wave-animation .bar:nth-child(8) {
+                animation-delay: 0.7s;
+            }
 
-    .wave-animation .bar:nth-child(9) {
-    animation-delay: 0.8s;
-    }
+            .wave-animation .bar:nth-child(9) {
+                animation-delay: 0.8s;
+            }
 
-    .wave-animation .bar:nth-child(10) {
-    animation-delay: 0.9s;
-    }
+            .wave-animation .bar:nth-child(10) {
+                animation-delay: 0.9s;
+            }
 
     @@keyframes wave {
-    0%, 100% {
-    height: 6px;
-    }
+        0%, 100% {
+            height: 6px;
+        }
 
-    25% {
-    height: 16px;
-    }
+        25% {
+            height: 16px;
+        }
 
-    50% {
-    height: 20px;
-    }
+        50% {
+            height: 20px;
+        }
 
-    75% {
-    height: 12px;
-    }
+        75% {
+            height: 12px;
+        }
     }
 
     .recording-paused-ui {
-    width: -webkit-fill-available !important;
-    display: flex !important;
-    justify-content: right !important;
-    align-items: center;
-    gap: 3px;
-    padding: 4px 0px 4px 4px;
-    box-sizing: border-box;
-    height: 32px;
+        width: -webkit-fill-available !important;
+        display: flex !important;
+        justify-content: right !important;
+        align-items: center;
+        gap: 3px;
+        padding: 4px 0px 4px 4px;
+        box-sizing: border-box;
+        height: 32px;
     }
 
     @*style search control pesan*@
     .filter-container-pesan {
-    /* padding: 10px 20px; */
-    display: flex;
-    background-color: white;
-    justify-content: space-between;
-    padding-right: 6px;
-    position: relative;
-    bottom: 7px;
+        /* padding: 10px 20px; */
+        display: flex;
+        background-color: white;
+        justify-content: space-between;
+        padding-right: 6px;
+        position: relative;
+        bottom: 7px;
     }
 
     .filter-input-pesan-wrapper {
-    cursor: text;
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 24px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: @(SearchPesanFocus ? "#409ADF" : "#808080");
-    margin-top: 5px;
-    margin-left: 10px;
+        cursor: text;
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 24px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: @(SearchPesanFocus ? "#409ADF" : "#808080");
+        margin-top: 5px;
+        margin-left: 10px;
     }
 
     .search-icon-pesan {
-    padding: 0 0px 0 4px;
-    box-sizing: border-box;
-    height: 26px;
-    width: 22px;
-    display: flex;
-    align-items: center;
-    color: #1c1c1c;
+        padding: 0 0px 0 4px;
+        box-sizing: border-box;
+        height: 26px;
+        width: 22px;
+        display: flex;
+        align-items: center;
+        color: #1c1c1c;
     }
 
     .filter-input-pesan {
-    font-size: 13px;
-    border: none;
-    background-color: white;
-    color: #212529;
-    box-sizing: border-box;
-    height: 22px;
-    width: 198px;
-    text-indent: 10px;
+        font-size: 13px;
+        border: none;
+        background-color: white;
+        color: #212529;
+        box-sizing: border-box;
+        height: 22px;
+        width: 198px;
+        text-indent: 10px;
     }
 
 
-    .filter-input-pesan:focus {
-    outline: none;
-    border: none;
-    }
+        .filter-input-pesan:focus {
+            outline: none;
+            border: none;
+        }
 
     /* .filter-input:focus + .search-icon,
-    .filter-input:focus ~ .search-icon {
-    color: #135995;
-    }
+        .filter-input:focus ~ .search-icon {
+        color: #135995;
+        }
 
-    .fiter-input:focus */
+        .fiter-input:focus */
 
 
     .clear-icon-hidden-pesan {
-    visibility: hidden;
+        visibility: hidden;
     }
 
     .filter-input-pesan.dxbl-text-edit .dxbl-edit-btn-clear {
-    position: absolute !important;
-    right: 0 !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    visibility: @(string.IsNullOrEmpty(SearchTextPesan) ? "hidden" : "visible");
+        position: absolute !important;
+        right: 0 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        visibility: @(string.IsNullOrEmpty(SearchTextPesan) ? "hidden" : "visible");
     }
 
     .filter-input-pesan.dxbl-text-edit .dxbl-text-edit-input {
-    max-width: 178px !important;
+        max-width: 178px !important;
     }
 
     .portal-notificationpane-activitylog-link.panel-pesan {
@@ -1601,64 +1601,64 @@
     }
 
     .portal-notification-bottom.panel-pesan {
-    text-decoration: none !important; /* hilangkan underline */
-    cursor: pointer !important;
+        text-decoration: none !important; /* hilangkan underline */
+        cursor: pointer !important;
     }
 
-    .portal-notification-bottom.panel-pesan:hover {
-    text-decoration: underline !important;
-    }
+        .portal-notification-bottom.panel-pesan:hover {
+            text-decoration: underline !important;
+        }
 
     /* Target input di dalam DxTextBox khusus berdasarkan class */
     .input-message-search input::placeholder,
     .input-group-name input::placeholder {
-    color: #606060 !important; /* Ganti sesuai warna yang diinginkan */
-    opacity: 1 !important; /* pastikan placeholder tidak transparan */
+        color: #606060 !important; /* Ganti sesuai warna yang diinginkan */
+        opacity: 1 !important; /* pastikan placeholder tidak transparan */
     }
 
     .listbox-item-template-text-message.pesan-suara {
-    display: flex;
+        display: flex;
     }
 
-    .listbox-item-template-text-message.pesan-suara .durasi {
-    align-content: center;
-    }
+        .listbox-item-template-text-message.pesan-suara .durasi {
+            align-content: center;
+        }
 
     .voice-note {
-    display: flex;
-    gap: 15px;
+        display: flex;
+        gap: 15px;
     }
 
-    .voice-note .display-profile-grup {
-    width: 32px !important;
-    height: 32px !important;
-    }
+        .voice-note .display-profile-grup {
+            width: 32px !important;
+            height: 32px !important;
+        }
 
     .voice-note-mic {
-    display: flex;
-    justify-content: center; /* Horizontal center */
-    align-items: center; /* Vertical center */
-    width: 17px;
-    height: 17px;
-    border-radius: 50% !important;
-    background-color: #409ADF;
-    position: absolute;
-    bottom: 15px;
-    left: 20px;
+        display: flex;
+        justify-content: center; /* Horizontal center */
+        align-items: center; /* Vertical center */
+        width: 17px;
+        height: 17px;
+        border-radius: 50% !important;
+        background-color: #409ADF;
+        position: absolute;
+        bottom: 15px;
+        left: 20px;
     }
 
-    .voice-note-mic.non-personal-message {
-    left: auto !important;
-    right: -6px !important;
-    }
+        .voice-note-mic.non-personal-message {
+            left: auto !important;
+            right: -6px !important;
+        }
 
     .text-pesan-dikutip {
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 402px;
-    line-height: 15px !important;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 402px;
+        line-height: 15px !important;
     }
 </style>
 @*Dialog message*@
@@ -1682,7 +1682,7 @@
                         }
                         else
                         {
-                            <img src="@DtPesanAktif.IconGrup" alt="Profile Photo"  />
+                            <img src="@DtPesanAktif.IconGrup" alt="Profile Photo" />
                         }
                     }
                     else
@@ -1695,7 +1695,7 @@
                         }
                         else
                         {
-                            <img src="@userPenerima.UrlProfile" alt="Profile Photo"  />
+                            <img src="@userPenerima.UrlProfile" alt="Profile Photo" />
                         }
                     }
 
@@ -1706,6 +1706,7 @@
                             @DtPesanAktif.NamaGrup
                         else
                             @userPenerima.NamaPanggilan
+
 
                     </p>
                     <div class="portal-personal-status-wrapper">
@@ -1718,11 +1719,12 @@
                         else
                         {
                             var keteranganGrup = "";
-                            if(DtPesanAktif.ListT7Pesan_Anggota is not null){
+                            if (DtPesanAktif.ListT7Pesan_Anggota is not null)
+                            {
                                 keteranganGrup = string.Join(", ",
                                 (from pesan in DtPesanAktif.ListT7Pesan_Anggota
-                                    join contact in DtContact on pesan.IdUser_Anggota equals contact.IdUser
-                                    select contact.NamaPanggilan).Distinct() // Menghindari duplikasi nama jika diperlukan
+                                 join contact in DtContact on pesan.IdUser_Anggota equals contact.IdUser
+                                 select contact.NamaPanggilan).Distinct() // Menghindari duplikasi nama jika diperlukan
                                 );
                             }
 
@@ -1775,7 +1777,7 @@
             </GroupHeaderDisplayTemplate>
             <ItemDisplayTemplate>
                 <div class="@(context.DataItem.StatusSystem ? "chat-component-wrapper-system-true" : (context.DataItem.IsMine ? "chat-component-wrapper-personal" : "chat-component-wrapper"))" style="padding-left:@(context.DataItem.IsMine == false && DtPesanAktif.StatusGrup == false ? "10px":"")"
-                @onmouseover="(() => {IdPesanDihover = context.DataItem.IdDetilPesan;})" @onmouseleave="() => { if (!TampilkanChatDropdown) IdPesanDihover = null; }">
+                     @onmouseover="(() => {IdPesanDihover = context.DataItem.IdDetilPesan;})" @onmouseleave="() => { if (!TampilkanChatDropdown) IdPesanDihover = null; }">
                     @{
                         var dtChat = DtPercakapan.Where(x => x.StatusSystem == false).ToList().OrderBy(x => x.WaktuSend.Value.UtcDateTime).ToList();
                         var prevPesan = dtChat.IndexOf(context.DataItem) > 0 ? dtChat[dtChat.IndexOf(context.DataItem) - 1] : null;
@@ -1814,12 +1816,15 @@
                                         <div class="portal-reply-message-wrapper" style="@style">
                                             <p style="margin-bottom: @(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "0px" : "5px"); color: @warna; font-weight:500;">@pengirim</p>
                                             <p class="@(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "" : "text-pesan-dikutip")" style="margin-bottom: 5px; font-weight:400;display:@(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-") ? "flex" : "-webkit-box")">
-                                                @if(context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-")){
+                                                @if (context.DataItem.PesanTerkutip_IsiPesan.Contains("pesan-suara-"))
+                                                {
                                                     <span class="material-symbols-outlined" style="scale:.8;margin-left: -5px;">
                                                         mic
                                                     </span>
                                                     <span style="line-height:22px !important;">@context.DataItem.PesanTerkutip_Durasi</span>
-                                                }else{
+                                                }
+                                                else
+                                                {
                                                     @((MarkupString)context.DataItem?.PesanTerkutip_IsiPesan?.Replace("new-line", "<br />"))
                                                 }
                                             </p>
@@ -1943,7 +1948,7 @@
                         var pengirim = "";
                         var warna = "";
                         var urlProfile = "";
-                        if(DtAnggota_GrupBaru.Count() > 0) warna = DtAnggota_GrupBaru.FirstOrDefault(x => x.IdUser_Anggota == context.DataItem.IdUser_Pengirim)?.Warna;
+                        if (DtAnggota_GrupBaru.Count() > 0) warna = DtAnggota_GrupBaru.FirstOrDefault(x => x.IdUser_Anggota == context.DataItem.IdUser_Pengirim)?.Warna;
                         if (context.DataItem.IdUser_Pengirim != null)
                         {
                             pengirim = DtContact.FirstOrDefault(x => x.IdUser == context.DataItem.IdUser_Pengirim).NamaPanggilan;
@@ -1957,14 +1962,15 @@
                         if (DtPesanAktif.StatusGrup)
                         {
                             <div class="display-profile-grup" style="visibility:@(tampilkanNama ? "visible !important;" : "hidden !important;")">
-                                @if(string.IsNullOrEmpty(urlProfile)){
+                                @if (string.IsNullOrEmpty(urlProfile))
+                                {
                                     <p class="display-profile-grup-initial">
                                         @GenerateInitials(pengirim)
                                     </p>
                                 }
                                 else
                                 {
-                                    <img src="@urlProfile" alt="Profile Photo"  />
+                                    <img src="@urlProfile" alt="Profile Photo" />
                                 }
 
                             </div>
@@ -2082,7 +2088,7 @@
                                                     }
                                                     else
                                                     {
-                                                        <img src="@contactUser.UrlProfile" alt="Profile Photo"  />
+                                                        <img src="@contactUser.UrlProfile" alt="Profile Photo" />
                                                     }
 
                                                     <div class="voice-note-mic non-personal-message">
@@ -2096,7 +2102,8 @@
                                         else
                                         {
                                             <span class="pesan-teks" style="min-height: 0px; visibility: visible; -webkit-user-select: text;">
-                                                @if(string.IsNullOrEmpty(context.DataItem.LinkPreview_Url)){
+                                                @if (string.IsNullOrEmpty(context.DataItem.LinkPreview_Url))
+                                                {
                                                     <span>@((MarkupString)HighlightText(context.DataItem.IsiPesan, SearchText))</span>
                                                 }
                                                 else
@@ -2226,14 +2233,14 @@
                         </div>
                         <div class="memo-wrapper">
                             <DxMemo @ref="@MessageBox" @bind-Text="@MessageText"
-                            ResizeMode="MemoResizeMode.Disabled"
-                            NullText="Type your message"
-                            CssClass="cw-320 personal-chat-input-message-small auto-grow-up-memo"
-                            InputId="tbInputBinding"
-                            Rows="1"
-                            TextAreaCssClass="memo-textarea-grow-up"
-                            @onkeydown="OnEnterPress"
-                            @oninput="UpdateRows" />
+                                    ResizeMode="MemoResizeMode.Disabled"
+                                    NullText="Type your message"
+                                    CssClass="cw-320 personal-chat-input-message-small auto-grow-up-memo"
+                                    InputId="tbInputBinding"
+                                    Rows="1"
+                                    TextAreaCssClass="memo-textarea-grow-up"
+                                    @onkeydown="OnEnterPress"
+                                    @oninput="UpdateRows" />
                         </div>
                     </div>
                 }
@@ -2271,7 +2278,7 @@
                     }
                 }
 
-                @if(MessageText != "" || AudioPreviewUrl != null || IsRecording)
+                @if (MessageText != "" || AudioPreviewUrl != null || IsRecording)
                 {
                     <div class="btn-send" @onclick="@ProsesKirimPesan" id="button-kirim">
                         <button type="button" class="btn btn-link btn-send-message">
@@ -2292,7 +2299,7 @@
         </div>
     </div>
     <div class="panel-pesan">
-        @if(DtPesan.Count() > 0)
+        @if (DtPesan.Count() > 0)
         {
             <div class="portal-notificationpane-header" style="padding: 0 10px 10px 17px !important;">
                 <div class="portal-notificationpane-header-content">
@@ -2301,16 +2308,16 @@
                             <div class="filter-input-pesan-wrapper" @onclick="(() => { SearchPesanFocus = true; txbSearchPesan.FocusAsync(); })">
                                 <div class="search-icon-pesan">
                                     <span class="material-symbols-outlined"
-                                            style="color: @(SearchPesanFocus ? "#135995" : "#1c1c1c"); scale: .7;opacity: .65;transform: scaleX(-1);">
+                                          style="color: @(SearchPesanFocus ? "#135995" : "#1c1c1c"); scale: .7;opacity: .65;transform: scaleX(-1);">
                                         search
                                     </span>
                                 </div>
                                 <DxTextBox @ref="txbSearchPesan"
-                                            BindValueMode="@BindValueMode.OnInput"
-                                            @bind-Text="FilterTextPesan"
-                                            @onblur="@(() => { SearchPesanFocus = false; })"
-                                            NullText="Cari obrolan"
-                                            CssClass="filter-input-pesan">
+                                           BindValueMode="@BindValueMode.OnInput"
+                                           @bind-Text="FilterTextPesan"
+                                           @onblur="@(() => { SearchPesanFocus = false; })"
+                                           NullText="Cari obrolan"
+                                           CssClass="filter-input-pesan">
                                     <Buttons>
                                         <DxEditorClearButtonInternal ClearButtonClick="@(() => FilterTextPesan = string.Empty)"></DxEditorClearButtonInternal>
                                     </Buttons>
@@ -2334,13 +2341,13 @@
                     <li class="portal-notification-li-message">
                         <div class="portal-notificationmenu-notification-wrapper pesan">
                             <DxListBox Data="@DtPesan_Ditampilkan.OrderByDescending(x => x.WaktuProses).ToList()"
-                            @bind-Value="@DtPesanAktif" GroupFieldName="@(string.IsNullOrEmpty(FilterTextPesan) ? "" : "Kategori")"
-                            CssClass="cw-640 ch-360 list-message-panel">
+                                       @bind-Value="@DtPesanAktif" GroupFieldName="@(string.IsNullOrEmpty(FilterTextPesan) ? "" : "Kategori")"
+                                       CssClass="cw-640 ch-360 list-message-panel">
                                 <GroupHeaderDisplayTemplate>
                                     @{
                                         var text = "";
-                                        if(context.DisplayText == "Chats") text = "Chat";
-                                        if(context.DisplayText == "Contacts") text = "Kontak";
+                                        if (context.DisplayText == "Chats") text = "Chat";
+                                        if (context.DisplayText == "Contacts") text = "Kontak";
                                         if (context.DisplayText == "Groups") text = "Grup";
                                         if (context.DisplayText == "Messages") text = "Pesan";
                                     }
@@ -2353,7 +2360,8 @@
                                             if (!context.DataItem.StatusGrup) userPenerima = DtContact.FirstOrDefault(y => y.IdUser == context.DataItem?.ListT7Pesan_Anggota?.FirstOrDefault(x => x.IdUser_Anggota != IdUser).IdUser_Anggota);
                                         }
                                         <div class="listbox-item-template-avatar">
-                                            @if(context.DataItem.StatusGrup){
+                                            @if (context.DataItem.StatusGrup)
+                                            {
                                                 if (string.IsNullOrEmpty(context.DataItem.IconGrup))
                                                 {
                                                     <p class="listbox-item-template-initial">
@@ -2362,12 +2370,12 @@
                                                 }
                                                 else
                                                 {
-                                                    <img src="@context.DataItem.IconGrup" alt="Profile Photo"  />
+                                                    <img src="@context.DataItem.IconGrup" alt="Profile Photo" />
                                                 }
                                             }
                                             else
                                             {
-                                                if(string.IsNullOrEmpty(userPenerima?.UrlProfile))
+                                                if (string.IsNullOrEmpty(userPenerima?.UrlProfile))
                                                 {
                                                     <p class="listbox-item-template-initial">
                                                         @GenerateInitials(userPenerima.NamaPanggilan)
@@ -2375,9 +2383,9 @@
                                                 }
                                                 else
                                                 {
-                                                    <img src="@userPenerima.UrlProfile" alt="Profile Photo"  />
+                                                    <img src="@userPenerima.UrlProfile" alt="Profile Photo" />
                                                 }
-                                            }                                        
+                                            }
                                         </div>
                                         <div class="listbox-item-template-text">
                                             <p class="listbox-item-template-text-username">
@@ -2386,20 +2394,24 @@
                                                 else
                                                     @((MarkupString)HighlightText(userPenerima.NamaPanggilan, SearchTextPesan, true))
 
+
                                             </p>
                                             @if (context.DataItem.Notes.Contains("pesan-suara-"))
                                             {
-                                                if(context.DataItem.StatusGrup){
+                                                if (context.DataItem.StatusGrup)
+                                                {
                                                     var names = Regex.Matches(context.DataItem.Notes, @"^(.*?):", RegexOptions.Multiline)
-                                        .Cast<Match>()
-                                        .Select(m => m.Groups[1].Value)
-                                        .ToList().FirstOrDefault();
+                                                    .Cast<Match>()
+                                                    .Select(m => m.Groups[1].Value)
+                                                    .ToList().FirstOrDefault();
                                                     <p class="listbox-item-template-text-message pesan-suara">
                                                         <span class="durasi">@names:</span>
                                                         <span class="material-symbols-outlined" style="scale:.8;">mic</span>
                                                         <span class="durasi">@context.DataItem.Durasi</span>
                                                     </p>
-                                                }else{
+                                                }
+                                                else
+                                                {
                                                     <p class="listbox-item-template-text-message pesan-suara">
                                                         <span class="material-symbols-outlined" style="scale:.8;margin-left: -6px;">
                                                             mic
@@ -2408,7 +2420,8 @@
                                                     </p>
                                                 }
                                             }
-                                            else{
+                                            else
+                                            {
                                                 <p class="listbox-item-template-text-message">@((MarkupString)HighlightText(context.DataItem.Notes, SearchTextPesan, true))</p>
                                             }
                                         </div>
@@ -2440,7 +2453,7 @@
                 </ul>
             </div>
         }
-        else if(DtPesan.Count() < 1)
+        else if (DtPesan.Count() < 1)
         {
             <div class="portal-notificationpane-top">
                 <div class="portal-notification-empty">
@@ -2458,18 +2471,18 @@
                 </div>
             </div>
         }
-                            
+
     </div>
 </div>
 
 
 @*Dropdown chat more*@
 <DxDropDown @bind-IsOpen="@TampilkanChatDropdown"
-PositionMode="DropDownPositionMode.Bottom"
-Width="max(7vw, 100px)"
-PositionTarget="@($"#chat-dropdown-more-{IdDetilPesanAktif}")"
-CloseMode="DropDownCloseMode.Close"
-PreventCloseOnPositionTargetClick="true">
+            PositionMode="DropDownPositionMode.Bottom"
+            Width="max(7vw, 100px)"
+            PositionTarget="@($"#chat-dropdown-more-{IdDetilPesanAktif}")"
+            CloseMode="DropDownCloseMode.Close"
+            PreventCloseOnPositionTargetClick="true">
     <div class="chat-dropdown-more">
         <div class="chat-btn-action" @onclick="ProsesReplyPercakapan">
             <span class="material-symbols-outlined" style="scale: .8;margin-right: 5px">reply</span>
@@ -2483,12 +2496,12 @@ PreventCloseOnPositionTargetClick="true">
 </DxDropDown>
 
 <DxDropDown @bind-IsOpen="@IsTampilkanPanelSearchPesan"
-PositionMode="DropDownPositionMode.Bottom"
-Width="100%"
-PositionTarget="#button-cari-pesan-id"
-CssClass="dropdown-cari-pesan"
-CloseMode="DropDownCloseMode.Close" CloseOnOutsideClick="false"
-PreventCloseOnPositionTargetClick="true">
+            PositionMode="DropDownPositionMode.Bottom"
+            Width="100%"
+            PositionTarget="#button-cari-pesan-id"
+            CssClass="dropdown-cari-pesan"
+            CloseMode="DropDownCloseMode.Close" CloseOnOutsideClick="false"
+            PreventCloseOnPositionTargetClick="true">
     <div class="search-container">
         <div class="search-input-chat">
             <DxTextBox @ref="@TxbSearchChat" NullText="Cari..." @bind-Text="SearchText" @oninput="@(e => OnSearchTextChanged(e.Value.ToString()))"></DxTextBox>
@@ -2522,18 +2535,18 @@ PreventCloseOnPositionTargetClick="true">
     </div>
 </DxDropDown>
 <DxDropDown @bind-IsOpen="@IsTampilkanCalendarSearchPesan"
-PositionMode="DropDownPositionMode.Bottom"
-Width="100%"
-PositionTarget="#nav-btn-calendar-pesan"
-CssClass="dropdown-calendar-cari-pesan"
-CloseMode="DropDownCloseMode.Close"
-PreventCloseOnPositionTargetClick="true">
+            PositionMode="DropDownPositionMode.Bottom"
+            Width="100%"
+            PositionTarget="#nav-btn-calendar-pesan"
+            CssClass="dropdown-calendar-cari-pesan"
+            CloseMode="DropDownCloseMode.Close"
+            PreventCloseOnPositionTargetClick="true">
     <DxCalendar SelectedDate="@SelectedDate" MinDate="@MinDate" MaxDate="@DateTime.Now"
-    SelectedDateChanged="@((DateTime newValue) => OnSelectedDateChanged(newValue))" />
+                SelectedDateChanged="@((DateTime newValue) => OnSelectedDateChanged(newValue))" />
 </DxDropDown>
 
 
-@code{
+@code {
     private string iconClass = string.Empty;
 
     private void AddIconActiveClass()

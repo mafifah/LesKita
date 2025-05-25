@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.IdentityModel.Claims
+@using Microsoft.EntityFrameworkCore
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime _js
 @inject ISvcStatusBar _svcStatusBar
@@ -8,7 +9,8 @@
 @inject RefreshViewState RefreshViewState
 @inject IServiceProvider ServicesProv 
 @inject IJSRuntime JSR
-@using static modApplication
+@inject IDbContextFactory<LesKitaDbContext> DbFactory
+@using static modAes
 @inherits LayoutComponentBase
 @namespace LesKita.Components
 <script>
@@ -569,11 +571,11 @@
     }
 
     * {
-        font-family: az_ea_font, "Segoe UI", az_font, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        font-weight: 400;
+    font-family: az_ea_font, "Segoe UI", az_font, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-weight: 400;
     }
 
-    
+
 
     body {
     overflow-x: hidden !important;
@@ -582,7 +584,7 @@
     }
 
     ul {
-        list-style-type: none;
+    list-style-type: none;
     }
     .header_profile-avatar {
     width: 2rem;
@@ -1072,10 +1074,10 @@
     user-select: none;
     }
 
-   .dxbl-list-box.cw-640.ch-360{
-        border: none !important;
-        width: 100%;
-        height: 100%;
+    .dxbl-list-box.cw-640.ch-360{
+    border: none !important;
+    width: 100%;
+    height: 100%;
     }
 
     .listbox-item-template{
@@ -1556,7 +1558,7 @@
     margin-bottom: 10px;
     }
 
-    
+
 </style>
 <!-- #endregion -->
 <style>
@@ -1685,148 +1687,150 @@
     outline: none; /* Hilangkan outline saat tombol ditekan */
     }
 </style>
-
-<CascadingValue Value="this">
-    <div class="container-utama">
-        <div class="d-flex justify-content-between align-items-start header px-3">
-            <div class="d-flex align-items-center">
-                <img src="https://sdatafile.blob.core.windows.net/gajahmasantarniaga/Gambar/Display%20Picture/Karyawan-Auto" class="rounded-circle profile-img" alt="Foto Profil">
-                <div class="ms-2">
-                    <p class="mb-0 greeting">@GetGreeting()</p>
-                    <h5 class="mb-0 username">@Username</h5>
+@if (!IsLoading)
+{
+    <CascadingValue Value="this">
+        <div class="container-utama">
+            <div class="d-flex justify-content-between align-items-start header px-3">
+                <div class="d-flex align-items-center">
+                    <img src="https://sdatafile.blob.core.windows.net/gajahmasantarniaga/Gambar/Display%20Picture/Karyawan-Auto" class="rounded-circle profile-img" alt="Foto Profil">
+                    <div class="ms-2">
+                        <p class="mb-0 greeting">@GetGreeting()</p>
+                        <h5 class="mb-0 username">@User.Nama</h5>
+                    </div>
+                </div>
+                <div class="notifikasi-container">
+                    <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; StartTimerNotifikasi(); ModalNotifikasi?.Show(); RefreshViewState.IsEnabled = false;})">
+                        <span class="badge-notif-custom" style="visibility: @(DtNotifikasi.Any() && DtNotifikasi.Where(x => x.IsRead != true).Count() > 0 ? "visible":"hidden")"></span>
+                        <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">notifications</span>
+                    </button>
                 </div>
             </div>
-            <div class="notifikasi-container">
-                <button id="popup-notifikasi" type="button" class="button-panel-header btn-default  position-relative" @onclick="(() => { TampilkanNotifikasi = !TampilkanNotifikasi; StartTimerNotifikasi(); ModalNotifikasi?.Show(); RefreshViewState.IsEnabled = false;})">
-                    <span class="badge-notif-custom" style="visibility: @(DtNotifikasi.Any() && DtNotifikasi.Where(x => x.IsRead != true).Count() > 0 ? "visible":"hidden")"></span>
-                    <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">notifications</span>
+            <div id="scrollContainer" class="page">
+                @RfContent
+            </div>
+
+            <div class="bottom-nav" style="--indicator-index: @(GetIndicatorIndex(activeTab));">
+                <!-- Indikator Aktif -->
+                <div class="indicator">
+                    <div class="floating-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 24; color: white">@GetIcon(activeTab)</span>
+                    </div>
+                </div>
+
+                <!-- Tombol Navigasi -->
+                <button class="nav-item @(activeTab == "order" ? "active" : "")" @onclick="@(() => SetActiveTab("order"))">
+                    <span class="material-symbols-outlined">view_agenda</span>
+                </button>
+                <button class="nav-item @(activeTab == "jadwal" ? "active" : "")" @onclick="@(() => SetActiveTab("jadwal"))">
+                    <span class="material-symbols-outlined">event_note</span>
+                </button>
+                <button class="nav-item @(activeTab == "beranda" ? "active" : "")" @onclick="@(() => SetActiveTab("beranda"))">
+                    <span class="material-symbols-outlined">home</span>
+                </button>
+                <button class="nav-item @(activeTab == "chat" ? "active" : "")" @onclick="@(() => SetActiveTab("chat"))">
+                    <span class="material-symbols-outlined">chat</span>
+                </button>
+                <button class="nav-item @(activeTab == "akun" ? "active" : "")" @onclick="@(() => SetActiveTab("akun"))">
+                    <span class="material-symbols-outlined">person</span>
                 </button>
             </div>
         </div>
-        <div id="scrollContainer" class="page">
-            @RfContent
-        </div>
 
-        <div class="bottom-nav" style="--indicator-index: @(GetIndicatorIndex(activeTab));">
-            <!-- Indikator Aktif -->
-            <div class="indicator">
-                <div class="floating-icon">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 24; color: white">@GetIcon(activeTab)</span>
-                </div>
+        <PthModal @ref="ModalNotifikasi">
+            <div class="header-bar">
+                <button type="button" @onclick="(() => { ModalNotifikasi.Close(); StopTimerNotifikasi(); })" class="btn button-with-icon btn-default pesan">
+                    <span style="scale: 1.2;" class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+                </button>
+                <span>@($"{($"Notifikasi")}")</span>
             </div>
-
-            <!-- Tombol Navigasi -->
-            <button class="nav-item @(activeTab == "order" ? "active" : "")" @onclick="@(() => SetActiveTab("order"))">
-                <span class="material-symbols-outlined">view_agenda</span>
-            </button>
-            <button class="nav-item @(activeTab == "jadwal" ? "active" : "")" @onclick="@(() => SetActiveTab("jadwal"))">
-                <span class="material-symbols-outlined">event_note</span>
-            </button>
-            <button class="nav-item @(activeTab == "beranda" ? "active" : "")" @onclick="@(() => SetActiveTab("beranda"))">
-                <span class="material-symbols-outlined">home</span>
-            </button>
-            <button class="nav-item @(activeTab == "bantuan" ? "active" : "")" @onclick="@(() => SetActiveTab("bantuan"))">
-                <span class="material-symbols-outlined">chat</span>
-            </button>
-            <button class="nav-item @(activeTab == "akun" ? "active" : "")" @onclick="@(() => SetActiveTab("akun"))">
-                <span class="material-symbols-outlined">person</span>
-            </button>
-        </div>
-    </div>
-
-    <PthModal @ref="ModalNotifikasi">
-        <div class="header-bar">
-            <button type="button" @onclick="(() => { ModalNotifikasi.Close(); StopTimerNotifikasi(); })" class="btn button-with-icon btn-default pesan">
-                <span style="scale: 1.2;" class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
-            </button>
-            <span>@($"{($"Notifikasi")}")</span>
-        </div>
-        <div class="portal-content-container">
-            <div class="portal-content-container-default">
-                <div class="portal-content-wrapper">
-                    <div class="portal-content">
-                        <div class="portal-stacklayout">
-                            <div class="portal-notificationpane">
-                                @if (DtNotifikasi.Any())
-                                {
-                                    <!-- Ketika ada data notification -->
-                                    <div class="portal-notificationpane-header">
-                                        <div class="portal-notificationpane-header-content">
-                                            <div class="portal-notification-dismisscontainer">
-                                                <div>
-                                                    <a role="link" class="portal-notificationpane-activitylog-link" @onclick="ProsesDismissAll">@($"{($"Hapus Notifikasi")}")</a>
+            <div class="portal-content-container">
+                <div class="portal-content-container-default">
+                    <div class="portal-content-wrapper">
+                        <div class="portal-content">
+                            <div class="portal-stacklayout">
+                                <div class="portal-notificationpane">
+                                    @if (DtNotifikasi.Any())
+                                    {
+                                        <!-- Ketika ada data notification -->
+                                        <div class="portal-notificationpane-header">
+                                            <div class="portal-notificationpane-header-content">
+                                                <div class="portal-notification-dismisscontainer">
+                                                    <div>
+                                                        <a role="link" class="portal-notificationpane-activitylog-link" @onclick="ProsesDismissAll">@($"{($"Hapus Notifikasi")}")</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="portal-notificationpane-top">
-                                        <ul class="portal-notificationpane-list">
-                                            @foreach (var notif in DtNotifikasi.OrderByDescending(x => x.WaktuProsesNotifikasi))
-                                            {
-                                                <li class="portal-notification-li @(notif.IsBeingRemoved ? "removing" : "")">
-                                                    <div class="portal-notificationmenu-notification-wrapper">
-                                                        <div class="portal-notificationmenu-notification">
-                                                            <div class="portal-notificationmenu-notification-title">
-                                                                <div class="portal-notificationmenu-notification-title-icon">
-                                                                    <span class="material-symbols-outlined" style="scale:.9;vertical-align: middle;color: #428000; font-variation-settings:'FILL' 1, 'wght' 200, 'GRAD' 80, 'opsz' 24">data_check</span>
+                                        <div class="portal-notificationpane-top">
+                                            <ul class="portal-notificationpane-list">
+                                                @foreach (var notif in DtNotifikasi.OrderByDescending(x => x.WaktuProsesNotifikasi))
+                                                {
+                                                    <li class="portal-notification-li @(notif.IsBeingRemoved ? "removing" : "")">
+                                                        <div class="portal-notificationmenu-notification-wrapper">
+                                                            <div class="portal-notificationmenu-notification">
+                                                                <div class="portal-notificationmenu-notification-title">
+                                                                    <div class="portal-notificationmenu-notification-title-icon">
+                                                                        <span class="material-symbols-outlined" style="scale:.9;vertical-align: middle;color: #428000; font-variation-settings:'FILL' 1, 'wght' 200, 'GRAD' 80, 'opsz' 24">data_check</span>
+                                                                    </div>
+                                                                    <div class="portal-notificationmenu-notification-title-text">@notif.Form</div>
                                                                 </div>
-                                                                <div class="portal-notificationmenu-notification-title-text">@notif.Form</div>
-                                                            </div>
-                                                            <div class="portal-notificationmenu-notification-description">
-                                                                <span style="visibility:hidden;">
-                                                                    <img src="" class="rzi rz-navigation-item-icon" style="height: 25px; width: 25px; display: flex;" />
-                                                                </span>
-                                                                @(notif?.IsiPesan ?? "")
-                                                            </div>
-                                                            <div class="portal-notification-inlineform"></div>
-                                                            <div class="portal-notification-time-info">
-                                                                @{
-                                                                    TimeSpan span = (DateTimeOffset.UtcNow - (notif?.WaktuProsesNotifikasi ?? DateTimeOffset.UtcNow));
-                                                                    if (span.Days > 0)
-                                                                        notif.TimeInfo = $"{span.Days} hari lalu";
-                                                                    else if (span.Hours > 0)
-                                                                        notif.TimeInfo = $"{span.Hours} jam lalu";
-                                                                    else if (span.Minutes > 0)
-                                                                        notif.TimeInfo = $"{span.Minutes} menit lalu";
-                                                                    else
-                                                                        notif.TimeInfo = $"{span.Seconds} detik lalu";
+                                                                <div class="portal-notificationmenu-notification-description">
+                                                                    <span style="visibility:hidden;">
+                                                                        <img src="" class="rzi rz-navigation-item-icon" style="height: 25px; width: 25px; display: flex;" />
+                                                                    </span>
+                                                                    @(notif?.IsiPesan ?? "")
+                                                                </div>
+                                                                <div class="portal-notification-inlineform"></div>
+                                                                <div class="portal-notification-time-info">
+                                                                    @{
+                                                                        TimeSpan span = (DateTimeOffset.UtcNow - (notif?.WaktuProsesNotifikasi ?? DateTimeOffset.UtcNow));
+                                                                        if (span.Days > 0)
+                                                                            notif.TimeInfo = $"{span.Days} hari lalu";
+                                                                        else if (span.Hours > 0)
+                                                                            notif.TimeInfo = $"{span.Hours} jam lalu";
+                                                                        else if (span.Minutes > 0)
+                                                                            notif.TimeInfo = $"{span.Minutes} menit lalu";
+                                                                        else
+                                                                            notif.TimeInfo = $"{span.Seconds} detik lalu";
 
-                                                                    var targetId = $"dropdown-notifikasi-action-{notif.IdNotifikasi}";
-                                                                }
+                                                                        var targetId = $"dropdown-notifikasi-action-{notif.IdNotifikasi}";
+                                                                    }
 
-                                                                @*<span class="material-symbols-outlined notifikasi-more" tabindex="0" title="More content actions">more_horiz</span>*@
-                                                                <div class="portal-notification-time-info-text">@notif.TimeInfo</div>
+                                                                    @*<span class="material-symbols-outlined notifikasi-more" tabindex="0" title="More content actions">more_horiz</span>*@
+                                                                    <div class="portal-notification-time-info-text">@notif.TimeInfo</div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="portal-notificationmenu-notification-dismissicon">
+                                                                <button class="portal-btn-close button-with-icon" @onclick="(() => { ProsesHapusNotifikasi(notif); })"><span class="material-symbols-outlined">close</span></button>
                                                             </div>
                                                         </div>
-
-                                                        <div class="portal-notificationmenu-notification-dismissicon">
-                                                            <button class="portal-btn-close button-with-icon" @onclick="(() => { ProsesHapusNotifikasi(notif); })"><span class="material-symbols-outlined">close</span></button>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="portal-notificationpane-top">
-                                        <div class="portal-notification-empty">
-                                            <div class="portal-notification-empty-icon"><span class="material-symbols-outlined" style="scale: 4">notifications</span></div>
-                                            <div class="nodata-content">@($"Belum ada notifikasi baru saat ini")</div>
+                                                    </li>
+                                                }
+                                            </ul>
                                         </div>
-                                    </div>
-                                }
+                                    }
+                                    else
+                                    {
+                                        <div class="portal-notificationpane-top">
+                                            <div class="portal-notification-empty">
+                                                <div class="portal-notification-empty-icon"><span class="material-symbols-outlined" style="scale: 4">notifications</span></div>
+                                                <div class="nodata-content">@($"Belum ada notifikasi baru saat ini")</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </PthModal>
-</CascadingValue>
-<!-- #endregion -->
+        </PthModal>
+    </CascadingValue>
+
+}
 
 
 
@@ -1837,36 +1841,47 @@
     private bool IsExitPromptVisible = false;
     private CancellationTokenSource? ExitCancelToken;
     private bool IsSelesaiRegister = false;
-
+    public bool IsLoading = true;
+    public LesKitaDbContext DbContext { get; set; }
+    public uimT2User User { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
+        User.WaktuInsert = DateTimeOffset.Now;
+        User.Role = "";
+        DbContext = DbFactory.CreateDbContext();
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
         if (user.Identity.IsAuthenticated)
         {
-            UserEmail = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value ?? "Tamu";
-            Username = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value ?? "Tamu";
+            User.Email = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value ?? "Tamu";
+            User.Nama = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value ?? "Tamu";
+            var existingUser = DbContext.T2User.AsNoTracking().FirstOrDefault(x => x.Email == User.Email);
+            if (existingUser != null)
+            {
+                User = existingUser.Adapt<uimT2User>();
+                if (existingUser.Role == "Mentor")
+                {
+                    var mentor = DbContext.T0Mentor.FirstOrDefault(x => x.IdUser == User.IdUser);
+                    User.Alamat = mentor?.Alamat;
+                    User.NoTelepon = mentor?.NoTelepon;
+                } else if (existingUser.Role == "Siswa")
+                {
+                    var siswa = DbContext.T0Siswa.FirstOrDefault(x => x.IdUser == User.IdUser);
+                    User.Alamat = siswa?.Alamat;
+                    User.NoTelepon = siswa?.NoTelepon;
+                }
+            }
         }
         else
         {
-            UserEmail = "xx@gmail.com";
-            Username = "Tamu";
+            User.Email = "xx@gmail.com";
+            User.Nama = "Tamu";
+            User.Role = "Siswa";
+
         }
-        // DtNotifikasi.Add(new uimT9Notifikasi
-        // {
-        //     IdNotifikasi = Guid.NewGuid(),
-        //     IdUser_Pengirim = Guid.Parse("00000001-0000-0000-0000-000000000000"),
-        //     IdUser_Penerima = Guid.Parse("00000001-0000-0000-0000-000000000000"),
-        //     UserPengirim_NamaPanggilan = "AUTO",
-        //     UserPenerima_NamaPanggilan = "AUTO",
-        //     IsRead = false,
-        //     WaktuProsesNotifikasi = DateTimeOffset.Now,
-        //     IsiPesan = "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem",
-        //     JenisPesan = "Bukan Dari User Login",
-        //     NilaiPK = "564a0000-1779-e460-94b3-08dd1867a8cd",
-        //     Form = "Pembayaran Berhasil",
-        // });
+        IsLoading = false;
+        StateHasChanged();
     }
 
     public bool IsAnyModalOpen =>
@@ -1949,7 +1964,7 @@
                 "beranda" => @<RcpBeranda></RcpBeranda>,
                 "order" => @<RcpOrder></RcpOrder>,
                 "jadwal" => @<RcpJadwal></RcpJadwal>,
-                "bantuan" => @<RcpBantuan ></RcpBantuan>,
+                "chat" => @<RcpChat ></RcpChat>,
                 "akun" => @<RcpAkun></RcpAkun>,
             };
         //await _js.InvokeVoidAsync("setScrollPositionInContainer", "scrollContainer", 0);
@@ -1963,7 +1978,7 @@
             "order" => 0,
             "jadwal" => 1,
             "beranda" => 2,
-            "bantuan" => 3,
+            "chat" => 3,
             "akun" => 4,
             _ => 2
         };
@@ -1976,7 +1991,7 @@
             "order" => "view_agenda",
             "jadwal" => "event_note",
             "beranda" => "home",
-            "bantuan" => "chat",
+            "chat" => "chat",
             "akun" => "person",
             _ => "home"
         };

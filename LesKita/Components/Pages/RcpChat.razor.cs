@@ -9,7 +9,7 @@ using Microsoft.JSInterop;
 using System.Text.RegularExpressions;
 using Contact = LesKita.Contact;
 
-public partial class RcpBantuan
+public partial class RcpChat
 {
     [Inject]
     public IJSRuntime JSR { get; set; }
@@ -31,7 +31,7 @@ public partial class RcpBantuan
     private string messageUrl = "Message";
 
     public string DisplayPersonalMessageSection { get => TampilkanPersonalMessageSection ? "flex" : "none"; }
-   
+
     public bool TampilkanPersonalMessageSection = false;
 
     public List<Contact> DtContact = new();
@@ -61,10 +61,7 @@ public partial class RcpBantuan
     private bool _firstRender = true;
     private bool _selesaiInisialisasi = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Inisialisasi();
-    }
+
     private async Task Inisialisasi()
     {
         _selesaiInisialisasi = true;
@@ -741,7 +738,7 @@ public partial class RcpBantuan
         //DtPesan.Remove(pesanLama);
         //DtPesan.Add(pesanBaru);
 
-        
+
 
         //await _svcPesan.InsertStatusPesan(t8PesanTerima);
 
@@ -974,7 +971,7 @@ public partial class RcpBantuan
         //JSR.InvokeVoidAsync("scrollToPesan", $"{pesanPalingAwal.IdDetilPesan}");
         StateHasChanged();
     }
-    public DotNetObjectReference<RcpBantuan>? DotNet;
+    public DotNetObjectReference<RcpChat>? DotNet;
     public bool IsLoadingMoreMessages = false;
     [JSInvokable]
     public async Task OnScroll(string value)
@@ -1186,7 +1183,7 @@ public partial class RcpBantuan
             return;
         }
 
-        
+
         await InvokeAsync(StateHasChanged);
     }
     async void OnSearchContactChanged(string newValue)
@@ -1211,7 +1208,7 @@ public partial class RcpBantuan
         await TxbSearchContact1.FocusAsync();
         StateHasChanged();
     }
-    
+
 
     #region Recording
 
@@ -1461,7 +1458,7 @@ public partial class RcpBantuan
                         if (!hasil.Any(x => x.IdPesan == grup.IdPesan))
                         {
                             var cloneGrup = grup.Adapt<uimT6Pesan>();
-                            cloneGrup.Notes =$"{karyawan.NamaPanggilan} juga ada di grup ini";
+                            cloneGrup.Notes = $"{karyawan.NamaPanggilan} juga ada di grup ini";
                             cloneGrup.Kategori = "Groups";
                             cloneGrup.WaktuProses = null;
                             hasil.Add(cloneGrup);

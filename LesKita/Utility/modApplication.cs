@@ -5,8 +5,6 @@ namespace LesKita;
 
 public static class modApplication
 {
-    public static string Username { get; set; }
-    public static string UserEmail { get; set; }
     public static bool IsBlazorHybrid()
     {
         return OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst();

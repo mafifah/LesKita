@@ -13,6 +13,7 @@ public class T0Siswa
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public string? Email { get; set; }
+    public string? NoTelepon { get; set; }
 
     public List<T1Order>? ListT1Order { get; set; }
 
