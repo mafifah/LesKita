@@ -4,8 +4,8 @@ public class PesanSignalR
 {
     public string Klien { get; set; }
     public string Divisi { get; set; }
-    public object IdUser { get; set; }
-    public object IdUser_Penerima { get; set; }
+    public Guid IdUser { get; set; }
+    public Guid IdUser_Penerima { get; set; }
     public string? UserPengirim_NamaPanggilan { get; set; }
     public string? UserPenerima_NamaPanggilan { get; set; }
     public bool StatusBroadcast { get; set; }

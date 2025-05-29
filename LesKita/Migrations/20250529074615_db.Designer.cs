@@ -4,6 +4,7 @@ using LesKita;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LesKita.Migrations
 {
     [DbContext(typeof(LesKitaDbContext))]
-    partial class LesKitaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250529074615_db")]
+    partial class db
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,9 +174,6 @@ namespace LesKita.Migrations
 
                     b.Property<Guid?>("IdSiswa")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("IdTransaksi")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAktif")
                         .HasColumnType("bit");

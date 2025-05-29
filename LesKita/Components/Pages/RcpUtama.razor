@@ -1,16 +1,15 @@
-﻿@page "/"
+﻿@page "/beranda"
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.IdentityModel.Claims
 @using Microsoft.EntityFrameworkCore
 @inject AuthenticationStateProvider AuthStateProvider
-@inject IJSRuntime _js
+@inject IJSRuntime JS
 @inject ISvcStatusBar _svcStatusBar
-@inject NavigationManager _nm
+@inject NavigationManager NM
 @inject RefreshViewState RefreshViewState
 @inject IServiceProvider ServicesProv 
 @inject IJSRuntime JSR
 @inject IDbContextFactory<LesKitaDbContext> DbFactory
-@using static modAes
 @inherits LayoutComponentBase
 @namespace LesKita.Components
 <script>
@@ -1862,15 +1861,28 @@
                 User = existingUser.Adapt<uimT2User>();
                 if (existingUser.Role == "Mentor")
                 {
-                    var mentor = DbContext.T0Mentor.FirstOrDefault(x => x.IdUser == User.IdUser);
+                    var mentor = DbContext.T0Mentor.Include(x => x.ListT1JadwalMentor).FirstOrDefault(x => x.IdUser == User.IdUser);
                     User.Alamat = mentor?.Alamat;
                     User.NoTelepon = mentor?.NoTelepon;
-                } else if (existingUser.Role == "Siswa")
+                    User.Tarif = mentor?.Tarif ?? 0;
+                    User.IdMentor = mentor?.Id;
+                    User.IdUser = (Guid)mentor?.IdUser;
+                    User.ListJadwal = mentor?.ListT1JadwalMentor;
+                }
+                else if (existingUser.Role == "Siswa")
                 {
                     var siswa = DbContext.T0Siswa.FirstOrDefault(x => x.IdUser == User.IdUser);
                     User.Alamat = siswa?.Alamat;
                     User.NoTelepon = siswa?.NoTelepon;
+                    User.IdSiswa = siswa?.Id;
+                    User.IdUser = (Guid)siswa?.IdUser;
+
                 }
+            }
+            else
+            {
+                await Task.Delay(100);
+                NM.NavigateTo("/");
             }
         }
         else
@@ -1953,7 +1965,7 @@
         if (efekBouncing)
         {
             // Pindahkan indikator ke posisi baru
-            await _js.InvokeVoidAsync("triggerBouncingAnimation");
+            await JS.InvokeVoidAsync("triggerBouncingAnimation");
 
             // Ganti konten tab setelah animasi selesai
             await Task.Delay(100);
@@ -2015,8 +2027,6 @@
     {
         psr.IsBeingRemoved = true;
         DtNotifikasi.Remove(psr);
-
-        //if (DtNotifikasi.Where(x => x.IsRead == false).ToList().Count() < 1) SembunyikanBadgeNotifikasi = true;
         StateHasChanged();
     }
 
@@ -2171,45 +2181,43 @@
         #endregion
 
     #region SignalR
-        public ClsServisSignalR SSR;
-        // public event PaymentBerhasilEventHandler? PaymentBerhasilDiterima;
-        // public delegate void PaymentBerhasilEventHandler(PesanSignalR psr);
+    public ClsServisSignalR SSR;
+    // public event PaymentBerhasilEventHandler? PaymentBerhasilDiterima;
+    // public delegate void PaymentBerhasilEventHandler(PesanSignalR psr);
         
-        public async void ssr_TerimaPesan(PesanSignalR psr)
-        {
-            //NotifikasiSignalDiterima?.Invoke(psr);
-            if (psr != null && psr.JenisPesan == "Notifikasi")
+    public async void ssr_TerimaPesan(PesanSignalR psr)
+    {
+        Console.WriteLine($"TERIMA PESAN untuk: {psr.UserPenerima_NamaPanggilan} ({psr.IdUser_Penerima}), Sedang Login: {User.Nama} ({User.IdUser})");
+    
+        if (psr != null && psr.JenisPesan == "Notifikasi" && psr.IdUser_Penerima == User.IdUser)
+        {        
+            var notif = new uimT9Notifikasi
             {
-                var notif = new uimT9Notifikasi
-                {
-                    IdNotifikasi = Guid.NewGuid(),
-                    IdUser_Pengirim = Guid.Parse("00000001-0000-0000-0000-000000000000"),
-                    IdUser_Penerima = Guid.Parse("00000001-0000-0000-0000-000000000000"),
-                    UserPengirim_NamaPanggilan = "AUTO",
-                    UserPenerima_NamaPanggilan = "AUTO",
-                    IsRead = false,
-                    WaktuProsesNotifikasi = DateTimeOffset.Now,
-                    IsiPesan = psr.IsiPesan,
-                    JenisPesan = "Bukan Dari User Login",
-                    //NilaiPK = psr.IdTransaksi,
-                    Form = psr.NamaForm,
-                };
-                DtNotifikasi.Add(notif);
-                await InvokeAsync(StateHasChanged);
-            }
+                IdNotifikasi = Guid.NewGuid(),
+                IdUser_Penerima = psr.IdUser_Penerima,
+                UserPenerima_NamaPanggilan = psr.UserPenerima_NamaPanggilan,
+                IsRead = false,
+                WaktuProsesNotifikasi = DateTimeOffset.Now,
+                IsiPesan = psr.IsiPesan,
+                JenisPesan = "Bukan Dari User Login",
+                Form = psr.NamaForm,
+            };
+        
+            DtNotifikasi.Add(notif);
+            await InvokeAsync(StateHasChanged);
         }
+    }
 
-        public async Task KirimSignalR()
+    public async Task KirimSignalR(string jenisPesan, string namaForm, string statusAction, string namaFieldPK, object nilaiPK, DateTimeOffset waktuProses, string isiPesan, Guid idUser, string User_NamaPanggilan, Guid idUserPenerima, string userPenerima_NamaPanggilan)
+    {
+        try
         {
-            // try
-            // {
-            //     await SSR.KirimPesan( jenisPesan: "Notifikasi", namaForm:"Pembayaran Berhasil", statusAction:"Insert", namaFieldPK: "", nilaiPK:"00000001-0000-0000-0000-000000000000", waktuProses:DateTime.Now, isiPesan: "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem", idUser:Guid.Parse("00000001-0000-0000-0000-000000000000"), User_NamaPanggilan:"AUTO", idUserPenerima: Guid.Parse("00000001-0000-0000-0000-000000000000"), userPenerima_NamaPanggilan:"AUTO");
-            //         await Task.Delay(30000);
-            // }
-            // catch (Exception ex)
-            // {
-            // }
+            await SSR.KirimPesan(jenisPesan, namaForm, statusAction, namaFieldPK, nilaiPK, waktuProses, isiPesan, idUser, User_NamaPanggilan, idUserPenerima, userPenerima_NamaPanggilan);
         }
+        catch (Exception ex)
+        {
+        }
+    }
     #endregion
 
     public string GetGreeting()

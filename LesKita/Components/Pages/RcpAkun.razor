@@ -4,16 +4,22 @@
 @inject IDbContextFactory<LesKitaDbContext> DbFactory
 <style>
     .page {
-    background-color: #fff;
-    height: calc(100vh - 40px) !important;
+    height: calc(100vh - 42px) !important;
     }
 
+    .container-utama {
+    background-color: @(IsTampilkanFormEditJadwal ? "#f2f2f2 !important" : "");
+    }
     .header {
-    display: none !important;
+    display: @(!IsTampilkanFormEditJadwal ? "none !important" : "");
+    height: @(IsTampilkanFormEditJadwal ? "258px !important" : "");
     }
 
+    .header div {
+    visibility: hidden;
+    }
     .profile-container {
-    margin: 5rem auto;
+    margin: auto;
     padding: 1.5rem;
     border-radius: 20px;
     font-family: sans-serif;
@@ -164,65 +170,220 @@
     .signout-button:hover {
     background: rgba(106, 70, 229, 0.08);
     }
+
+    .header-jadwal{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    }
 </style>
-<div class="profile-container">
-    <div class="avatar-circle">
-        <span>A</span>
-    </div>
-    <h2>@DtUser.Nama</h2>
-    <p class="join-date">Joined @DtUser.WaktuInsert.Value.ToString("MMMM dd, yyyy")</p>
+<style>
+    .header-detail-jadwal {
+    display: flex;
+    position: fixed;
+    align-items: center;
+    gap: 10px;
+    top: 30px;
+    margin-left: -1px;
+    left: 20px;
+    }
 
-    <div class="card">
-        <h3>General</h3>
-        <div class="info-row">
-            <span class="material-symbols-outlined" style="font-size:25px;">person</span>
-            <input class="editable-input" @bind="@DtUser.Nama" />
+    .header-detail-jadwal span {
+    color: #b8bde8;
+    font-size: 28px;
+    }
+
+    .header-detail-jadwal div {
+    color: #b8bde8;
+    }
+
+    .deskripsi-sesi {
+    position: fixed;
+    top: 80px;
+    color: white;
+    }
+
+    .lampiran-container {
+    position: fixed;
+    top: 230px;
+    border-radius: 35px;
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    }
+
+    .lampiran-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    }
+
+    .unduh-btn {
+    border-radius: 6px;
+    padding: 4px 8px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    color: #6282c8;
+    border: 0.5px solid #6282c8;
+    outline:none;
+    }
+
+    .unduh-btn:active,
+    .unduh-btn:hover {
+    background-color: #6282c8;
+    color: #fff;
+    }
+
+    .card-content-lampiran {
+    display: flex;
+    gap: 5px;
+    }
+
+    .container-form-jadwal{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: -webkit-fill-available;
+    }
+
+    .item-control{
+    margin-bottom: 15px;
+    }
+</style>
+@if (!IsTampilkanFormEditJadwal)
+{
+    <div class="profile-container">
+        <div class="avatar-circle">
+            <span>A</span>
         </div>
-        <div class="info-row">
-            <span class="material-symbols-outlined" style="font-size: 21px;">mail</span>
-            <input class="editable-input" @bind="@DtUser.Email" />
-        </div>
-        <div class="info-row">
-            <span class="material-symbols-outlined" style="font-size:21px;">call</span>
-            <input class="editable-input" @bind="@DtUser.NoTelepon" />
-        </div>
-        <div class="info-row">
-            <span class="material-symbols-outlined" style="font-size:22px;">location_on</span>
-            <input class="editable-input" @bind="DtUser.Alamat" />
-        </div>
-        <div class="info-row">
-            <span class="material-symbols-outlined" style="font-size:22px;">location_on</span>
-            <select class="editable-input" id="role" @bind="DtUser.Role" style="padding: 6px; border-radius: 8px; border: 1px solid #ccc;">
-                <option value="">Pilih</option>
-                <option value="Siswa">Siswa</option>
-                <option value="Mentor">Mentor</option>
-            </select>
-        </div>
-    </div>
-    <div class="card">
-        <h3>Notifikasi</h3>
-        <div class="info-row notifikasi">
-            <div class="label" style="display:flex;gap:10px;">
-                <span class="material-symbols-outlined" style="font-size:21px;">notifications</span>
-                <span>Aktifkan Notifikasi</span>
+        <h2>@DtUser.Nama</h2>
+        <p class="join-date">Joined @DtUser.WaktuInsert.Value.ToString("MMMM dd, yyyy")</p>
+
+        <div class="card">
+            <h3>General</h3>
+            <div class="info-row">
+                <span class="material-symbols-outlined" style="font-size:25px;">person</span>
+                <input class="editable-input" @bind="@DtUser.Nama" />
             </div>
-            <label class="switch">
-                <input type="checkbox" @bind="DtUser.StatusNotifikasi" />
-                <span class="slider"></span>
-            </label>
+            <div class="info-row">
+                <span class="material-symbols-outlined" style="font-size: 21px;">mail</span>
+                <input class="editable-input" @bind="@DtUser.Email" />
+            </div>
+            <div class="info-row">
+                <span class="material-symbols-outlined" style="font-size:21px;">call</span>
+                <input class="editable-input" @bind="@DtUser.NoTelepon" />
+            </div>
+            <div class="info-row">
+                <span class="material-symbols-outlined" style="font-size:22px;">location_on</span>
+                <input class="editable-input" @bind="DtUser.Alamat" />
+            </div>
+            @if (DtUser.Role == "Mentor")
+            {
+                <div class="info-row">
+                    <span class="material-symbols-outlined" style="font-size:22px;">request_quote</span>
+                    <input class="editable-input" @bind-value="DtUser.FormattedTarif" @bind-value:event="oninput" @onblur="UpdateTarif" />
+                </div>
+            }
+        </div>
+        @if (DtUser.Role == "Mentor")
+        {
+            <div class="card">
+                <div class="header-jadwal">
+                    <h3>Atur Jadwal</h3>
+                    <span class="material-symbols-outlined" @onclick="@(() => { IsTampilkanFormEditJadwal = true; StateHasChanged(); })">calendar_add_on</span>
+                </div>
+                @foreach (var item in ListJadwal)
+                {
+                    <div class="info-row notifikasi">
+                        <span>@($"{item.Hari}, {item.JamMulai?.ToString(@"hh\.mm")} - {item.JamSelesai?.ToString(@"hh\.mm")}")</span>
+                        <div style="display:flex;gap:5px;">
+                            <span class="material-symbols-outlined" @onclick="@(() => { item.StatusAction = "edit"; DrJadwalDipilih = item; IsTampilkanFormEditJadwal = true; StateHasChanged(); })">draw</span>
+                            <span class="material-symbols-outlined" @onclick="@(() => { HapusJadwal(item); })">delete</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <div class="card">
+            <h3>Notifikasi</h3>
+            <div class="info-row notifikasi">
+                <div class="label" style="display:flex;gap:10px;">
+                    <span class="material-symbols-outlined" style="font-size:21px;">notifications</span>
+                    <span>Aktifkan Notifikasi</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" @bind="DtUser.StatusNotifikasi" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        @if (!DtUser.Nama.Contains("Tamu"))
+        {
+            <button class="update-button" @onclick="@ProsesPerbaruiData">Perbarui Data</button>
+            <button class="signout-button" @onclick="ProsesLogOut">Sign out</button>
+        }
+        else
+        {
+            <button class="signout-button" @onclick="@(() => { Navigation.NavigateTo("/login"); })">Log In</button>
+        }
+    </div>
+
+}
+else
+{
+    <div class="bg-white rounded-2xl p-4 shadow-md max-w-md mx-auto lampiran-container">
+        <!-- Header -->
+        <div class="header-detail-jadwal">
+            <span class="material-symbols-outlined" aria-hidden="true" @onclick="@(() => { IsTampilkanFormEditJadwal = false; DrJadwalDipilih = new();  StateHasChanged(); })">arrow_back</span>
+            <div class="absolute top-4 left-4 font-bold">Atur Jadwal Les</div>
+        </div>
+        <div class="deskripsi-sesi">
+            <!-- Title & Author -->
+            <div class="mb-2">
+                <h2 class="text-2xl font-bold text-gray-800">Pilih Jadwal Les Anda</h2>
+                <p class="text-sm text-gray-500">Jadwal ini akan terlihat oleh siswa agar mereka bisa menyesuaikan waktu untuk belajar bersama Anda.</p>
+            </div>
+        </div>
+        <!-- Lessons Summary -->
+        <div class="mb-4 container-form-jadwal">
+            <div class="form-atur-jadwal">
+                <div class="item-control">
+                    <div class="text-sm text-gray-600 text-muted">
+                        Pilih Hari
+                    </div>
+                    <select class="editable-input" @bind="DrJadwalDipilih.Hari">
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                        <option value="Minggu">Minggu</option>
+                    </select>
+                </div>
+                <div class="item-control">
+                    <div class="text-sm text-gray-600 text-muted">
+                        Pilih Jam Mulai
+                    </div>
+                    <input type="time" class="editable-input" @bind="DrJadwalDipilih.JamMulaiDateTime" />
+                </div>
+                <div class="item-control">
+                    <div class="text-sm text-gray-600 text-muted">
+                        Pilih Jam Selesai
+                    </div>
+                    <input type="time" class="editable-input" @bind="DrJadwalDipilih.JamSelesaiDateTime"/>
+                </div>
+            </div>
+            <button class="unduh-btn" @onclick="@SimpanJadwal">Simpan</button>
         </div>
     </div>
-    @if (!DtUser.Nama.Contains("Tamu"))
-    {
-        <button class="update-button" @onclick="@ProsesPerbaruiData">Perbarui Data</button>
-        <button class="signout-button" @onclick="ProsesLogOut">Sign out</button>
-    }
-    else
-    {
-        <button class="signout-button" @onclick="@(() => { Navigation.NavigateTo("/login"); })">Log In</button>
-    }
-</div>
-
+}
 @code {
     [CascadingParameter]
     public RcpUtama RcpUtama { get; set; }
@@ -230,13 +391,30 @@
     public uimT2User DtAwal = new();
     public uimT2User DtUser = new();
     public LesKitaDbContext DbContext { get; set; }
+    public List<uimT1JadwalMentor> ListJadwal { get; set; } = new();
 
     protected override void OnInitialized()
     {
         var user = RcpUtama.User;
         DtUser = user;
+        DtUser.ListJadwal.ForEach(x =>
+        {
+            ListJadwal.Add(new uimT1JadwalMentor
+            {
+                IdJadwalMentor = x.IdJadwalMentor,
+                IdMentor = x.IdMentor,
+                Hari = x.Hari,
+                JamMulai = x.JamMulai,
+                JamSelesai = x.JamSelesai,
+                Status = x.Status,
+            });
+        });
         DbContext = DbFactory.CreateDbContext();
-        
+    }
+
+    private void UpdateTarif()
+    {
+        DtUser.FormattedTarif = string.Format("{0:N0}", DtUser.Tarif);
     }
 
     private async Task ProsesPerbaruiData()
@@ -266,29 +444,48 @@
                 }
             }
         }
-        else
-        {
-            DbContext.T2User.Add(DtUser);
-
-            if (DtUser.Role == "Mentor")
-            {
-                var mentor = DtUser.Adapt<T0Mentor>();
-                DbContext.T0Mentor.Add(mentor);
-            }
-            else if (DtUser.Role == "Siswa")
-            {
-                var siswa = DtUser.Adapt<T0Siswa>();
-                DbContext.T0Siswa.Add(siswa);
-            }
-        }
-
         await DbContext.SaveChangesAsync();
     }
 
-
-    
     private void ProsesLogOut()
     {
         Navigation.NavigateTo("auth/logout", forceLoad: true);
     }
+
+    #region Jadwal
+    public uimT1JadwalMentor DrJadwalDipilih { get; set; } = new();
+    public bool IsTampilkanFormEditJadwal { get; set; } = false;
+    private async Task SimpanJadwal()
+    {
+        // Validasi dasar
+        if (string.IsNullOrEmpty(DrJadwalDipilih.Hari) || DrJadwalDipilih.JamMulai == null || DrJadwalDipilih.JamSelesai == null) return;
+        if (DrJadwalDipilih.StatusAction == "edit") DbContext.T1JadwalMentor.Update(DrJadwalDipilih);
+        else
+        {
+            ListJadwal.Add(DrJadwalDipilih);
+            DrJadwalDipilih.IdMentor = DtUser.IdMentor;
+            DrJadwalDipilih.Status = true;
+            DbContext.T1JadwalMentor.Add(DrJadwalDipilih);
+        }
+
+        await DbContext.SaveChangesAsync();
+
+        IsTampilkanFormEditJadwal = false;
+        StateHasChanged();
+        // Lanjutkan simpan ke DB, panggil service, dsb.
+        Console.WriteLine($"Simpan: {DrJadwalDipilih.Hari} | {DrJadwalDipilih.JamMulai} - {DrJadwalDipilih.JamSelesai}");
+    }
+
+    private async Task HapusJadwal(uimT1JadwalMentor item)
+    {
+        DbContext.T1JadwalMentor.Remove(item);
+        await DbContext.SaveChangesAsync();
+
+        ListJadwal.Remove(item);
+        StateHasChanged();
+        // Lanjutkan simpan ke DB, panggil service, dsb.
+        Console.WriteLine($"Simpan: {DrJadwalDipilih.Hari} | {DrJadwalDipilih.JamMulai} - {DrJadwalDipilih.JamSelesai}");
+    }
+
+    #endregion
 }

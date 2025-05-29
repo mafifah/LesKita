@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LesKita.Migrations
 {
     [DbContext(typeof(LesKitaDbContext))]
-    [Migration("20250525043809_db")]
-    partial class db
+    [Migration("20250529095228_dbUpdate")]
+    partial class dbUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -153,12 +153,9 @@ namespace LesKita.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("T0MentorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("IdJadwalMentor");
 
-                    b.HasIndex("T0MentorId");
+                    b.HasIndex("IdMentor");
 
                     b.ToTable("T1JadwalMentor");
                 });
@@ -177,6 +174,9 @@ namespace LesKita.Migrations
 
                     b.Property<Guid?>("IdSiswa")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IdTransaksi")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAktif")
                         .HasColumnType("bit");
@@ -551,9 +551,11 @@ namespace LesKita.Migrations
 
             modelBuilder.Entity("LesKita.Model.T1JadwalMentor", b =>
                 {
-                    b.HasOne("LesKita.Model.T0Mentor", null)
+                    b.HasOne("LesKita.Model.T0Mentor", "T0Mentor")
                         .WithMany("ListT1JadwalMentor")
-                        .HasForeignKey("T0MentorId");
+                        .HasForeignKey("IdMentor");
+
+                    b.Navigation("T0Mentor");
                 });
 
             modelBuilder.Entity("LesKita.Model.T1Order", b =>

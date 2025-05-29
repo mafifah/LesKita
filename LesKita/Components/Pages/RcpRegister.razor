@@ -1,0 +1,197 @@
+﻿@page "/register"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@using static modAes
+@inject NavigationManager NM
+@inject IJSRuntime JS
+@inject IDbContextFactory<LesKitaDbContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
+<style>
+    .login-box {
+        background-color: #6282c8;
+        padding: 1.3rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        height: 100vh;
+        /* max-width: 360px; */
+        text-align: center;
+    }
+
+    .logo-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        margin-bottom: 0.2rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .input-control {
+    }
+
+    .input {
+        display: block;
+        width: 100%;
+        padding: 0.5rem;
+        margin: 0.7rem 0;
+        border: 1px solid #ccc;
+        border: none;
+        border-radius: 6px;
+        color: #555;
+        font-size: 12px;
+    }
+
+    .options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0.5rem 0 1rem;
+        font-size: 0.8rem;
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: #3a5db4;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+        .login-btn:hover,
+        .login-btn:active {
+            background-color: #2f4da1;
+        }
+
+    .divider {
+        margin: 1rem 0;
+        font-size: 0.85rem;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .social {
+        width: 100%;
+        padding: 0.7rem;
+        margin-bottom: 0.6rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .google {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        color: #444444;
+    }
+
+        .google:hover,
+        .google:active {
+            background-color: #f2f2f2;
+        }
+
+    .signup-text {
+        font-size: 0.85rem;
+        margin-top: 1rem;
+        color: white;
+        font-weight: 500;
+    }
+
+</style>
+<script>
+    window.clickLoginGoogleLink = () => {
+        const link = document.getElementById("loginGoogleLink");
+        if (link) {
+            link.click();
+        }
+    };
+
+    window.clickLogin = () => {
+        const link = document.getElementById("login-btn");
+        if (link) {
+            link.click();
+        }
+    };
+</script>
+<form>
+    <div class="login-box">
+        @* 
+        <h2 style="text-align: start;width: 200px;color: white;font-size: 30px;">
+            Sign in to your account
+        </h2> *@
+        <p style="text-align: start;color: white;font-weight: 400;">Enter your email and password to log in</p>
+
+        <div class="input-control">
+            <input class="input" name="email" placeholder="Email" @bind="@Email" />
+            <input class="input" name="password" placeholder="Password" type="password" @bind="@Password" />
+        </div>
+
+        <button class="login-btn" type="button" @onclick="@ProsesRegister">Daftar</button>
+
+        <div class="divider">Atau</div>
+
+        <button class="social google" @onclick="@RegisterWithGoogle">Daftar dengan Google</button>
+
+        <p class="signup-text">
+            Belum punya akun? <span>Buat Akun</span>
+        </p>
+    </div>
+    <a id="loginGoogleLink" href="/login-google" style="visibility:hidden;">Login with Google</a>
+</form>
+
+
+<form method="post" action="/auth/login" style="visibility:hidden">
+    <input class="input" name="email" placeholder="Email" @bind="@Email" />
+    <input class="input" name="password" placeholder="Password" type="password" @bind="@Password" />
+    <button class="login-btn" id="login-btn" type="submit">Log In</button>
+</form>
+@code {
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string ErrorMessage { get; set; }
+    async Task RegisterWithGoogle()
+    {
+        await JS.InvokeVoidAsync("clickLoginGoogleLink");
+    }
+
+    async Task ProsesRegister()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        Random rnd = new Random();
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        string generatedName = new string(Enumerable.Range(0, 6)
+            .Select(_ => chars[rnd.Next(chars.Length)]).ToArray());
+
+        var user = await db.T2User.FirstOrDefaultAsync(u => u.Email == Email);
+        if (user is not null) return;
+
+        user = new uimT2User
+        {
+            Email = Email,
+            Nama = generatedName,
+            Password =  Encrypt(Password),
+            WaktuInsert = DateTime.Now,
+            Role = "",
+        };
+
+        db.T2User.Add(user);
+        await db.SaveChangesAsync();
+
+        await Task.Delay(200);
+        await JS.InvokeVoidAsync("clickLogin");
+
+    }
+
+}

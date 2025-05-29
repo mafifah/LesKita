@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Claims;
 using Microsoft.EntityFrameworkCore;
+using Mapster;
+using System.Text;
 
 internal class Program
 {
@@ -73,6 +75,38 @@ internal class Program
 
         //Config Database
         builder.Services.AddDbContextFactory<LesKitaDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        //Config Mapster
+        var config = TypeAdapterConfig.GlobalSettings;
+        config.Default.NameMatchingStrategy(NameMatchingStrategy.Flexible);
+        config.Default.IgnoreNullValues(true);
+
+        config.NewConfig<string, Guid?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : Guid.Parse(src));
+        config.NewConfig<string, DateTimeOffset?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : DateTimeOffset.Parse(src));
+        config.NewConfig<string, DateTime?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : DateTime.Parse(src));
+        config.NewConfig<string, DateOnly?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : DateOnly.Parse(src));
+        config.NewConfig<string, long?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : long.Parse(src));
+        config.NewConfig<string, long>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? 0 : long.Parse(src));
+        config.NewConfig<string, int?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : int.Parse(src));
+        config.NewConfig<string, int>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? 0 : int.Parse(src));
+        config.NewConfig<string, decimal?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? 0 : decimal.Parse(src));
+        config.NewConfig<string, double?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : double.Parse(src));
+        config.NewConfig<string, bool?>()
+              .MapWith(src => string.IsNullOrEmpty(src) ? null : bool.Parse(src));
+        config.NewConfig<string, byte[]?>()
+              .MapWith(src => string.IsNullOrEmpty(src) || src == "System.Byte[]" ? null : Encoding.ASCII.GetBytes(src));
+        config.NewConfig<byte[]?, string>()
+              .MapWith(src => src == null ? null : Encoding.UTF8.GetString(src));
 
         var app = builder.Build();
 

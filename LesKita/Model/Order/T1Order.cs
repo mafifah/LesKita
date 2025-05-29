@@ -30,6 +30,7 @@ public class T1Order
     public bool IsAktif { get; set; } = false;
     public bool IsCancel { get; set; } = false;
     public bool IsDone { get; set; } = false;
+    public string? IdTransaksi { get; set; }
 
     [ForeignKey("IdSiswa")]
     public T0Siswa? T0Siswa { get; set; }

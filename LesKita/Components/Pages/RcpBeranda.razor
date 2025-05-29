@@ -1,31 +1,34 @@
 ﻿@using System.Text.Json
+@using Microsoft.EntityFrameworkCore
 @using static LesKita.Controllers.PaymentController
 @inherits LayoutComponentBase
-@inject IJSRuntime _js
+@inject IJSRuntime JS
 @inject ISvcStatusBar _svcStatusBar
-@inject NavigationManager _nm
+@inject NavigationManager NM
 @inject RefreshViewState RefreshViewState
 @inject IServiceProvider ServicesProv
 @inject IJSRuntime JSR
 @inject HttpClient Http
+@inject IDbContextFactory<LesKitaDbContext> DbFactory
+
 <style>
     .services{
-        position:fixed !important;
-        margin: 20px !important;
-        top: 100px;
-        width: -webkit-fill-available;
-        border-radius:12px !important;
+    position:fixed !important;
+    margin: 20px !important;
+    top: 100px;
+    width: -webkit-fill-available;
+    border-radius:12px !important;
     }
 
     .service-item .icon-box {
-        background-color: #eef3ff;
-        border-radius: 12px;
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    background-color: #eef3ff;
+    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     }
 
     .service-item .icon-box .material-symbols-outlined {
@@ -39,12 +42,12 @@
     color: #333;
     }
 
-   
+
     .tarif{
-        border: 0.5px solid rgba(170, 170, 170, 0.3) !important;
-        color: #6282c8;
-        border-radius: 5px;
-        min-width: 100px;
+    border: 0.5px solid rgba(170, 170, 170, 0.3) !important;
+    color: #6282c8;
+    border-radius: 5px;
+    min-width: 100px;
     }
 
     .tarif:hover {
@@ -95,13 +98,13 @@
     }
 
     .pilih-mentor-btn {
-        border: 0.5px solid #6282c8;
-        border-radius: 6px;
-        padding: 5px 10px;
-        background-color: #6282c8;
-        color: #fff;
-        cursor: pointer;
-        font-size: 12px;
+    border: 0.5px solid #6282c8;
+    border-radius: 6px;
+    padding: 5px 10px;
+    background-color: #6282c8;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
     }
 
     .jadwal-btn.selected {
@@ -241,10 +244,10 @@
     }
 
     .listbox-item-template-avatar .avatar-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
     }
 
 
@@ -255,10 +258,10 @@
     }
 
     .listbox-item-template-text {
-        display: flex;
-        flex-direction: column;
-        margin-left: 8px;
-        width: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    width: -webkit-fill-available;
     }
 
     .listbox-item-template-text-nama {
@@ -371,14 +374,14 @@
     }
 
     .price{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     }
 
     .price .nominal {
-        font-size:12px;
-        font-weight:500;
+    font-size:12px;
+    font-weight:500;
     }
 </style>
 
@@ -412,26 +415,30 @@
     };
 
 </script>
-<div class="card services shadow-sm p-4 mb-4 bg-white rounded text-center">
-    <div class="row row-cols-2 text-center g-3">
-        <div class="col" @onclick="@(() => { ModalMentor?.Show(); })">
-            <div class="service-item">
-                <div class="icon-box">
-                    <span class="material-symbols-outlined">supervisor_account</span>
+@if(RcpUtama.User.Role != "Mentor")
+{
+    <div class="card services shadow-sm p-4 mb-4 bg-white rounded text-center">
+        <div class="row row-cols-2 text-center g-3">
+            <div class="col" @onclick="@(() => { ModalMentor?.Show(); })">
+                <div class="service-item">
+                    <div class="icon-box">
+                        <span class="material-symbols-outlined">supervisor_account</span>
+                    </div>
+                    <div class="label">Mentor</div>
                 </div>
-                <div class="label">Mentor</div>
             </div>
-        </div>
-        <div class="col">
-            <div class="service-item">
-                <div class="icon-box">
-                    <span class="material-symbols-outlined">task</span>
+            <div class="col">
+                <div class="service-item">
+                    <div class="icon-box">
+                        <span class="material-symbols-outlined">task</span>
+                    </div>
+                    <div class="label">Latihan Soal</div>
                 </div>
-                <div class="label">Latihan Soal</div>
             </div>
         </div>
     </div>
-</div>
+}
+
 
 <PthModal @ref="ModalMentor">
     <div class="header-bar">
@@ -460,7 +467,9 @@
                                                     <!-- Middle content -->
                                                     <div class="header-content">
                                                         <p class="header-title">Jadwal Tersedia</p>
-                                                        <p class="header-date">Senin, Selasa, Rabu</p>
+                                                        <p class="header-date">
+                                                            @string.Join(", ", item.ListT1JadwalMentor?.Where(j => !string.IsNullOrWhiteSpace(j.Hari)).Select(j => j.Hari).Distinct())
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div class="listbox-item-template-contact">
@@ -544,7 +553,7 @@
                                         {
                                             @foreach (var item in DrMentorDipilih?.ListT1JadwalMentor?.OrderBy(x => x.Hari).ToList())
                                             {
-                                                <button class="jadwal-btn @(DrJadwalDipilih?.IdJadwalMentor == item.IdJadwalMentor ? "selected" : "")" @onclick="(() => { ProsesPilihJadwal(item); })">@($"{item.Hari} {item.JamMulai?.ToString(@"hh\:mm")} - {item.JamSelesai?.ToString(@"hh\:mm")}")</button>
+                                                <button class="jadwal-btn @(DrJadwalDipilih?.IdJadwalMentor == item.IdJadwalMentor ? "selected" : "")" @onclick="(() => { ProsesPilihJadwal(item); })">@($"{item.Hari} {item.JamMulai?.ToString(@"hh\.mm")} - {item.JamSelesai?.ToString(@"hh\.mm")}")</button>
                                             }
                                         }
                                     </div>
@@ -602,6 +611,8 @@
 </PthModal>
 
 @code {
+    [CascadingParameter]
+    public RcpUtama RcpUtama { get; set; }
 
     public bool IsLoading_DtMentor { get; set; } = false;
     public bool IsSkeletonAktif { get; set; } = false;
@@ -613,98 +624,32 @@
     public List<uimT0Mentor> DtMentor { get; set; } = new();
 
     private DotNetObjectReference<RcpBeranda>? dotNetRef;
-    
+
+    private LesKitaDbContext DbContext { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        var x = RcpUtama;
         if (Http.BaseAddress == null) Http.BaseAddress = new Uri("https://localhost:7068/"); // ganti sesuai port kamu
-        DtMentorTerbaik.Add(new uimT0Mentor
-            {
-                Nama = "Geni Santika",
-                Alamat = "Jl. Raya No. 1",
-                Rating = 4.5,
-                Usia = 27,
-                JumlahKlien = 15,
-                UrlFoto = "https://randomuser.me/api/portraits/women/39.jpg",
-                Tarif = 180000,
-                ListT1JadwalMentor = new List<T1JadwalMentor>
-                {
-                    new T1JadwalMentor { Hari = "Minggu", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                    new T1JadwalMentor { Hari = "Senin", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                }
-            });
-        DtMentorTerbaik.Add(new uimT0Mentor
-            {
-                Nama = "M. Afifah",
-                Alamat = "Jl. Raya No. 51",
-                Rating = 4.2,
-                Usia = 26,
-                JumlahKlien = 10,
-                UrlFoto = "https://randomuser.me/api/portraits/men/40.jpg",
-                Tarif = 80000,
-                ListT1JadwalMentor = new List<T1JadwalMentor>
-                {
-                    new T1JadwalMentor { Hari = "Selasa", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                }
-            });
+        DbContext = DbFactory.CreateDbContext();
+        var data = DbContext.Set<T0Mentor>().Include(x => x.ListT1JadwalMentor).AsNoTracking().ToList();
 
-        DtMentor.Add(new uimT0Mentor
-            {
-                Nama = "Geni Santika",
-                Alamat = "Jl. Raya No. 1",
-                Rating = 4.5,
-                Usia = 27,
-                JumlahKlien = 15,
-                UrlFoto = "https://randomuser.me/api/portraits/women/39.jpg",
-                Tarif = 180000,
-                ListT1JadwalMentor = new List<T1JadwalMentor>
-                {
-                    new T1JadwalMentor { Hari = "Minggu", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                    new T1JadwalMentor { Hari = "Senin", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                }
-
-            });
-        DtMentor.Add(new uimT0Mentor
-            {
-                Nama = "M. Afifah",
-                Alamat = "Jl. Raya No. 51",
-                Rating = 4.2,
-                Usia = 26,
-                JumlahKlien = 10,
-                UrlFoto = "https://randomuser.me/api/portraits/men/40.jpg",
-                Tarif = 80000,
-                ListT1JadwalMentor = new List<T1JadwalMentor>
-                {
-                    new T1JadwalMentor { Hari = "Selasa", JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                }
-            });
-        DtMentor.Add(new uimT0Mentor
-            {
-                Nama = "Nura Hutama",
-                Alamat = "Jl. Raya No. 52",
-                Rating = 4.3,
-                Usia = 27,
-                JumlahKlien = 10,
-                UrlFoto = "https://randomuser.me/api/portraits/men/45.jpg",
-                Tarif = 140000,
-                ListT1JadwalMentor = new List<T1JadwalMentor>
-                {
-                    new T1JadwalMentor { Hari = "Sabtu", JamMulai = new TimeSpan(18, 0, 0), JamSelesai = new TimeSpan(19, 0, 0) },
-                    new T1JadwalMentor { Hari = "Kamis", JamMulai = new TimeSpan(18, 0, 0), JamSelesai = new TimeSpan(19, 0, 0) },
-                    new T1JadwalMentor { Hari = "Jumat", JamMulai = new TimeSpan(18, 0, 0), JamSelesai = new TimeSpan(19, 0, 0) },
-                }
-            });
+        DtMentor = data.Select(x => new uimT0Mentor
+        {
+            Id = x.Id,
+            Nama = x.Nama,
+            Alamat = x.Alamat,
+            Tarif = x.Tarif,
+            UrlFoto = "",
+            IdUser = x.IdUser,
+            ListT1JadwalMentor = x.ListT1JadwalMentor
+        }).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            SSR = new ClsServisSignalR();
-            try
-            {
-                await SSR.MulaiKoneksi("LesKita"); //SignalR - Connect ke klien tertentu pada Hub
-            }
-            catch (OperationCanceledException oc_ex) { }
             dotNetRef = DotNetObjectReference.Create(this);
             await JSR.InvokeVoidAsync("setDotNetRef", dotNetRef);
         }
@@ -729,7 +674,7 @@
 
     #region Booking
     public PthModal? ModalCreateOrder;
-    public T1Order DrOrderBaru { get; set; }
+    public uimT1Order DrOrderBaru { get; set; }
     public T1JadwalMentor DrJadwalDipilih { get; set; }
     public int JumlahSesi { get; set; } = 0;
     public double TotalBiaya { get; set; } = 0;
@@ -747,24 +692,40 @@
     }
     public async Task ProsesBayar()
     {
-        
+
         DrOrderBaru = new();
         DrOrderBaru.IdOrder = NewId.NextGuid();
+        DrOrderBaru.IdTransaksi = GenerateIdTransaksi();
         DrOrderBaru.IsPaid = false;
-        DrOrderBaru.Siswa_Nama = "ABC";
-        DrOrderBaru.Siswa_Email = "abc@gmail.com";
         DrOrderBaru.JumlahSesi = JumlahSesi;
         DrOrderBaru.Harga = DrMentorDipilih?.Tarif ?? 0;
-        DrOrderBaru.Total = TotalBiaya;
+        DrOrderBaru.Total = TotalBiaya + TotalLayanan;
+
+        //siswa
+        DrOrderBaru.IdSiswa = RcpUtama.User.IdSiswa;
+        DrOrderBaru.Siswa_Nama = RcpUtama.User.Nama;
+        DrOrderBaru.Siswa_Email = RcpUtama.User.Email;
+        DrOrderBaru.Siswa_Alamat = RcpUtama.User.Alamat;
+        DrOrderBaru.Siswa_NoTelepon = RcpUtama.User.NoTelepon;
+
+        //siswa
+        DrOrderBaru.IdMentor = DrMentorDipilih.Id;
+        DrOrderBaru.Mentor_Nama = DrMentorDipilih.Nama;
+        DrOrderBaru.Mentor_Email = DrMentorDipilih.Email;
+        DrOrderBaru.Mentor_Alamat = DrMentorDipilih.Alamat;
+        DrOrderBaru.Mentor_NoTelepon = DrMentorDipilih.NoTelepon;
+        DrOrderBaru.Mentor_IdUser = DrMentorDipilih.IdUser;
+        DbContext.T1Order.Add(DrOrderBaru);
+        await DbContext.SaveChangesAsync();
 
         var dto = new MidtransRequestDto
         {
             IdOrder = DrOrderBaru.IdOrder.ToString(),
             Siswa_Nama = DrOrderBaru.Siswa_Nama,
             Siswa_Email = DrOrderBaru.Siswa_Email,
-            Total = (double)DrOrderBaru.Total
+            Total = (double)DrOrderBaru.Total,
         };
-        
+
 
         var response = await Http.PostAsJsonAsync("api/payment/create", dto);
         // Baca respons JSON dari API backend
@@ -782,6 +743,101 @@
         }
         StateHasChanged();
     }
+
+    public string GenerateIdTransaksi()
+    {
+        var kodeTahunBulan = DateTime.Now.ToString("yyMM");
+        string sequenceGenerated = GetSequenceTerbaruIdTransaksi(kodeTahunBulan);
+
+        var idTransaksiGenerated = $"DO-{kodeTahunBulan}-{sequenceGenerated}";
+        return idTransaksiGenerated;
+    }
+
+    public string GetSequenceTerbaruIdTransaksi(string kodeTahunBulan)
+    {
+        var idTransaksiTerakhir = DbContext.T1Order.AsNoTracking()
+                                    .Where(dbSet => dbSet.IdTransaksi.Substring(3, 8) == $"{kodeTahunBulan}")
+                                    .Select(d => d.IdTransaksi)
+                                    .OrderByDescending(t => t)
+                                    .FirstOrDefault();
+
+        if (idTransaksiTerakhir is null)
+        {
+            return "0001";
+        }
+        var stringSequenceTerakhir = idTransaksiTerakhir.Substring(12);
+        var intSequence = int.Parse(stringSequenceTerakhir);
+        return (intSequence + 1).ToString().PadLeft(4, '0');
+    }
+
+    public List<T2Jadwal> GenerateJadwalLes(DayOfWeek hariYangDipilih, TimeSpan jamMulai, TimeSpan jamSelesai, int jumlahSesi, DateTimeOffset now, uimT1Order order)
+    {
+        var hasil = new List<T2Jadwal>();
+        int sesiTerbuat = 0;
+
+        DateTime current = GetNextDateThisWeek(hariYangDipilih, now);
+
+        while (sesiTerbuat < jumlahSesi)
+        {
+            var tanggal = new DateTimeOffset(current.Date + jamMulai, now.Offset);
+            var waktuMulai = jamMulai;
+            var waktuSelesai = jamSelesai;
+
+            if (tanggal >= now)
+            {
+                if (!IsBentrok(tanggal.Date, waktuMulai, waktuSelesai))
+                {
+                    hasil.Add(new T2Jadwal
+                    {
+                        IdOrder = order.IdOrder,
+                        Tanggal = current.Date,
+                        JamMulai = jamMulai,
+                        JamSelesai = jamSelesai,
+                        Status = false,
+                    });
+
+                    sesiTerbuat++;
+                }
+            }
+
+            current = current.AddDays(7);
+        }
+
+        return hasil;
+    }
+
+    bool IsBentrok(DateTime tanggal, TimeSpan mulai, TimeSpan selesai)
+    {
+        return DbContext.T2Jadwal.AsNoTracking().Any(j =>
+            j.Tanggal.HasValue &&
+            j.Tanggal.Value.Date == tanggal &&
+            ((mulai >= j.JamMulai && mulai < j.JamSelesai) ||
+             (selesai > j.JamMulai && selesai <= j.JamSelesai)));
+    }
+
+    DateTime GetNextDateThisWeek(DayOfWeek targetDay, DateTimeOffset from)
+    {
+        int daysUntil = ((int)targetDay - (int)from.DayOfWeek + 7) % 7;
+        return from.Date.AddDays(daysUntil);
+    }
+
+
+    public DayOfWeek ConvertToDayOfWeek(string hari)
+    {
+        switch (hari.ToLower())
+        {
+            case "senin": return DayOfWeek.Monday;
+            case "selasa": return DayOfWeek.Tuesday;
+            case "rabu": return DayOfWeek.Wednesday;
+            case "kamis": return DayOfWeek.Thursday;
+            case "jumat": return DayOfWeek.Friday;
+            case "sabtu": return DayOfWeek.Saturday;
+            case "minggu": return DayOfWeek.Sunday;
+            default: throw new ArgumentException("Hari tidak valid");
+        }
+    }
+
+
     #endregion
 
     #region Payment Handler
@@ -791,10 +847,47 @@
         Console.WriteLine("Pembayaran berhasil: " + result);
         ModalMentor.Close();
         ModalCreateOrder.Close();
+        var notif = new uimT9Notifikasi
+        {
+            IdNotifikasi = Guid.NewGuid(),
+            IdUser_Penerima = RcpUtama.User.IdUser,
+            UserPenerima_NamaPanggilan = RcpUtama.User.Nama,
+            IsRead = false,
+            WaktuProsesNotifikasi = DateTimeOffset.Now,
+            IsiPesan = $"Pembayaran untuk order dengan ID Transaksi {DrOrderBaru.IdTransaksi} berhasil diproses",
+            JenisPesan = "Bukan Dari User Login",
+            Form = "Notifikasi",
+        };
+        RcpUtama.DtNotifikasi.Add(notif);
+        StateHasChanged();
+        if (DrOrderBaru != null && DrOrderBaru.IdMentor != null)
+        {
+            await RcpUtama.KirimSignalR(
+                jenisPesan: "Notifikasi",
+                namaForm: "Order Baru",
+                statusAction: "Insert",
+                namaFieldPK: "IdOrder",
+                nilaiPK: DrOrderBaru.IdOrder,
+                waktuProses: DateTime.Now,
+                isiPesan: $"Anda menerima order les baru dari {DrOrderBaru.Siswa_Nama}, ID transaksi: {DrOrderBaru.IdTransaksi}",
+                idUser: Guid.Empty,
+                User_NamaPanggilan: "",
+                idUserPenerima: (Guid)DrOrderBaru.Mentor_IdUser,
+                userPenerima_NamaPanggilan: DrOrderBaru.Mentor_Nama);
+        }
+        DrOrderBaru.IsPaid = false;
+        DrOrderBaru.IsAktif = true;
+        DbContext.T1Order.Update(DrOrderBaru);
+        //Generate jadwal les
+        var jadwalLes = GenerateJadwalLes(hariYangDipilih: ConvertToDayOfWeek(DrJadwalDipilih.Hari), jamMulai: (TimeSpan)DrJadwalDipilih.JamMulai, jamSelesai: (TimeSpan)DrJadwalDipilih.JamSelesai, jumlahSesi: JumlahSesi, now: DateTimeOffset.Now, order: DrOrderBaru);
+        DbContext.T2Jadwal.AddRange(jadwalLes);
+        await DbContext.SaveChangesAsync();
+
         DrOrderBaru = null;
         DrMentorDipilih = null;
         DrJadwalDipilih = null;
-        await KirimSignalR();
+
+        
     }
 
     [JSInvokable]
@@ -821,18 +914,5 @@
     }
     #endregion
 
-    #region SignalR
-    public ClsServisSignalR SSR;
-    public async Task KirimSignalR()
-    {
-        try
-        {
-            await SSR.KirimPesan(jenisPesan: "Notifikasi", namaForm: "Pembayaran Berhasil", statusAction: "Insert", namaFieldPK: "", nilaiPK: "00000001-0000-0000-0000-000000000000", waktuProses: DateTime.Now, isiPesan: "Pesanan dengan Id Transaksi DO-2501-GMA-0023 telah diproses oleh sistem", idUser: Guid.Parse("00000001-0000-0000-0000-000000000000"), User_NamaPanggilan: "AUTO", idUserPenerima: Guid.Parse("00000001-0000-0000-0000-000000000000"), userPenerima_NamaPanggilan: "AUTO");
-            await Task.Delay(30000);
-        }
-        catch (Exception ex)
-        {
-        }
-    }
-    #endregion
+    
 }

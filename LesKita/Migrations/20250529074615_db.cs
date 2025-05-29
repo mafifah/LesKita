@@ -119,15 +119,14 @@ namespace LesKita.Migrations
                     Hari = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     JamMulai = table.Column<TimeSpan>(type: "time", nullable: true),
                     JamSelesai = table.Column<TimeSpan>(type: "time", nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    T0MentorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Status = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_T1JadwalMentor", x => x.IdJadwalMentor);
                     table.ForeignKey(
-                        name: "FK_T1JadwalMentor_T0Mentor_T0MentorId",
-                        column: x => x.T0MentorId,
+                        name: "FK_T1JadwalMentor_T0Mentor_IdMentor",
+                        column: x => x.IdMentor,
                         principalTable: "T0Mentor",
                         principalColumn: "Id");
                 });
@@ -331,9 +330,9 @@ namespace LesKita.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_T1JadwalMentor_T0MentorId",
+                name: "IX_T1JadwalMentor_IdMentor",
                 table: "T1JadwalMentor",
-                column: "T0MentorId");
+                column: "IdMentor");
 
             migrationBuilder.CreateIndex(
                 name: "IX_T1Order_IdMentor",

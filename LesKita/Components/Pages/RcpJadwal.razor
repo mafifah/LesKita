@@ -2,11 +2,11 @@
 @inject ClsServisDrive Drive
 <style>
     .header{
-        background-color: @(IsTampilkanDetailJadwal ? "" : "#f2f2f2 !important");
-        height: 258px !important;
+    background-color: @(IsTampilkanDetailJadwal ? "" : "#f2f2f2 !important");
+    height: 258px !important;
     }
     .page{
-        height: calc(100vh - 300px) !important;
+    height: calc(100vh - 300px) !important;
     }
     .header div {
     visibility: hidden;
@@ -16,14 +16,14 @@
     }
 
     .date-header {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 20px;
-        margin-bottom: 10px;
-        font-family: 'Segoe UI', sans-serif;
-        position: fixed;
-        top: 170px;
-        min-width: -webkit-fill-available;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    position: fixed;
+    top: 170px;
+    min-width: -webkit-fill-available;
     }
 
     .date-item {
@@ -134,9 +134,9 @@
     color:white;
     }
     .lampiran-container{
-        position: fixed;
-        top: 190px;
-        border-radius: 35px;
+    position: fixed;
+    top: 190px;
+    border-radius: 35px;
     }
     .lampiran-card {
     background: white;
@@ -167,8 +167,8 @@
     }
 
     .card-content-lampiran{
-        display:flex;
-        gap:5px;
+    display:flex;
+    gap:5px;
     }
 </style>
 @if (!IsTampilkanDetailJadwal)
@@ -255,32 +255,11 @@ else
 
         var random = new Random();
         var warnaList = new[] { "#FACC15", "#34D399", "#6366F1", "#F472B6" };
-
-        for (int i = 0; i < 3; i++) // 3 hari ke depan
-        {
-            var tanggal = DateTimeOffset.Now.Date.AddDays(i);
-            int jumlahJadwalHariIni = random.Next(2, 5);
-
-            for (int j = 0; j < jumlahJadwalHariIni; j++)
-            {
-                var jamMulaiJam = random.Next(8, 20);
-                var jamMulai = new TimeSpan(jamMulaiJam, 0, 0);
-                var jamSelesai = jamMulai.Add(TimeSpan.FromHours(1));
-
-                DtJadwal.Add(new uimT2Jadwal
-                    {
-                        IdJadwal = Guid.NewGuid(),
-                        IdOrder = Guid.NewGuid(),
-                        Tanggal = tanggal,
-                        JamMulai = jamMulai,
-                        JamSelesai = jamSelesai,
-                        Status = true,
-                        Siswa_Nama = $"Siswa {i * 10 + j}",
-                        Mentor_Nama = $"Mentor {i * 10 + j}",
-                        WarnaKode = warnaList[random.Next(warnaList.Length)]
-                    });
-            }
-        }
+        
+        if (RcpUtama.User.Role != "Mentor")
+            DtJadwal = RcpUtama.DbContext.T2Jadwal.Where(x => x.Tanggal >= DateTimeOffset.Now.Date && x.Tanggal < DateTimeOffset.Now.Date.AddDays(7) && x.T1Order.IdSiswa == RcpUtama.User.IdSiswa).OrderBy(x => x.Tanggal).ToList().Adapt<List<uimT2Jadwal>>();
+        else
+            DtJadwal = RcpUtama.DbContext.T2Jadwal.Where(x => x.Tanggal >= DateTimeOffset.Now.Date && x.Tanggal < DateTimeOffset.Now.Date.AddDays(7) && x.T1Order.IdMentor == RcpUtama.User.IdMentor).OrderBy(x => x.Tanggal).ToList().Adapt<List<uimT2Jadwal>>();
     }
     private DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now.Date;
 

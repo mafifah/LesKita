@@ -21,7 +21,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Redirect("/");
+        return Redirect("/beranda");
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromForm] string email, [FromForm] string password)
@@ -32,15 +32,15 @@ public class AuthController : Controller
 
         if (user == null)
         {
-            return Unauthorized("Email atau password salah.");
+            return Redirect("/login");
         }
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Nama),
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user?.Nama ?? ""),
+            new Claim(ClaimTypes.Email, user?.Email ?? ""),
             new Claim("IdUser", user.IdUser.ToString()),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user ?.Role ?? "")
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -50,10 +50,10 @@ public class AuthController : Controller
             new AuthenticationProperties
             {
                 IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
             });
-
-        return Redirect("/");
+        await Task.Delay(1000); // Simulate some processing delay
+        return Redirect("/beranda");
     }
 
 }

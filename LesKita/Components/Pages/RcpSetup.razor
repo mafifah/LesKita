@@ -1,0 +1,166 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using System.IdentityModel.Claims
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NM
+@inject IDbContextFactory<LesKitaDbContext> DbFactory
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    }
+
+    body, html {
+    height: 100%;
+    background: white;
+    }
+
+    .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    }
+
+    .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #555;
+    position: relative;
+    }
+
+    .title::after {
+    content: '';
+    display: block;
+    height: 4px;
+    width: 30px;
+    background: #6282c8;
+    margin: 6px auto 0;
+    border-radius: 2px;
+    }
+
+    .user-types {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    }
+
+    .card {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    color: #1d1d1f;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border:none;
+    width:160px;
+    }
+
+    .card .icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+    }
+
+    .card:hover,
+    .card:active
+    {
+    background: #6282c8;
+    color: white;
+    }
+    .card:hover .material-symbols-outlined {
+    color: white !important;
+    }
+
+
+    .card p{
+    font-size: medium;
+    }
+
+    .card:nth-child(1) .material-symbols-outlined {
+    color: #555;
+    }
+
+    .card:nth-child(2) .material-symbols-outlined {
+    color: #555;
+    }
+
+    .material-symbols-outlined {
+    font-size: 70px;
+    }
+</style>
+<div class="container">
+    <h2 class="title">Apa peran Anda?</h2>
+    <div class="user-types">
+        <div class="card" @onclick="@(() => {ProsesPerbaruiData("Siswa"); })">
+            <span class="material-symbols-outlined">supervisor_account</span>
+            <p>Siswa</p>
+        </div>
+        <div class="card" @onclick="@(() => {ProsesPerbaruiData("Mentor"); })">
+            <span class="material-symbols-outlined">productivity</span>
+            <p>Mentor</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    public uimT2User User { get; set; } = new uimT2User();
+    public LesKitaDbContext DbContext { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        DbContext = DbFactory.CreateDbContext();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            User.Email = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value ?? "Tamu";
+            User.Nama = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value ?? "Tamu";
+            var existingUser = DbContext.T2User.AsNoTracking().FirstOrDefault(x => x.Email == User.Email);
+            if (existingUser != null && string.IsNullOrEmpty(existingUser.Role))
+            {
+                return;
+
+            }
+        }
+        await Task.Delay(100);
+        NM.NavigateTo("/beranda");
+        StateHasChanged();
+    }
+
+    private async Task ProsesPerbaruiData(string role)
+    {
+        var existingUser = DbContext.T2User.AsNoTracking().FirstOrDefault(x => x.Email == User.Email);
+        User.Role = role;
+        if (existingUser != null)
+        {
+            User.IdUser = existingUser.IdUser;
+            User.Nama = existingUser.Nama;
+            existingUser.Role = role;
+            DbContext.Update(existingUser);
+        }
+        else
+        {
+            DbContext.T2User.Add(User);
+        }
+
+
+        if (User.Role == "Mentor")
+        {
+            var mentor = User.Adapt<T0Mentor>();
+            DbContext.T0Mentor.Add(mentor);
+        }
+        else if (User.Role == "Siswa")
+        {
+            var siswa = User.Adapt<T0Siswa>();
+            DbContext.T0Siswa.Add(siswa);
+        }
+        await DbContext.SaveChangesAsync();
+        NM.NavigateTo("/beranda");
+    }
+}

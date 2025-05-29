@@ -1,4 +1,5 @@
-﻿using ColumnAttribute = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using ColumnAttribute = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
 
 namespace LesKita.Model;
 
@@ -14,4 +15,6 @@ public class T1JadwalMentor
     [Column(TypeName = "time")]
     public TimeSpan? JamSelesai { get; set; }
     public bool Status { get; set; }
+    [ForeignKey("IdMentor")]
+    public T0Mentor T0Mentor { get; set; }
 }
