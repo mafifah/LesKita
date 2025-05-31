@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using Microsoft.EntityFrameworkCore;
 @inject ClsServisDrive Drive
 <style>
     .header{
@@ -193,8 +194,8 @@
                 <div class="schedule-card">
                     <div class="color-bar" style="background-color:@item.WarnaKode"></div>
                     <div class="card-content">
-                        <div class="title">Sesi dengan @item.Mentor_Nama</div>
-                        <div class="desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+                        <div class="title">@($"Sesi dengan {(RcpUtama.User.Role == "Siswa" ? item.Mentor_Nama : item.Siswa_Nama)}")</div>
+                        <div class="desc">@item.Deskripsi</div>
                     </div>
                 </div>
             </div>
@@ -212,8 +213,8 @@ else
         <div class="deskripsi-sesi">
             <!-- Title & Author -->
             <div class="mb-2">
-                <h2 class="text-2xl font-bold text-gray-800">3D Illustration Course</h2>
-                <p class="text-sm text-gray-500">Leo Nikuma Arindao</p>
+                <h2 class="text-2xl font-bold text-gray-800">@($"Sesi dengan {(RcpUtama.User.Role == "Siswa" ? DrJadwalDipilih.Mentor_Nama : DrJadwalDipilih.Siswa_Nama)}")</h2>
+                <p class="text-sm text-gray-500">@($"{DrJadwalDipilih.Tanggal?.ToString("dd MMM yy")}, {DrJadwalDipilih.JamMulai?.ToString(@"hh\.mm")} - {DrJadwalDipilih.JamSelesai?.ToString(@"hh\.mm")}")</p>
             </div>
         </div>
         <!-- Lessons Summary -->
@@ -252,14 +253,67 @@ else
     {
         SelectedDate = DateTimeOffset.Now.Date;
         GenerateDateHeaders();
-
         var random = new Random();
         var warnaList = new[] { "#FACC15", "#34D399", "#6366F1", "#F472B6" };
-        
-        if (RcpUtama.User.Role != "Mentor")
-            DtJadwal = RcpUtama.DbContext.T2Jadwal.Where(x => x.Tanggal >= DateTimeOffset.Now.Date && x.Tanggal < DateTimeOffset.Now.Date.AddDays(7) && x.T1Order.IdSiswa == RcpUtama.User.IdSiswa).OrderBy(x => x.Tanggal).ToList().Adapt<List<uimT2Jadwal>>();
-        else
-            DtJadwal = RcpUtama.DbContext.T2Jadwal.Where(x => x.Tanggal >= DateTimeOffset.Now.Date && x.Tanggal < DateTimeOffset.Now.Date.AddDays(7) && x.T1Order.IdMentor == RcpUtama.User.IdMentor).OrderBy(x => x.Tanggal).ToList().Adapt<List<uimT2Jadwal>>();
+
+        if (RcpUtama.User.Role != "Mentor" && !RcpUtama.User.Nama.Contains("Tamu"))
+        {
+            var jadwal = RcpUtama.DbContext.Set<T2Jadwal>().Include(x => x.T1Order) // Ambil relasi ke T1Order
+                        .Include(x => x.ListT3Materi) // Ambil relasi ke list T3Materi
+                        .Where(x =>
+                            x.Tanggal >= DateTimeOffset.Now.Date &&
+                            x.Tanggal < DateTimeOffset.Now.Date.AddDays(7) &&
+                            x.T1Order.IdSiswa == RcpUtama.User.IdSiswa
+                        )
+                        .OrderBy(x => x.Tanggal)
+                        .ToList();
+            jadwal.ForEach(x =>
+            {
+                DtJadwal.Add(new uimT2Jadwal
+                    {
+                        IdJadwal = x.IdJadwal,
+                        IdOrder = x.IdOrder,
+                        Tanggal = x.Tanggal,
+                        JamMulai = x.JamMulai,
+                        JamSelesai = x.JamSelesai,
+                        Deskripsi = string.IsNullOrEmpty(x.Deskripsi) ? "Tunggu mentor mengisi deskripsi dan mengunggah materi sesi ini." : "Klik jadwal ini untuk membaca deskripsi dan mengunduh materi dari mentor.",
+                        T1Order = x.T1Order,
+                        ListT3Materi = x.ListT3Materi.ToList(),
+                        WarnaKode = warnaList[random.Next(warnaList.Length)],
+                    });
+                StateHasChanged();
+            });
+        }
+        else if (!RcpUtama.User.Nama.Contains("Tamu"))
+        {
+            var jadwal = RcpUtama.DbContext.Set<T2Jadwal>().Include(x => x.T1Order) // Ambil relasi ke T1Order
+                        .Include(x => x.ListT3Materi) // Ambil relasi ke list T3Materi
+                        .Where(x =>
+                            x.Tanggal >= DateTimeOffset.Now.Date &&
+                            x.Tanggal < DateTimeOffset.Now.Date.AddDays(7) &&
+                            x.T1Order.IdMentor == RcpUtama.User.IdMentor
+                        )
+                        .OrderBy(x => x.Tanggal)
+                        .ToList();
+            jadwal.ForEach(x =>
+            {
+                DtJadwal.Add(new uimT2Jadwal
+                    {
+                        IdJadwal = x.IdJadwal,
+                        IdOrder = x.IdOrder,
+                        Tanggal = x.Tanggal,
+                        JamMulai = x.JamMulai,
+                        JamSelesai = x.JamSelesai,
+                        Deskripsi = string.IsNullOrEmpty(x.Deskripsi) ? "Lengkapi sesi ini dengan deskripsi dan materi. Klik untuk mulai." : x.Deskripsi,
+                        T1Order = x.T1Order,
+                        ListT3Materi = x.ListT3Materi.ToList(),
+                        WarnaKode = warnaList[random.Next(warnaList.Length)],
+                    });
+
+                StateHasChanged();
+            });
+        }
+
     }
     private DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now.Date;
 

@@ -37,6 +37,5 @@ public class T1Order
     [ForeignKey("IdMentor")]
     public T0Mentor T0Mentor { get; set; }
     public List<T2Jadwal>? ListT2Jadwal { get; set; }
-
-
+    public List<T2Rating>? ListT2Rating { get; set; }
 }

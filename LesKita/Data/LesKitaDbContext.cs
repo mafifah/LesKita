@@ -1,5 +1,4 @@
-﻿using LesKita.Model.Rating;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace LesKita;
 

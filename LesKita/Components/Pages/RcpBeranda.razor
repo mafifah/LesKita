@@ -9,7 +9,6 @@
 @inject IServiceProvider ServicesProv
 @inject IJSRuntime JSR
 @inject HttpClient Http
-@inject IDbContextFactory<LesKitaDbContext> DbFactory
 
 <style>
     .services{
@@ -625,15 +624,12 @@
 
     private DotNetObjectReference<RcpBeranda>? dotNetRef;
 
-    private LesKitaDbContext DbContext { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var x = RcpUtama;
         if (Http.BaseAddress == null) Http.BaseAddress = new Uri("https://localhost:7068/"); // ganti sesuai port kamu
-        DbContext = DbFactory.CreateDbContext();
-        var data = DbContext.Set<T0Mentor>().Include(x => x.ListT1JadwalMentor).AsNoTracking().ToList();
-
+        var data = RcpUtama.DbContext.Set<T0Mentor>().Include(x => x.ListT1JadwalMentor).Include(x => x.ListT1Order!).ThenInclude(o => o.ListT2Rating).AsNoTracking().ToList();
         DtMentor = data.Select(x => new uimT0Mentor
         {
             Id = x.Id,
@@ -642,8 +638,11 @@
             Tarif = x.Tarif,
             UrlFoto = "",
             IdUser = x.IdUser,
-            ListT1JadwalMentor = x.ListT1JadwalMentor
+            ListT1JadwalMentor = x.ListT1JadwalMentor,
+            Rating = x.ListT1Order?.SelectMany(o => o.ListT2Rating ?? new List<T2Rating>()).Where(r => r.Skor != null).Average(r => (double?)r.Skor!) ?? 0,
+            JumlahKlien = x.ListT1Order?.SelectMany(o => o.ListT2Rating ?? new List<T2Rating>()).Count(r => r.Skor != null) ?? 0
         }).ToList();
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -715,8 +714,8 @@
         DrOrderBaru.Mentor_Alamat = DrMentorDipilih.Alamat;
         DrOrderBaru.Mentor_NoTelepon = DrMentorDipilih.NoTelepon;
         DrOrderBaru.Mentor_IdUser = DrMentorDipilih.IdUser;
-        DbContext.T1Order.Add(DrOrderBaru);
-        await DbContext.SaveChangesAsync();
+        RcpUtama.DbContext.T1Order.Add(DrOrderBaru);
+        await RcpUtama.DbContext.SaveChangesAsync();
 
         var dto = new MidtransRequestDto
         {
@@ -755,7 +754,7 @@
 
     public string GetSequenceTerbaruIdTransaksi(string kodeTahunBulan)
     {
-        var idTransaksiTerakhir = DbContext.T1Order.AsNoTracking()
+        var idTransaksiTerakhir = RcpUtama.DbContext.T1Order.AsNoTracking()
                                     .Where(dbSet => dbSet.IdTransaksi.Substring(3, 8) == $"{kodeTahunBulan}")
                                     .Select(d => d.IdTransaksi)
                                     .OrderByDescending(t => t)
@@ -808,7 +807,7 @@
 
     bool IsBentrok(DateTime tanggal, TimeSpan mulai, TimeSpan selesai)
     {
-        return DbContext.T2Jadwal.AsNoTracking().Any(j =>
+        return RcpUtama.DbContext.T2Jadwal.AsNoTracking().Any(j =>
             j.Tanggal.HasValue &&
             j.Tanggal.Value.Date == tanggal &&
             ((mulai >= j.JamMulai && mulai < j.JamSelesai) ||
@@ -875,13 +874,13 @@
                 idUserPenerima: (Guid)DrOrderBaru.Mentor_IdUser,
                 userPenerima_NamaPanggilan: DrOrderBaru.Mentor_Nama);
         }
-        DrOrderBaru.IsPaid = false;
+        DrOrderBaru.IsPaid = true;
         DrOrderBaru.IsAktif = true;
-        DbContext.T1Order.Update(DrOrderBaru);
+        RcpUtama.DbContext.T1Order.Update(DrOrderBaru);
         //Generate jadwal les
         var jadwalLes = GenerateJadwalLes(hariYangDipilih: ConvertToDayOfWeek(DrJadwalDipilih.Hari), jamMulai: (TimeSpan)DrJadwalDipilih.JamMulai, jamSelesai: (TimeSpan)DrJadwalDipilih.JamSelesai, jumlahSesi: JumlahSesi, now: DateTimeOffset.Now, order: DrOrderBaru);
-        DbContext.T2Jadwal.AddRange(jadwalLes);
-        await DbContext.SaveChangesAsync();
+        RcpUtama.DbContext.T2Jadwal.AddRange(jadwalLes);
+        await RcpUtama.DbContext.SaveChangesAsync();
 
         DrOrderBaru = null;
         DrMentorDipilih = null;

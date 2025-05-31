@@ -15,7 +15,7 @@ public class T2Jadwal
     [Column(TypeName = "time")]
     public TimeSpan? JamSelesai { get; set; }
     public bool Status { get; set; }
-
+    public string Deskripsi { get; set; }
     public List<T3Materi>? ListT3Materi { get; set; }
     [ForeignKey("IdOrder")]
     public T1Order? T1Order { get; set; }

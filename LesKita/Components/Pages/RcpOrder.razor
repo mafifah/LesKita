@@ -1,12 +1,12 @@
 ﻿@using LesKita.Components
 <style>
     .page {
-        background-color: #f9fafb;
-        height: calc(100vh - 42px) !important;
+    background-color: #f9fafb;
+    height: calc(100vh - 42px) !important;
     }
 
     .header {
-        display: none !important;
+    display: none !important;
     }
 
     .card-modern {
@@ -219,7 +219,7 @@
                     <div class="customer-role">@item.Mentor_Alamat</div>
                 </div>
             </div>
-            @if (item.IsAktif || item.IsPaid)
+            @if ((item.IsAktif || item.IsPaid) && !item.IsDone)
             {
                 <div style="display: flex; gap: 8px;">
                     <div class="action-order">
@@ -235,12 +235,12 @@
                 </div>
             }
         </div>
-        @if (item.IsAktif)
+        @if (item.IsAktif && !item.IsDone && RcpUtama.User.Role != "Mentor")
         {
             <!-- Footer -->
             <div class="card-footer">
                 <span></span>
-                <button class="btn-action" @onclick="@ProsesSelesaikanPesanan">
+                <button class="btn-action" @onclick="(() => { ProsesSelesaikanPesanan(item); })">
                     Selesai
                 </button>
             </div>
@@ -261,8 +261,8 @@
             {
                 var index = i;  // Salin ke variabel lokal agar tidak tertimpa
                 <span @onclick="() => SetRating(index + 1)"
-                      style="font-size: 40px; color:@(index < currentRating ? "gold" : "gray")"
-                      class="material-symbols-sharp cursor-pointer">
+                style="font-size: 40px; color:@(index < currentRating ? "gold" : "gray")"
+                class="material-symbols-sharp cursor-pointer">
                     <i class="fa @(i < currentRating ? "fa-star" : "fa regular fa-star")" aria-hidden="true"></i>
                 </span>
             }
@@ -271,101 +271,28 @@
 
         <div class="komentar">
             <p class="text-sm mb-2" style="font-size: 16px;font-weight: 600;">Tell us more (optional)</p>
-            <textarea placeholder="Why this rating?" class="w-full border border-gray-300 rounded-md p-2 text-sm mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
-
+            <textarea @bind="Komentar" placeholder="Ceritakan mengapa kamu memberi rating ini" class="w-full border border-gray-300 rounded-md p-2 text-sm mb-4 resize-none"></textarea>
         </div>
 
 
         <!-- Submit Button -->
-        <button class="text-white py-2 text-sm font-semibold btn-review">Selesaikan Pesanan</button>
+        <button class="text-white py-2 text-sm font-semibold btn-review" @onclick="@ProsesRating">Selesaikan Pesanan</button>
     </div>
 
 </PthBottomSheet>
 
 @code {
+    [CascadingParameter]
+    public RcpUtama RcpUtama { get; set; }
     public PthBottomSheet BottomSheetReview { get; set; }
     private List<T1Order> DtOrder = new();
+    private T1Order DrOrderDipilih = new();
 
     protected override async Task OnInitializedAsync()
     {
-        DtOrder = new List<T1Order>
-        {
-            new T1Order
-            {
-                IdOrder = Guid.NewGuid(),
-                IdSiswa = Guid.NewGuid(),
-                IdMentor = Guid.NewGuid(),
-                JumlahSesi = 4,
-                TanggalPemesanan = DateTimeOffset.Now.AddDays(-2),
-                Siswa_Nama = "Ali",
-                Siswa_TanggalLahir = new DateTimeOffset(2010, 5, 1, 0, 0, 0, TimeSpan.Zero),
-                Siswa_Usia = DateTimeOffset.Now.AddYears(-13),
-                Siswa_Alamat = "Jl. Merdeka No. 10",
-                Mentor_Nama = "Bu Rina",
-                Mentor_TanggalLahir = new DateTimeOffset(1990, 8, 15, 0, 0, 0, TimeSpan.Zero),
-                Mentor_Usia = DateTimeOffset.Now.AddYears(-34),
-                Mentor_Alamat = "Jl. Mawar No. 5",
-                Harga = 50000,
-                Total = 200000,
-                IsPaid = true,
-                IsAktif = true,
-                ListT2Jadwal = new List<T2Jadwal>
-                {
-                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(1), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(8), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(14), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(28), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                }
-            },
-            new T1Order
-            {
-                IdOrder = Guid.NewGuid(),
-                IdSiswa = Guid.NewGuid(),
-                IdMentor = Guid.NewGuid(),
-                JumlahSesi = 2,
-                TanggalPemesanan = DateTimeOffset.Now.AddDays(-5),
-                Siswa_Nama = "Budi",
-                Siswa_TanggalLahir = new DateTimeOffset(2008, 9, 10, 0, 0, 0, TimeSpan.Zero),
-                Siswa_Usia = DateTimeOffset.Now.AddYears(-16),
-                Siswa_Alamat = "Jl. Diponegoro No. 20",
-                Mentor_Nama = "Pak Andi",
-                Mentor_TanggalLahir = new DateTimeOffset(1985, 3, 22, 0, 0, 0, TimeSpan.Zero),
-                Mentor_Usia = DateTimeOffset.Now.AddYears(-39),
-                Mentor_Alamat = "Jl. Melati No. 12",
-                Harga = 50000,
-                Total = 50000,
-                IsPaid = true,
-                IsDone = true,
-                ListT2Jadwal = new List<T2Jadwal>
-                {
-                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(2), JamMulai = new TimeSpan(15, 0, 0), JamSelesai = new TimeSpan(16, 0, 0) },
-                }
-            },
-            new T1Order
-            {
-                IdOrder = Guid.NewGuid(),
-                IdSiswa = Guid.NewGuid(),
-                IdMentor = Guid.NewGuid(),
-                JumlahSesi = 1,
-                TanggalPemesanan = DateTimeOffset.Now.AddDays(-1),
-                Siswa_Nama = "Citra",
-                Siswa_TanggalLahir = new DateTimeOffset(2012, 11, 30, 0, 0, 0, TimeSpan.Zero),
-                Siswa_Usia = DateTimeOffset.Now.AddYears(-12),
-                Siswa_Alamat = "Jl. Kenanga No. 3",
-                Mentor_Nama = "Bu Sari",
-                Mentor_TanggalLahir = new DateTimeOffset(1992, 12, 1, 0, 0, 0, TimeSpan.Zero),
-                Mentor_Usia = DateTimeOffset.Now.AddYears(-32),
-                Mentor_Alamat = "Jl. Anggrek No. 7",
-                Harga = 60000,
-                Total = 60000,
-                IsCancel = true,
-                ListT2Jadwal = new List<T2Jadwal>
-                {
-                    new T2Jadwal { Tanggal = DateTimeOffset.Now.AddDays(5), JamMulai = new TimeSpan(17, 0, 0), JamSelesai = new TimeSpan(18, 0, 0) },
-                }
-            }
-        };
+        if (RcpUtama.User.Role != "Mentor" && !RcpUtama.User.Nama.Contains("Tamu")) DtOrder = RcpUtama.DbContext.Set<T1Order>().Where(x => x.IdSiswa == RcpUtama.User.IdSiswa).OrderBy(x => x.TanggalPemesanan).ToList();
 
+        else if (!RcpUtama.User.Nama.Contains("Tamu")) DtOrder = RcpUtama.DbContext.Set<T1Order>().Where(x => x.IdMentor == RcpUtama.User.IdMentor).OrderBy(x => x.TanggalPemesanan).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -375,7 +302,6 @@
         {
 
         }
-        // _svcStatusBar.SetStatusBarColor(Color.FromArgb("#ffffff"), true);
     }
 
     public string GetStatusOrder(T1Order order)
@@ -395,19 +321,36 @@
         return "Status Tidak Diketahui";
     }
 
-    public async Task ProsesSelesaikanPesanan()
+    public async Task ProsesSelesaikanPesanan(T1Order order)
     {
+        DrOrderDipilih = order;
         BottomSheetReview.ShowBottomSheet();
     }
 
     #region Rating
     int currentRating = 0;
+    string Komentar = "";
 
     void SetRating(int rating)
     {
-        Console.WriteLine($"[DEBUG] Rating clicked: {rating}");
         currentRating = rating;
         StateHasChanged();
+    }
+    async Task ProsesRating()
+    {
+        var rating = new T2Rating
+        {
+            IdOrder = DrOrderDipilih.IdOrder,
+            Skor = currentRating,
+            Komentar = Komentar,
+        };
+
+        DrOrderDipilih.IsDone = true;
+        RcpUtama.DbContext.T1Order.Update(DrOrderDipilih);
+        RcpUtama.DbContext.T2Rating.Add(rating);
+        await RcpUtama.DbContext.SaveChangesAsync();
+        StateHasChanged();
+        BottomSheetReview.HideBottomSheet();
     }
     #endregion
 }
